@@ -300,6 +300,7 @@
                 <tr><td>orderDate</td><td>string</td><td>10</td><td><span class="optional">N</span></td><td>訂單日期</td><td>DOCUMENTDATE</td></tr>
                 <tr><td>eMESTransferType</td><td>string</td><td>10</td><td><span class="required">Y</span></td><td>MES 單別</td><td>TRANSTYPE</td></tr>
                 <tr><td>eMESTransferCode</td><td>string</td><td>30</td><td><span class="required">Y</span></td><td>MES 單號</td><td>TRANSNO</td></tr>
+                <tr><td>source_no</td><td>string</td><td>50</td><td><span class="required">Y</span></td><td>來源單號（MES單別-單號）</td><td>eMESTransferType + "-" + eMESTransferCode</td></tr>
             </table>
 
             <h3>3.3 表身（line）- getTransferFormBody() - 陣列</h3>
