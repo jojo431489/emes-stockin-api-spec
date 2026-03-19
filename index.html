@@ -394,6 +394,45 @@
             </div>
         </div>
 
+        <!-- 報工單 Category -->
+        <div class="category">
+            <div class="category-header">
+                <div class="category-icon" style="background: linear-gradient(135deg, #10b981, #047857);">
+                    📝
+                </div>
+                <div class="category-title">
+                    <h2>報工單</h2>
+                    <p>Work Report - 0190760</p>
+                </div>
+            </div>
+            <div class="api-grid">
+                <a href="wo-work-report-data-create.html" class="api-card">
+                    <div class="api-card-header">
+                        <h3>拋送報工單</h3>
+                        <span class="method method-post">POST</span>
+                    </div>
+                    <div class="code">wo.work.report.data.create</div>
+                    <p>工單出站後，將報工資料拋送至 ERP</p>
+                    <div class="tags">
+                        <span class="tag">MES→ERP</span>
+                        <span class="tag">api-2195</span>
+                    </div>
+                </a>
+                <a href="wo-work-report-data-process.html" class="api-card">
+                    <div class="api-card-header">
+                        <h3>取消報工單</h3>
+                        <span class="method method-delete">CANCEL</span>
+                    </div>
+                    <div class="code">wo.work.report.data.process</div>
+                    <p>取消出站後，通知 ERP 還原報工單</p>
+                    <div class="tags">
+                        <span class="tag">MES→ERP</span>
+                        <span class="tag">api-2196</span>
+                    </div>
+                </a>
+            </div>
+        </div>
+
         <!-- 一般移轉單 Category -->
         <div class="category">
             <div class="category-header">
@@ -423,7 +462,7 @@
         <!-- Stats -->
         <div class="stats">
             <div class="stat-item">
-                <div class="number">7</div>
+                <div class="number">9</div>
                 <div class="label">已完成 API</div>
             </div>
             <div class="stat-item">
@@ -438,7 +477,7 @@
 
         <!-- Footer -->
         <div class="footer">
-            <p>eMES API 規格書 v1.1 | 更新日期: 2026-03-19</p>
+            <p>eMES API 規格書 v1.2 | 更新日期: 2026-03-19</p>
             <p style="margin-top:5px;">傳輸格式: JSON (Content-Type: application/json)</p>
         </div>
     </div>

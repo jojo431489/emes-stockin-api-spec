@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>wo.work.report.data.create - 拋送報工單 | eMES API 規格書</title>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #1e40af;
+            --success-color: #16a34a;
+            --error-color: #dc2626;
+            --warning-color: #d97706;
+            --bg-color: #f8fafc;
+            --border-color: #e2e8f0;
+            --text-color: #1e293b;
+            --text-muted: #64748b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background: var(--bg-color);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 40px 20px;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .back-link {
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 20px;
+            font-size: 0.9em;
+        }
+
+        .back-link:hover {
+            color: white;
+        }
+
+        .api-title {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .api-title h1 {
+            font-size: 2em;
+            margin: 0;
+        }
+
+        .method-badge {
+            background: rgba(255,255,255,0.2);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 600;
+        }
+
+        .api-code {
+            font-family: 'Consolas', monospace;
+            background: rgba(0,0,0,0.2);
+            padding: 10px 20px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 1.1em;
+            display: inline-block;
+        }
+
+        .api-desc {
+            margin-top: 15px;
+            opacity: 0.9;
+            max-width: 800px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .section {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .section h2 {
+            font-size: 1.4em;
+            color: var(--text-color);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--bg-color);
+        }
+
+        .section h3 {
+            font-size: 1.1em;
+            color: var(--text-color);
+            margin: 25px 0 15px 0;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .info-item {
+            background: var(--bg-color);
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .info-item .label {
+            font-size: 0.85em;
+            color: var(--text-muted);
+            margin-bottom: 5px;
+        }
+
+        .info-item .value {
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95em;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background: var(--bg-color);
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        tr:hover {
+            background: #f1f5f9;
+        }
+
+        .required {
+            color: var(--error-color);
+            font-weight: bold;
+        }
+
+        .optional {
+            color: var(--text-muted);
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            font-weight: 500;
+        }
+
+        .tag-required {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .tag-optional {
+            background: #e0e7ff;
+            color: #4f46e5;
+        }
+
+        .tag-head {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .tag-line {
+            background: #dcfce7;
+            color: #16a34a;
+        }
+
+        pre {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Consolas', monospace;
+            font-size: 0.9em;
+            line-height: 1.5;
+        }
+
+        .code-inline {
+            background: #f1f5f9;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Consolas', monospace;
+            font-size: 0.9em;
+            color: var(--primary-color);
+        }
+
+        .flow-diagram {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            overflow-x: auto;
+        }
+
+        .note {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 15px 20px;
+            border-radius: 0 8px 8px 0;
+            margin: 20px 0;
+        }
+
+        .note-title {
+            font-weight: 600;
+            color: #92400e;
+            margin-bottom: 5px;
+        }
+
+        .note-content {
+            color: #78350f;
+            font-size: 0.95em;
+        }
+
+        .success-box {
+            background: #dcfce7;
+            border-left: 4px solid #16a34a;
+            padding: 15px 20px;
+            border-radius: 0 8px 8px 0;
+            margin: 20px 0;
+        }
+
+        .error-box {
+            background: #fee2e2;
+            border-left: 4px solid #dc2626;
+            padding: 15px 20px;
+            border-radius: 0 8px 8px 0;
+            margin: 20px 0;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .two-column {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .footer {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-muted);
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <a href="index.html" class="back-link">← 返回 API 列表</a>
+            <div class="api-title">
+                <h1>拋送報工單</h1>
+                <span class="method-badge">POST</span>
+                <span class="method-badge">MES → ERP</span>
+            </div>
+            <div class="api-code">wo.work.report.data.create</div>
+            <p class="api-desc">
+                工單出站完成後，將報工資料（生產報工單）拋送至 ERP 系統。
+                ERP 回傳報工單號後，MES 將單號回寫至 SFT_OP_REALRUN 和 SFT_WS_RUN。
+            </p>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- 基本資訊 -->
+        <div class="section">
+            <h2>基本資訊</h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="label">API 名稱</div>
+                    <div class="value">wo.work.report.data.create</div>
+                </div>
+                <div class="info-item">
+                    <div class="label">內部任務名稱</div>
+                    <div class="value">generateProductionForm</div>
+                </div>
+                <div class="info-item">
+                    <div class="label">傳輸格式</div>
+                    <div class="value">JSON (Content-Type: application/json)</div>
+                </div>
+                <div class="info-item">
+                    <div class="label">案號</div>
+                    <div class="value">0190760</div>
+                </div>
+                <div class="info-item">
+                    <div class="label">API 編號</div>
+                    <div class="value">api-2195</div>
+                </div>
+                <div class="info-item">
+                    <div class="label">資料方向</div>
+                    <div class="value">MES → ERP</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 觸發時機 -->
+        <div class="section">
+            <h2>觸發時機</h2>
+            <div class="flow-diagram">
+                <svg viewBox="0 0 900 200" style="max-width: 900px; width: 100%;">
+                    <!-- 步驟 1: 出站作業 -->
+                    <rect x="20" y="60" width="150" height="80" rx="8" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+                    <text x="95" y="95" text-anchor="middle" font-size="14" font-weight="600" fill="#1e40af">出站作業</text>
+                    <text x="95" y="115" text-anchor="middle" font-size="11" fill="#3b82f6">CheckOut</text>
+
+                    <!-- 箭頭 1 -->
+                    <path d="M170 100 L210 100" stroke="#64748b" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+                    <!-- 步驟 2: 產生報工單 -->
+                    <rect x="220" y="60" width="150" height="80" rx="8" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+                    <text x="295" y="90" text-anchor="middle" font-size="14" font-weight="600" fill="#166534">產生報工單</text>
+                    <text x="295" y="110" text-anchor="middle" font-size="10" fill="#22c55e">generateProductionForm</text>
+                    <text x="295" y="125" text-anchor="middle" font-size="10" fill="#22c55e">MainDataHead:354</text>
+
+                    <!-- 箭頭 2 -->
+                    <path d="M370 100 L410 100" stroke="#64748b" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+                    <!-- 步驟 3: 送 ERP -->
+                    <rect x="420" y="60" width="150" height="80" rx="8" fill="#fef3c7" stroke="#f59e0b" stroke-width="2"/>
+                    <text x="495" y="90" text-anchor="middle" font-size="14" font-weight="600" fill="#92400e">送出至 ERP</text>
+                    <text x="495" y="110" text-anchor="middle" font-size="10" fill="#d97706">wo.work.report</text>
+                    <text x="495" y="125" text-anchor="middle" font-size="10" fill="#d97706">.data.create</text>
+
+                    <!-- 箭頭 3 -->
+                    <path d="M570 100 L610 100" stroke="#64748b" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+                    <!-- 步驟 4: 回寫單號 -->
+                    <rect x="620" y="60" width="150" height="80" rx="8" fill="#f3e8ff" stroke="#9333ea" stroke-width="2"/>
+                    <text x="695" y="90" text-anchor="middle" font-size="14" font-weight="600" fill="#7e22ce">回寫報工單號</text>
+                    <text x="695" y="110" text-anchor="middle" font-size="10" fill="#a855f7">SFT_OP_REALRUN</text>
+                    <text x="695" y="125" text-anchor="middle" font-size="10" fill="#a855f7">SFT_WS_RUN</text>
+
+                    <!-- 箭頭 4 -->
+                    <path d="M770 100 L810 100" stroke="#64748b" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+                    <!-- 完成 -->
+                    <circle cx="840" cy="100" r="30" fill="#10b981"/>
+                    <text x="840" y="105" text-anchor="middle" font-size="20" fill="white">✓</text>
+
+                    <defs>
+                        <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#64748b"/>
+                        </marker>
+                    </defs>
+                </svg>
+            </div>
+
+            <div class="note">
+                <div class="note-title">觸發條件</div>
+                <div class="note-content">
+                    當作業員完成出站（CheckOut）、進站（CheckIn）、批次出站（BatchCheckOut）、批次進站（BatchCheckIn）等作業後，
+                    系統會呼叫 <code class="code-inline">MainDataHead.generateProductionForm()</code> 方法，
+                    將報工資料拋送至 ERP。
+                </div>
+            </div>
+        </div>
+
+        <!-- 請求參數 - HEAD -->
+        <div class="section">
+            <h2>請求參數</h2>
+
+            <h3><span class="tag tag-head">HEAD</span> 報工單頭檔 (SFT_SFCTD)</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>欄位</th>
+                        <th>MES 欄位</th>
+                        <th>ERP 欄位</th>
+                        <th>類型</th>
+                        <th>必填</th>
+                        <th>說明</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>報工類別</td>
+                        <td><code class="code-inline">TD001</code></td>
+                        <td><code class="code-inline">doc_type_no</code></td>
+                        <td>String</td>
+                        <td><span class="tag tag-required">必填</span></td>
+                        <td>報工單類型代碼</td>
+                    </tr>
+                    <tr>
+                        <td>報工日期</td>
+                        <td><code class="code-inline">TD003</code></td>
+                        <td><code class="code-inline">create_date</code></td>
+                        <td>Date</td>
+                        <td><span class="tag tag-required">必填</span></td>
+                        <td>報工作業日期 (yyyy-MM-dd)</td>
+                    </tr>
+                    <tr>
+                        <td>工作站</td>
+                        <td><code class="code-inline">TD004</code></td>
+                        <td><code class="code-inline">workstation_no</code></td>
+                        <td>String</td>
+                        <td><span class="tag tag-required">必填</span></td>
+                        <td>ERP 工作站代號 (ERP_WSID)</td>
+                    </tr>
+                    <tr>
+                        <td>備註</td>
+                        <td><code class="code-inline">TD006</code></td>
+                        <td><code class="code-inline">remark</code></td>
+                        <td>String</td>
+                        <td><span class="tag tag-optional">選填</span></td>
+                        <td>報工單備註</td>
+                    </tr>
+                    <tr>
+                        <td>品號-品名</td>
+                        <td><code class="code-inline">itemCode-itemName</code></td>
+                        <td><code class="code-inline">source_no</code></td>
+                        <td>String</td>
+                        <td><span class="tag tag-optional">選填</span></td>
+                        <td>產品來源識別</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3><span class="tag tag-line">LINE</span> 報工單明細 (SFT_SFCTE)</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>欄位</th>
+                        <th>MES 欄位</th>
+                        <th>ERP 欄位</th>
+                        <th>類型</th>
+                        <th>必填</th>
+                        <th>說明</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>報工人員</td>
+                        <td><code class="code-inline">TE004</code></td>
+                        <td><code class="code-inline">reporter</code></td>
+                        <td>String</td>
+                        <td><span class="tag tag-required">必填</span></td>
+                        <td>操作人員 ID</td>
+                    </tr>
+                    <tr>
+                        <td>機台編號</td>
+                        <td><code class="code-inline">TE005</code></td>
+                        <td><code class="code-inline">machine_no</code></td>
+                        <td>String</td>
+                        <td><span class="tag tag-required">必填</span></td>
+                        <td>設備編號 (eqId)</td>
+                    </tr>
+                    <tr>
+                        <td>工單類別</td>
+                        <td><code class="code-inline">TE006</code></td>
+                        <td rowspan="2"><code class="code-inline">wo_no</code></td>
+                        <td>String</td>
+                        <td><span class="tag tag-required">必填</span></td>
+                        <td>製令類別 (moType)</td>
+                    </tr>
+                    <tr>
+                        <td>工單號</td>
+                        <td><code class="code-inline">TE007</code></td>
+                        <td>String</td>
+                        <td><span class="tag tag-required">必填</span></td>
+                        <td>製令號 (moCode)，與工單類別組合</td>
+                    </tr>
+                    <tr>
+                        <td>製程序號</td>
+                        <td><code class="code-inline">TE008</code></td>
+                        <td><code class="code-inline">op_seq</code></td>
+                        <td>String</td>
+                        <td><span class="tag tag-required">必填</span></td>
+                        <td>操作製程序列 (ERP_OPSEQ)</td>
+                    </tr>
+                    <tr>
+                        <td>製程代碼</td>
+                        <td><code class="code-inline">TE009</code></td>
+                        <td><code class="code-inline">op_no</code></td>
+                        <td>String</td>
+                        <td><span class="tag tag-required">必填</span></td>
+                        <td>操作製程代碼 (ERP_OPID)</td>
+                    </tr>
+                    <tr>
+                        <td>報工數量</td>
+                        <td><code class="code-inline">TE011</code></td>
+                        <td><code class="code-inline">qty</code></td>
+                        <td>Numeric</td>
+                        <td><span class="tag tag-required">必填</span></td>
+                        <td>完成數量</td>
+                    </tr>
+                    <tr>
+                        <td>勞動時間</td>
+                        <td><code class="code-inline">TE012</code></td>
+                        <td><code class="code-inline">labor_hours</code></td>
+                        <td>Numeric</td>
+                        <td><span class="tag tag-required">必填</span></td>
+                        <td>人工時數（分鐘）</td>
+                    </tr>
+                    <tr>
+                        <td>機器時間</td>
+                        <td><code class="code-inline">TE013</code></td>
+                        <td><code class="code-inline">machine_hours</code></td>
+                        <td>Numeric</td>
+                        <td><span class="tag tag-required">必填</span></td>
+                        <td>機器時數（分鐘）</td>
+                    </tr>
+                    <tr>
+                        <td>備註</td>
+                        <td><code class="code-inline">TE015</code></td>
+                        <td><code class="code-inline">remark</code></td>
+                        <td>String</td>
+                        <td><span class="tag tag-optional">選填</span></td>
+                        <td>報工行備註</td>
+                    </tr>
+                    <tr>
+                        <td>完成日期</td>
+                        <td><code class="code-inline">-</code></td>
+                        <td><code class="code-inline">complete_date</code></td>
+                        <td>Date</td>
+                        <td><span class="tag tag-optional">選填</span></td>
+                        <td>作業完成日期</td>
+                    </tr>
+                    <tr>
+                        <td>單位</td>
+                        <td><code class="code-inline">TE020</code></td>
+                        <td><code class="code-inline">unit_no</code></td>
+                        <td>String</td>
+                        <td><span class="tag tag-optional">選填</span></td>
+                        <td>基本單位</td>
+                    </tr>
+                    <tr>
+                        <td>雙單位</td>
+                        <td><code class="code-inline">TWINUNIT</code></td>
+                        <td><code class="code-inline">-</code></td>
+                        <td>String</td>
+                        <td><span class="tag tag-optional">選填</span></td>
+                        <td>製造雙單位名稱</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 請求範例 -->
+        <div class="section">
+            <h2>請求範例</h2>
+            <h3>MES 內部 JSON 格式</h3>
+            <pre>{
+  "head": {
+    "productionType": "10",
+    "date": "2026-03-19",
+    "wsId": "WS001",
+    "remark": "正常報工",
+    "itemCode": "ITEM-001",
+    "itemName": "測試品項",
+    "create": "USER001"
+  },
+  "line": [
+    {
+      "userId": "USER001",
+      "eqId": "EQ001",
+      "moType": "5101",
+      "moCode": "20260319001",
+      "opSeq": "10",
+      "opId": "OP001",
+      "state": "1",
+      "qty": "100",
+      "useTime": "60",
+      "useMachineTime": "55",
+      "remark": "",
+      "packagingQty": "10",
+      "itemCode": "ITEM-001",
+      "itemName": "測試品項",
+      "description": "規格說明",
+      "unit": "PCS",
+      "packUnit": "BOX",
+      "manufactureDualUnit": "BOX"
+    }
+  ]
+}</pre>
+
+            <h3>ERP XML 格式 (WFERP)</h3>
+            <pre>&lt;parameters&gt;
+  &lt;parameter key="enterprise_no" type="string"&gt;公司代碼&lt;/parameter&gt;
+  &lt;parameter key="site_no" type="string"&gt;工廠代碼&lt;/parameter&gt;
+
+  &lt;parameter key="report_data" type="data"&gt;
+    &lt;data name="report"&gt;
+      &lt;row seq="1"&gt;
+        &lt;field name="doc_type_no" type="string"&gt;10&lt;/field&gt;
+        &lt;field name="create_date" type="date"&gt;2026-03-19&lt;/field&gt;
+        &lt;field name="workstation_no" type="string"&gt;WS001&lt;/field&gt;
+        &lt;field name="remark" type="string"&gt;正常報工&lt;/field&gt;
+        &lt;field name="source_no" type="string"&gt;ITEM-001-測試品項&lt;/field&gt;
+
+        &lt;detail name="report_detail"&gt;
+          &lt;row&gt;
+            &lt;field name="wo_no" type="string"&gt;5101-20260319001&lt;/field&gt;
+            &lt;field name="qty" type="numeric"&gt;100&lt;/field&gt;
+            &lt;field name="labor_hours" type="numeric"&gt;60&lt;/field&gt;
+            &lt;field name="machine_hours" type="numeric"&gt;55&lt;/field&gt;
+            &lt;field name="machine_no" type="string"&gt;EQ001&lt;/field&gt;
+            &lt;field name="op_seq" type="string"&gt;10&lt;/field&gt;
+            &lt;field name="op_no" type="string"&gt;OP001&lt;/field&gt;
+            &lt;field name="unit_no" type="string"&gt;PCS&lt;/field&gt;
+            &lt;field name="reporter" type="string"&gt;USER001&lt;/field&gt;
+            &lt;field name="complete_date" type="date"&gt;2026-03-19&lt;/field&gt;
+            &lt;field name="remark" type="string"&gt;&lt;/field&gt;
+          &lt;/row&gt;
+        &lt;/detail&gt;
+      &lt;/row&gt;
+    &lt;/data&gt;
+  &lt;/parameter&gt;
+&lt;/parameters&gt;</pre>
+        </div>
+
+        <!-- 回應格式 -->
+        <div class="section">
+            <h2>回應格式</h2>
+
+            <div class="two-column">
+                <div>
+                    <h3>成功回應 (code=200)</h3>
+                    <div class="success-box">
+                        <pre style="background: transparent; padding: 0; margin: 0;">{
+  "code": 200,
+  "msg": "報工單建立成功",
+  "ERPMessage": {
+    "description": "處理成功",
+    "report_no": "10-20260319001"
+  }
+}</pre>
+                    </div>
+                </div>
+                <div>
+                    <h3>失敗回應 (code=500)</h3>
+                    <div class="error-box">
+                        <pre style="background: transparent; padding: 0; margin: 0;">{
+  "code": 500,
+  "msg": "報工單建立失敗",
+  "ERPMessage": {
+    "description": "工單號不存在"
+  }
+}</pre>
+                    </div>
+                </div>
+            </div>
+
+            <h3>回應欄位說明</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>欄位</th>
+                        <th>類型</th>
+                        <th>說明</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code class="code-inline">code</code></td>
+                        <td>Integer</td>
+                        <td>200=成功, 500=失敗</td>
+                    </tr>
+                    <tr>
+                        <td><code class="code-inline">msg</code></td>
+                        <td>String</td>
+                        <td>處理訊息</td>
+                    </tr>
+                    <tr>
+                        <td><code class="code-inline">ERPMessage.report_no</code></td>
+                        <td>String</td>
+                        <td>ERP 回傳的報工單號（類別-單號）</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 回寫邏輯 -->
+        <div class="section">
+            <h2>ERP 回寫邏輯</h2>
+            <p>ERP 回傳報工單號後，MES 會將單號回寫至以下資料表：</p>
+
+            <div class="flow-diagram">
+                <svg viewBox="0 0 800 280" style="max-width: 800px; width: 100%;">
+                    <!-- ERP 回傳 -->
+                    <rect x="20" y="100" width="150" height="80" rx="8" fill="#fef3c7" stroke="#f59e0b" stroke-width="2"/>
+                    <text x="95" y="130" text-anchor="middle" font-size="13" font-weight="600" fill="#92400e">ERP 回傳</text>
+                    <text x="95" y="150" text-anchor="middle" font-size="11" fill="#d97706">report_no</text>
+                    <text x="95" y="165" text-anchor="middle" font-size="10" fill="#d97706">10-20260319001</text>
+
+                    <!-- 箭頭 -->
+                    <path d="M170 140 L230 140" stroke="#64748b" stroke-width="2" marker-end="url(#arrowhead2)"/>
+
+                    <!-- 解析 -->
+                    <rect x="240" y="100" width="120" height="80" rx="8" fill="#e0e7ff" stroke="#6366f1" stroke-width="2"/>
+                    <text x="300" y="130" text-anchor="middle" font-size="13" font-weight="600" fill="#4338ca">解析單號</text>
+                    <text x="300" y="150" text-anchor="middle" font-size="10" fill="#6366f1">PDTYPE=10</text>
+                    <text x="300" y="165" text-anchor="middle" font-size="10" fill="#6366f1">PDNO=20260319001</text>
+
+                    <!-- 分支箭頭 -->
+                    <path d="M360 120 L420 60" stroke="#64748b" stroke-width="2" marker-end="url(#arrowhead2)"/>
+                    <path d="M360 160 L420 220" stroke="#64748b" stroke-width="2" marker-end="url(#arrowhead2)"/>
+
+                    <!-- SFT_OP_REALRUN -->
+                    <rect x="430" y="20" width="200" height="80" rx="8" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+                    <text x="530" y="50" text-anchor="middle" font-size="13" font-weight="600" fill="#166534">SFT_OP_REALRUN</text>
+                    <text x="530" y="70" text-anchor="middle" font-size="10" fill="#22c55e">PRODUCTION_REPORTID</text>
+                    <text x="530" y="85" text-anchor="middle" font-size="10" fill="#22c55e">PRODUCTION_REPORTSN</text>
+
+                    <!-- SFT_WS_RUN -->
+                    <rect x="430" y="180" width="200" height="80" rx="8" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+                    <text x="530" y="210" text-anchor="middle" font-size="13" font-weight="600" fill="#1e40af">SFT_WS_RUN</text>
+                    <text x="530" y="230" text-anchor="middle" font-size="10" fill="#3b82f6">WR024 (報工單號)</text>
+                    <text x="530" y="245" text-anchor="middle" font-size="10" fill="#3b82f6">WR025 (報工序號)</text>
+
+                    <!-- 完成標記 -->
+                    <circle cx="720" y="60" r="25" fill="#10b981"/>
+                    <text x="720" y="65" text-anchor="middle" font-size="18" fill="white">✓</text>
+                    <path d="M630 60 L685 60" stroke="#64748b" stroke-width="2" marker-end="url(#arrowhead2)"/>
+
+                    <circle cx="720" y="220" r="25" fill="#10b981"/>
+                    <text x="720" y="225" text-anchor="middle" font-size="18" fill="white">✓</text>
+                    <path d="M630 220 L685 220" stroke="#64748b" stroke-width="2" marker-end="url(#arrowhead2)"/>
+
+                    <defs>
+                        <marker id="arrowhead2" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#64748b"/>
+                        </marker>
+                    </defs>
+                </svg>
+            </div>
+
+            <h3>回寫 SQL 邏輯</h3>
+            <pre>-- 更新 SFT_OP_REALRUN
+UPDATE SFT_OP_REALRUN
+SET PRODUCTION_REPORTID = 'PDTYPE-PDNO',
+    PRODUCTION_REPORTSN = TE003
+WHERE ID = :KEYID
+  AND ERP_OPSEQ = :TE008
+  AND ERP_OPID = :TE009
+  AND ERP_WSID = :TD004
+  AND SEQUENCE = :PRODUCTIONSEQ
+
+-- 更新 SFT_WS_RUN
+UPDATE SFT_WS_RUN
+SET WR024 = 'PDTYPE-PDNO',
+    WR025 = TE003
+WHERE (對應的進出站記錄條件)</pre>
+
+            <div class="note">
+                <div class="note-title">合併報工模式</div>
+                <div class="note-content">
+                    當系統設定 <code class="code-inline">EmploymentReportingItemized = "-1"</code> 時，
+                    採用合併報工模式，會根據 TD001 和 TD002 批次更新相關記錄。
+                </div>
+            </div>
+        </div>
+
+        <!-- 相關資料表 -->
+        <div class="section">
+            <h2>相關資料表</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>資料表</th>
+                        <th>說明</th>
+                        <th>關鍵欄位</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code class="code-inline">SFT_SFCTD</code></td>
+                        <td>報工單頭檔</td>
+                        <td>TD001(類別), TD002(單號), TD003(日期), TD004(工作站)</td>
+                    </tr>
+                    <tr>
+                        <td><code class="code-inline">SFT_SFCTE</code></td>
+                        <td>報工單明細</td>
+                        <td>TE001-TE002(FK), TE003(行號), TE011(數量)</td>
+                    </tr>
+                    <tr>
+                        <td><code class="code-inline">SFT_OP_REALRUN</code></td>
+                        <td>製程執行記錄</td>
+                        <td>PRODUCTION_REPORTID, PRODUCTION_REPORTSN</td>
+                    </tr>
+                    <tr>
+                        <td><code class="code-inline">SFT_WS_RUN</code></td>
+                        <td>工作站執行記錄</td>
+                        <td>WR024(報工單號), WR025(報工序號)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 程式碼位置 -->
+        <div class="section">
+            <h2>程式碼位置</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>功能</th>
+                        <th>檔案路徑</th>
+                        <th>行號</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>報工單生成入口</td>
+                        <td>SFT_core/src/com/dci/sft/dataTrunk/MainDataHead.java</td>
+                        <td>354</td>
+                    </tr>
+                    <tr>
+                        <td>JSON 轉換</td>
+                        <td>SFT_core/src/com/dci/sft/erp/webservice/SendFormSbyJson.java</td>
+                        <td>47-57</td>
+                    </tr>
+                    <tr>
+                        <td>欄位定義</td>
+                        <td>SFT_core/src/com/dci/sft/erp/webservice/SendFormElementbyJson.java</td>
+                        <td>289-343</td>
+                    </tr>
+                    <tr>
+                        <td>XML 參數組裝</td>
+                        <td>SFT_ERPIntegrate/src/com/dci/sft/erp/webservice/SendFormS.java</td>
+                        <td>1503-1577</td>
+                    </tr>
+                    <tr>
+                        <td>ERP 送出</td>
+                        <td>SFT_core/src/com/dci/sft/jsonMappingHibernate/TransOrderDataToJson.java</td>
+                        <td>1636-1645</td>
+                    </tr>
+                    <tr>
+                        <td>回寫處理</td>
+                        <td>SFT_core/src/com/dci/sft/jsonMappingHibernate/TransOrderDataToJson.java</td>
+                        <td>1452-1527</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 錯誤處理 -->
+        <div class="section">
+            <h2>錯誤處理</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>錯誤類型</th>
+                        <th>原因</th>
+                        <th>處理方式</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code class="code-inline">SocketTimeoutException</code></td>
+                        <td>連線超時</td>
+                        <td>檢查 ERP 伺服器狀態，重新補送</td>
+                    </tr>
+                    <tr>
+                        <td><code class="code-inline">ConnectException</code></td>
+                        <td>無法連線</td>
+                        <td>檢查網路、ERP 伺服器狀態</td>
+                    </tr>
+                    <tr>
+                        <td><code class="code-inline">RemoteException</code></td>
+                        <td>遠端服務錯誤</td>
+                        <td>查閱 ERP 日誌，聯絡 ERP 廠商</td>
+                    </tr>
+                    <tr>
+                        <td>工單號不存在</td>
+                        <td>ERP 端無此工單</td>
+                        <td>確認工單已同步至 ERP</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>LOG 記錄</h3>
+            <pre>// 日誌檔案：logs/ERPReturnErrorRec.log
+
+[ERP_SEND_ERROR] taskName=generateProductionForm, errorType=SocketTimeoutException, errorMsg=Read timed out
+[ERP_SEND_ERROR] 送出内容={...JSON...}</pre>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>eMES API 規格書 | 案號: 0190760 | 更新日期: 2026-03-19</p>
+    </div>
+</body>
+</html>
