@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>wo.update - eMES API</title>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #1e40af;
+            --success-color: #16a34a;
+            --error-color: #dc2626;
+            --warning-color: #d97706;
+            --bg-color: #f8fafc;
+            --border-color: #e2e8f0;
+            --text-color: #1e293b;
+            --text-muted: #64748b;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+        }
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .navbar a { color: white; text-decoration: none; }
+        .navbar .brand { font-size: 1.2em; font-weight: 600; }
+        .navbar .back { opacity: 0.9; }
+        .navbar .back:hover { opacity: 1; }
+        .container { max-width: 1100px; margin: 0 auto; padding: 30px; }
+        .api-header {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .api-header h1 { color: var(--warning-color); font-size: 1.8em; margin-bottom: 10px; }
+        .api-code {
+            font-family: 'Consolas', monospace;
+            background: var(--bg-color);
+            padding: 8px 15px;
+            border-radius: 6px;
+            display: inline-block;
+            color: var(--warning-color);
+            font-size: 1.1em;
+        }
+        .badges { margin-top: 15px; display: flex; gap: 10px; flex-wrap: wrap; }
+        .badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+        .badge-put { background: #fef3c7; color: #d97706; }
+        .badge-json { background: #dbeafe; color: #2563eb; }
+        .badge-sync { background: #fef3c7; color: #d97706; }
+        .badge-erp { background: #f3e8ff; color: #7c3aed; }
+        h2 {
+            color: var(--secondary-color);
+            font-size: 1.4em;
+            margin: 30px 0 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--border-color);
+        }
+        h3 { color: var(--text-color); font-size: 1.1em; margin: 20px 0 10px; }
+        h4 { color: var(--text-muted); font-size: 1em; margin: 15px 0 10px; }
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; font-size: 0.9em; }
+        th, td { border: 1px solid var(--border-color); padding: 10px 12px; text-align: left; }
+        th { background: var(--warning-color); color: white; font-weight: 600; }
+        tr:nth-child(even) { background: var(--bg-color); }
+        tr:hover { background: #fef3c7; }
+        .required { background: var(--error-color); color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.75em; }
+        .optional { background: var(--text-muted); color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.75em; }
+        .code-block {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Consolas', monospace;
+            font-size: 0.85em;
+            line-height: 1.5;
+            margin: 15px 0;
+        }
+        .code-block .key { color: #7dd3fc; }
+        .code-block .string { color: #86efac; }
+        .code-block .number { color: #fbbf24; }
+        .code-block .comment { color: #64748b; font-style: italic; }
+        .info-box {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        .info-box.info { background: #dbeafe; border-left: 4px solid var(--primary-color); }
+        .info-box.warning { background: #fef3c7; border-left: 4px solid var(--warning-color); }
+        .info-box.danger { background: #fee2e2; border-left: 4px solid var(--error-color); }
+        .info-box.success { background: #dcfce7; border-left: 4px solid var(--success-color); }
+        .info-box.purple { background: #f3e8ff; border-left: 4px solid #7c3aed; }
+        .flow-diagram { text-align: center; margin: 20px 0; padding: 20px; background: white; border-radius: 10px; }
+        .toc {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .toc ul { list-style: none; display: flex; flex-wrap: wrap; gap: 15px; }
+        .toc a { color: var(--primary-color); text-decoration: none; }
+        .toc a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="index.html" class="back">← 返回 API 列表</a>
+        <span class="brand">eMES API 規格書</span>
+    </nav>
+
+    <div class="container">
+        <!-- API Header -->
+        <div class="api-header">
+            <h1>工單更新（數量/日期調整）</h1>
+            <div class="api-code">wo.update</div>
+            <div class="badges">
+                <span class="badge badge-put">PUT</span>
+                <span class="badge badge-json">JSON</span>
+                <span class="badge badge-sync">同步</span>
+                <span class="badge badge-erp">ERP → MES</span>
+            </div>
+        </div>
+
+        <!-- TOC -->
+        <div class="toc">
+            <ul>
+                <li><a href="#basic">基本資訊</a></li>
+                <li><a href="#flow">業務流程</a></li>
+                <li><a href="#request">Request</a></li>
+                <li><a href="#response">Response</a></li>
+                <li><a href="#qty-logic">數量檢核邏輯</a></li>
+                <li><a href="#errors">錯誤代碼</a></li>
+                <li><a href="#example">JSON 範例</a></li>
+            </ul>
+        </div>
+
+        <!-- 基本資訊 -->
+        <div class="card" id="basic">
+            <h2>1. 基本資訊</h2>
+            <table>
+                <tr><th width="25%">項目</th><th>說明</th></tr>
+                <tr><td>API 中文名稱</td><td>工單更新（製令數量/日期調整）</td></tr>
+                <tr><td>API 英文名稱</td><td>Work Order Update</td></tr>
+                <tr><td>API Code</td><td><code>wo.update</code></td></tr>
+                <tr><td>案號</td><td>0189142</td></tr>
+                <tr><td>REST Endpoint</td><td><code>POST /ESB/API/upModetail</code></td></tr>
+                <tr><td>呼叫方向</td><td><strong>ERP → MES</strong></td></tr>
+                <tr><td>呼叫時機</td><td>ERP 修改工單數量或日期後，同步至 MES</td></tr>
+                <tr><td>主要業務情境</td><td>ERP 調整製令產量或排程日期，同步更新 MES 的製令及批次資料</td></tr>
+                <tr><td>Request 格式</td><td><strong>JSON</strong> (Content-Type: application/json)</td></tr>
+                <tr><td>同步/非同步</td><td>同步呼叫</td></tr>
+                <tr><td>交易控管</td><td>需要</td></tr>
+            </table>
+
+            <div class="info-box purple">
+                <strong>呼叫方向說明</strong><br>
+                此 API 為 <strong>ERP → MES</strong> 單向推送。<br>
+                OperationType = 2 表示修改操作。
+            </div>
+        </div>
+
+        <!-- 業務流程 -->
+        <div class="card" id="flow">
+            <h2>2. 業務流程</h2>
+            <div class="flow-diagram">
+                <svg width="850" height="300" viewBox="0 0 850 300" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <marker id="arrow" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#d97706"/>
+                        </marker>
+                    </defs>
+                    <!-- ERP 區域 -->
+                    <rect x="20" y="30" width="200" height="220" rx="10" fill="#f3e8ff" stroke="#7c3aed" stroke-width="2"/>
+                    <text x="120" y="55" text-anchor="middle" font-size="14" font-weight="bold" fill="#7c3aed">ERP 系統</text>
+
+                    <!-- MES 區域 -->
+                    <rect x="280" y="30" width="550" height="220" rx="10" fill="#fef3c7" stroke="#d97706" stroke-width="2"/>
+                    <text x="555" y="55" text-anchor="middle" font-size="14" font-weight="bold" fill="#d97706">MES 系統</text>
+
+                    <!-- ERP 節點 -->
+                    <rect x="40" y="80" width="160" height="50" rx="6" fill="#7c3aed"/>
+                    <text x="120" y="100" text-anchor="middle" fill="white" font-size="11">1. 修改工單</text>
+                    <text x="120" y="118" text-anchor="middle" fill="white" font-size="9">(wo.update)</text>
+
+                    <!-- MES 節點 -->
+                    <rect x="300" y="80" width="130" height="50" rx="6" fill="#d97706"/>
+                    <text x="365" y="100" text-anchor="middle" fill="white" font-size="10">2. 數量檢核</text>
+                    <text x="365" y="118" text-anchor="middle" fill="white" font-size="9">(WoUpdate)</text>
+
+                    <rect x="450" y="80" width="130" height="50" rx="6" fill="#d97706"/>
+                    <text x="515" y="100" text-anchor="middle" fill="white" font-size="10">3. 更新製令</text>
+                    <text x="515" y="118" text-anchor="middle" fill="white" font-size="9">(MODETAIL)</text>
+
+                    <rect x="600" y="80" width="110" height="50" rx="6" fill="#d97706"/>
+                    <text x="655" y="100" text-anchor="middle" fill="white" font-size="10">4. 調整批次</text>
+                    <text x="655" y="118" text-anchor="middle" fill="white" font-size="9">(LOT)</text>
+
+                    <rect x="730" y="80" width="80" height="50" rx="6" fill="#10b981"/>
+                    <text x="770" y="105" text-anchor="middle" fill="white" font-size="10">完成</text>
+
+                    <!-- 連接線 -->
+                    <line x1="200" y1="105" x2="295" y2="105" stroke="#d97706" stroke-width="2" stroke-dasharray="5,5" marker-end="url(#arrow)"/>
+                    <line x1="430" y1="105" x2="445" y2="105" stroke="#d97706" stroke-width="2" marker-end="url(#arrow)"/>
+                    <line x1="580" y1="105" x2="595" y2="105" stroke="#d97706" stroke-width="2" marker-end="url(#arrow)"/>
+                    <line x1="710" y1="105" x2="725" y2="105" stroke="#d97706" stroke-width="2" marker-end="url(#arrow)"/>
+
+                    <!-- 數量檢核說明 -->
+                    <rect x="300" y="155" width="280" height="80" rx="6" fill="#fee2e2" stroke="#dc2626"/>
+                    <text x="440" y="175" text-anchor="middle" fill="#dc2626" font-size="10" font-weight="bold">數量檢核邏輯</text>
+                    <text x="440" y="195" text-anchor="middle" fill="#dc2626" font-size="9">newQTY vs (MOQTY - MODIQTY)</text>
+                    <text x="440" y="210" text-anchor="middle" fill="#dc2626" font-size="9">增加：直接增加 LOTSIZE</text>
+                    <text x="440" y="225" text-anchor="middle" fill="#dc2626" font-size="9">扣除：檢查可變更額度</text>
+
+                    <!-- 圖例 -->
+                    <text x="425" y="280" text-anchor="middle" font-size="11" fill="#64748b">程式位置: WoUpdate.java → RegularESB.upModetail():1243-1472</text>
+                </svg>
+            </div>
+
+            <div class="info-box info">
+                <strong>程式碼對應</strong>
+                <ul style="margin-top:10px; margin-left:20px;">
+                    <li>API 入口: <code>WoUpdate.java:59-100</code></li>
+                    <li>數量檢核: <code>RegularESB.java:1234-1319</code></li>
+                    <li>LOT 更新: <code>RegularESB.java:1243-1472</code></li>
+                    <li>製程重算: <code>SFT_OP_REALRUN.sqlUpdate_RecalculateAll()</code></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Request 規格 -->
+        <div class="card" id="request">
+            <h2>3. Request 規格</h2>
+
+            <div class="info-box success">
+                <strong>傳輸格式: JSON</strong><br>
+                <code>Content-Type: application/json</code>
+            </div>
+
+            <h3>3.1 外層結構</h3>
+            <table>
+                <tr><th>欄位</th><th>型別</th><th>必填</th><th>說明</th></tr>
+                <tr><td>CompanyID</td><td>string</td><td><span class="required">Y</span></td><td>公司代號</td></tr>
+                <tr><td>OperationType</td><td>int</td><td><span class="required">Y</span></td><td>操作類型（<strong>2=修改</strong>）</td></tr>
+                <tr><td>content</td><td>array</td><td><span class="required">Y</span></td><td>工單資料陣列</td></tr>
+            </table>
+
+            <h3>3.2 content 陣列內容</h3>
+            <table>
+                <tr><th>欄位</th><th>型別</th><th>必填</th><th>說明</th><th>異動欄位</th></tr>
+                <tr><td>wo_no</td><td>string</td><td><span class="required">Y</span></td><td>製令編號（單別-單號）</td><td>條件欄位</td></tr>
+                <tr><td>item_no</td><td>string</td><td><span class="required">Y</span></td><td>品號</td><td>ITEMID</td></tr>
+                <tr><td>unit_no</td><td>string</td><td><span class="required">Y</span></td><td>單位代號</td><td>UNIT</td></tr>
+                <tr><td>plan_date_s</td><td>string</td><td><span class="required">Y</span></td><td>預計開工日</td><td>PLANPROCESSST</td></tr>
+                <tr><td>plan_date_e</td><td>string</td><td><span class="required">Y</span></td><td>預計完工日</td><td>DUEDATETIME</td></tr>
+                <tr><td>wo_qty</td><td>decimal</td><td><span class="required">Y</span></td><td>新預計產量</td><td>QTY / PLANRELEASEQTY / LOT.LOTSIZE</td></tr>
+                <tr><td>so_no</td><td>string</td><td><span class="optional">N</span></td><td>訂單單號</td><td>DOID</td></tr>
+                <tr><td>so_seq</td><td>string</td><td><span class="optional">N</span></td><td>訂單項次</td><td>SEQUENCE</td></tr>
+                <tr><td>factory_no</td><td>string</td><td><span class="required">Y</span></td><td>廠別代號</td><td>FACTORYID</td></tr>
+                <tr><td>warehouse_no</td><td>string</td><td><span class="optional">N</span></td><td>庫別代號</td><td>WAREHOUSEID</td></tr>
+                <tr><td>remark</td><td>string</td><td><span class="optional">N</span></td><td>備註</td><td>DESCRIPTION</td></tr>
+                <tr><td>priority</td><td>string</td><td><span class="optional">N</span></td><td>優先級</td><td>MO032</td></tr>
+            </table>
+        </div>
+
+        <!-- Response -->
+        <div class="card" id="response">
+            <h2>4. Response 規格</h2>
+            <table>
+                <tr><th>欄位</th><th>型別</th><th>說明</th></tr>
+                <tr><td>code</td><td>string</td><td>200=成功，500=失敗</td></tr>
+                <tr><td>msg</td><td>string</td><td>處理結果訊息</td></tr>
+                <tr><td>query</td><td>array</td><td>查詢結果</td></tr>
+            </table>
+
+            <h3>成功行為</h3>
+            <ul style="margin-left: 20px; margin-top: 10px;">
+                <li>UPDATE MODETAIL（製令主檔：QTY, DOID, 日期等）</li>
+                <li>UPDATE/INSERT/DELETE LOT（批次數量調整）</li>
+                <li>SFT_OP_REALRUN.sqlUpdate_RecalculateAll()（重算製程）</li>
+            </ul>
+        </div>
+
+        <!-- 數量檢核邏輯 -->
+        <div class="card" id="qty-logic">
+            <h2>5. 數量檢核邏輯</h2>
+
+            <div class="info-box warning">
+                <strong>關鍵變數定義</strong><br>
+                <ul style="margin-top:10px; margin-left:20px;">
+                    <li><strong>MOQTY</strong>: MODETAIL.PLANRELEASEQTY（原預計發放量）</li>
+                    <li><strong>MOREQTY</strong>: MODETAIL.RELEASEDQTY（已發放量）</li>
+                    <li><strong>LOTQTY</strong>: LOT.LOTSIZE（待發放量）</li>
+                    <li><strong>newQTY</strong>: ERP 傳入的新產量</li>
+                    <li><strong>MODIQTY</strong>: SFT_MO_MODI 合計（補發放量）</li>
+                    <li><strong>BATQTY</strong>: SFT_BATCH_REC 合計（拆批量）</li>
+                </ul>
+            </div>
+
+            <h3>5.1 增加數量情況</h3>
+            <p><code>newQTY > (MOQTY - MODIQTY)</code></p>
+            <div class="code-block">
+<pre><span class="comment">// 增加數量 - 直接增加</span>
+增加量 = newQTY - (MOQTY - MODIQTY)
+
+<span class="key">IF</span> LOT 存在 <span class="key">THEN</span>
+    <span class="key">UPDATE</span> LOT <span class="key">SET</span> LOTSIZE += 增加量
+<span class="key">ELSE</span>
+    <span class="key">INSERT</span> LOT (新建批次記錄)
+<span class="key">END IF</span>
+
+<span class="key">UPDATE</span> MODETAIL <span class="key">SET</span> PLANRELEASEQTY += 增加量</pre>
+            </div>
+
+            <h3>5.2 扣除數量情況</h3>
+            <p><code>newQTY < (MOQTY - MODIQTY)</code></p>
+            <div class="code-block">
+<pre><span class="comment">// 扣除數量 - 需檢查可變更額度</span>
+最大可變更量 = MOQTY - MOREQTY - BATQTY
+此次變更量 = MOQTY - newQTY - MODIQTY
+
+<span class="key">IF</span> 最大可變更量 >= 此次變更量 <span class="key">THEN</span>
+    <span class="comment">// 可以扣除</span>
+    <span class="key">IF</span> LOTQTY - 此次變更量 > 0 <span class="key">THEN</span>
+        <span class="key">UPDATE</span> LOT <span class="key">SET</span> LOTSIZE -= 此次變更量
+    <span class="key">ELSE</span>
+        <span class="key">DELETE FROM</span> LOT  <span class="comment">// 扣除後數量為零或負數</span>
+    <span class="key">END IF</span>
+    <span class="key">UPDATE</span> MODETAIL <span class="key">SET</span> PLANRELEASEQTY -= 此次變更量
+<span class="key">ELSE</span>
+    <span class="comment">// 無法扣除 - 已發放或拆批超過可變更額度</span>
+    <span class="key">Throw</span> Exception(<span class="string">"JS_0126_00060"</span>)
+<span class="key">END IF</span></pre>
+            </div>
+
+            <div class="info-box danger">
+                <strong>重要限制</strong><br>
+                若 MES 端已發放數量 + 拆批數量 > 新產量，將無法進行扣除，會拋出錯誤 <code>JS_0126_00060</code>。
+            </div>
+
+            <h3>5.3 流程圖</h3>
+            <div class="flow-diagram">
+                <svg width="650" height="280" viewBox="0 0 650 280" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <marker id="arrow2" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#d97706"/>
+                        </marker>
+                    </defs>
+                    <!-- 判斷菱形 -->
+                    <polygon points="325,30 425,70 325,110 225,70" fill="#d97706" stroke="#b45309" stroke-width="2"/>
+                    <text x="325" y="65" text-anchor="middle" fill="white" font-size="10">newQTY vs</text>
+                    <text x="325" y="80" text-anchor="middle" fill="white" font-size="10">(MOQTY-MODIQTY)</text>
+
+                    <!-- 增加分支 -->
+                    <rect x="480" y="45" width="150" height="50" rx="6" fill="#10b981"/>
+                    <text x="555" y="70" text-anchor="middle" fill="white" font-size="11">增加數量</text>
+                    <text x="555" y="85" text-anchor="middle" fill="white" font-size="9">直接增加 LOTSIZE</text>
+                    <line x1="425" y1="70" x2="475" y2="70" stroke="#d97706" stroke-width="2" marker-end="url(#arrow2)"/>
+                    <text x="445" y="60" font-size="10" fill="#d97706">&gt;</text>
+
+                    <!-- 扣除分支 -->
+                    <polygon points="325,150 400,185 325,220 250,185" fill="#f97316" stroke="#ea580c" stroke-width="2"/>
+                    <text x="325" y="180" text-anchor="middle" fill="white" font-size="10">可變更額度</text>
+                    <text x="325" y="195" text-anchor="middle" fill="white" font-size="10">足夠?</text>
+                    <line x1="325" y1="110" x2="325" y2="145" stroke="#d97706" stroke-width="2" marker-end="url(#arrow2)"/>
+                    <text x="340" y="130" font-size="10" fill="#d97706">&lt;</text>
+
+                    <!-- 可扣除 -->
+                    <rect x="450" y="160" width="150" height="50" rx="6" fill="#10b981"/>
+                    <text x="525" y="185" text-anchor="middle" fill="white" font-size="11">扣除數量</text>
+                    <text x="525" y="200" text-anchor="middle" fill="white" font-size="9">減少 LOTSIZE</text>
+                    <line x1="400" y1="185" x2="445" y2="185" stroke="#f97316" stroke-width="2" marker-end="url(#arrow2)"/>
+                    <text x="420" y="175" font-size="10" fill="#f97316">是</text>
+
+                    <!-- 不可扣除 -->
+                    <rect x="50" y="160" width="150" height="50" rx="6" fill="#dc2626"/>
+                    <text x="125" y="185" text-anchor="middle" fill="white" font-size="11">拋出錯誤</text>
+                    <text x="125" y="200" text-anchor="middle" fill="white" font-size="9">JS_0126_00060</text>
+                    <line x1="250" y1="185" x2="205" y2="185" stroke="#f97316" stroke-width="2" marker-end="url(#arrow2)"/>
+                    <text x="230" y="175" font-size="10" fill="#f97316">否</text>
+
+                    <!-- 圖例 -->
+                    <text x="325" y="265" text-anchor="middle" font-size="10" fill="#64748b">程式位置: RegularESB.java:1234-1319</text>
+                </svg>
+            </div>
+        </div>
+
+        <!-- 錯誤代碼 -->
+        <div class="card" id="errors">
+            <h2>6. 錯誤代碼</h2>
+            <table>
+                <tr><th>代碼</th><th>訊息</th><th>說明</th></tr>
+                <tr><td>JS_0126_00060</td><td>變更數量小於待發放數量，不允許異動</td><td>扣除數量超過可變更額度</td></tr>
+                <tr><td>JS_0096_00058</td><td>此品號不存在</td><td>ITEM 表無此品號</td></tr>
+                <tr><td>JS_0016_00134</td><td>單位不存在，請確認</td><td>UnitBasis 無此單位</td></tr>
+                <tr><td>JS_0016_00115</td><td>廠別代號不存在</td><td>FACTORY 無此廠別</td></tr>
+                <tr><td>JS_0135_00036</td><td>此庫別代號不存在</td><td>WAREHOUSE 無此庫別</td></tr>
+                <tr><td>remind_002</td><td>資料不存在</td><td>製令編號不存在</td></tr>
+            </table>
+        </div>
+
+        <!-- JSON 範例 -->
+        <div class="card" id="example">
+            <h2>7. JSON 範例</h2>
+
+            <h3>Request（增加數量）</h3>
+            <div class="code-block">
+<pre>{
+  <span class="key">"CompanyID"</span>: <span class="string">"COMP01"</span>,
+  <span class="key">"OperationType"</span>: <span class="number">2</span>,  <span class="comment">// 2=修改</span>
+  <span class="key">"content"</span>: [{
+    <span class="key">"wo_no"</span>: <span class="string">"5101-20260319001"</span>,
+    <span class="key">"item_no"</span>: <span class="string">"FG-A001-001"</span>,
+    <span class="key">"unit_no"</span>: <span class="string">"PCS"</span>,
+    <span class="key">"plan_date_s"</span>: <span class="string">"2026-03-19 08:00:00"</span>,
+    <span class="key">"plan_date_e"</span>: <span class="string">"2026-03-21 17:00:00"</span>,
+    <span class="key">"wo_qty"</span>: <span class="number">1500</span>,  <span class="comment">// 原本 1000，增加 500</span>
+    <span class="key">"factory_no"</span>: <span class="string">"P001"</span>,
+    <span class="key">"remark"</span>: <span class="string">"追加訂單"</span>
+  }]
+}</pre>
+            </div>
+
+            <h3>Request（扣除數量）</h3>
+            <div class="code-block">
+<pre>{
+  <span class="key">"CompanyID"</span>: <span class="string">"COMP01"</span>,
+  <span class="key">"OperationType"</span>: <span class="number">2</span>,
+  <span class="key">"content"</span>: [{
+    <span class="key">"wo_no"</span>: <span class="string">"5101-20260319001"</span>,
+    <span class="key">"item_no"</span>: <span class="string">"FG-A001-001"</span>,
+    <span class="key">"unit_no"</span>: <span class="string">"PCS"</span>,
+    <span class="key">"plan_date_s"</span>: <span class="string">"2026-03-19 08:00:00"</span>,
+    <span class="key">"plan_date_e"</span>: <span class="string">"2026-03-20 17:00:00"</span>,
+    <span class="key">"wo_qty"</span>: <span class="number">800</span>,  <span class="comment">// 原本 1000，扣除 200</span>
+    <span class="key">"factory_no"</span>: <span class="string">"P001"</span>,
+    <span class="key">"remark"</span>: <span class="string">"客戶減少訂單"</span>
+  }]
+}</pre>
+            </div>
+
+            <h3>Response (成功)</h3>
+            <div class="code-block">
+<pre>{
+  <span class="key">"code"</span>: <span class="string">"200"</span>,
+  <span class="key">"msg"</span>: <span class="string">"success"</span>,
+  <span class="key">"query"</span>: []
+}</pre>
+            </div>
+
+            <h3>Response (失敗 - 無法扣除)</h3>
+            <div class="code-block">
+<pre>{
+  <span class="key">"code"</span>: <span class="string">"500"</span>,
+  <span class="key">"msg"</span>: <span class="string">"JS_0126_00060"</span>,  <span class="comment">// 已發放數量超過新數量</span>
+  <span class="key">"query"</span>: []
+}</pre>
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>

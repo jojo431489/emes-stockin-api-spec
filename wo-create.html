@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>wo.create - eMES API</title>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #1e40af;
+            --success-color: #16a34a;
+            --error-color: #dc2626;
+            --warning-color: #d97706;
+            --bg-color: #f8fafc;
+            --border-color: #e2e8f0;
+            --text-color: #1e293b;
+            --text-muted: #64748b;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+        }
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .navbar a { color: white; text-decoration: none; }
+        .navbar .brand { font-size: 1.2em; font-weight: 600; }
+        .navbar .back { opacity: 0.9; }
+        .navbar .back:hover { opacity: 1; }
+        .container { max-width: 1100px; margin: 0 auto; padding: 30px; }
+        .api-header {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .api-header h1 { color: var(--primary-color); font-size: 1.8em; margin-bottom: 10px; }
+        .api-code {
+            font-family: 'Consolas', monospace;
+            background: var(--bg-color);
+            padding: 8px 15px;
+            border-radius: 6px;
+            display: inline-block;
+            color: var(--primary-color);
+            font-size: 1.1em;
+        }
+        .badges { margin-top: 15px; display: flex; gap: 10px; flex-wrap: wrap; }
+        .badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+        .badge-post { background: #dcfce7; color: #16a34a; }
+        .badge-json { background: #dbeafe; color: #2563eb; }
+        .badge-sync { background: #fef3c7; color: #d97706; }
+        .badge-erp { background: #f3e8ff; color: #7c3aed; }
+        h2 {
+            color: var(--secondary-color);
+            font-size: 1.4em;
+            margin: 30px 0 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--border-color);
+        }
+        h3 { color: var(--text-color); font-size: 1.1em; margin: 20px 0 10px; }
+        h4 { color: var(--text-muted); font-size: 1em; margin: 15px 0 10px; }
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; font-size: 0.9em; }
+        th, td { border: 1px solid var(--border-color); padding: 10px 12px; text-align: left; }
+        th { background: var(--primary-color); color: white; font-weight: 600; }
+        tr:nth-child(even) { background: var(--bg-color); }
+        tr:hover { background: #e0e7ff; }
+        .required { background: var(--error-color); color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.75em; }
+        .optional { background: var(--text-muted); color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.75em; }
+        .code-block {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Consolas', monospace;
+            font-size: 0.85em;
+            line-height: 1.5;
+            margin: 15px 0;
+        }
+        .code-block .key { color: #7dd3fc; }
+        .code-block .string { color: #86efac; }
+        .code-block .number { color: #fbbf24; }
+        .code-block .comment { color: #64748b; font-style: italic; }
+        .info-box {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        .info-box.info { background: #dbeafe; border-left: 4px solid var(--primary-color); }
+        .info-box.warning { background: #fef3c7; border-left: 4px solid var(--warning-color); }
+        .info-box.success { background: #dcfce7; border-left: 4px solid var(--success-color); }
+        .info-box.purple { background: #f3e8ff; border-left: 4px solid #7c3aed; }
+        .flow-diagram { text-align: center; margin: 20px 0; padding: 20px; background: white; border-radius: 10px; }
+        .toc {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .toc ul { list-style: none; display: flex; flex-wrap: wrap; gap: 15px; }
+        .toc a { color: var(--primary-color); text-decoration: none; }
+        .toc a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="index.html" class="back">← 返回 API 列表</a>
+        <span class="brand">eMES API 規格書</span>
+    </nav>
+
+    <div class="container">
+        <!-- API Header -->
+        <div class="api-header">
+            <h1>工單新增</h1>
+            <div class="api-code">wo.create</div>
+            <div class="badges">
+                <span class="badge badge-post">POST</span>
+                <span class="badge badge-json">JSON</span>
+                <span class="badge badge-sync">同步</span>
+                <span class="badge badge-erp">ERP → MES</span>
+            </div>
+        </div>
+
+        <!-- TOC -->
+        <div class="toc">
+            <ul>
+                <li><a href="#basic">基本資訊</a></li>
+                <li><a href="#flow">業務流程</a></li>
+                <li><a href="#request">Request</a></li>
+                <li><a href="#response">Response</a></li>
+                <li><a href="#rules">檢核規則</a></li>
+                <li><a href="#errors">錯誤代碼</a></li>
+                <li><a href="#example">JSON 範例</a></li>
+                <li><a href="#tables">資料表</a></li>
+            </ul>
+        </div>
+
+        <!-- 基本資訊 -->
+        <div class="card" id="basic">
+            <h2>1. 基本資訊</h2>
+            <table>
+                <tr><th width="25%">項目</th><th>說明</th></tr>
+                <tr><td>API 中文名稱</td><td>工單新增（製令資料新增）</td></tr>
+                <tr><td>API 英文名稱</td><td>Work Order Create</td></tr>
+                <tr><td>API Code</td><td><code>wo.create</code></td></tr>
+                <tr><td>案號</td><td>0189142</td></tr>
+                <tr><td>REST Endpoint</td><td><code>POST /ESB/API/upModetail</code></td></tr>
+                <tr><td>呼叫方向</td><td><strong>ERP → MES</strong></td></tr>
+                <tr><td>呼叫時機</td><td>ERP 開立新工單後，同步至 MES</td></tr>
+                <tr><td>主要業務情境</td><td>ERP 產生製令後，將工單資訊推送至 MES，MES 建立對應的製令、批次及製程記錄</td></tr>
+                <tr><td>Request 格式</td><td><strong>JSON</strong> (Content-Type: application/json)</td></tr>
+                <tr><td>同步/非同步</td><td>同步呼叫</td></tr>
+                <tr><td>交易控管</td><td>需要（setAutoCommit(false) + transactionCommit()）</td></tr>
+            </table>
+
+            <div class="info-box purple">
+                <strong>呼叫方向說明</strong><br>
+                此 API 為 <strong>ERP → MES</strong> 單向推送，由 ERP 主動呼叫 MES 介面新增工單資料。
+            </div>
+        </div>
+
+        <!-- 業務流程 -->
+        <div class="card" id="flow">
+            <h2>2. 業務流程</h2>
+            <div class="flow-diagram">
+                <svg width="850" height="280" viewBox="0 0 850 280" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <marker id="arrow" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#7c3aed"/>
+                        </marker>
+                    </defs>
+                    <!-- ERP 區域 -->
+                    <rect x="20" y="30" width="200" height="200" rx="10" fill="#f3e8ff" stroke="#7c3aed" stroke-width="2"/>
+                    <text x="120" y="55" text-anchor="middle" font-size="14" font-weight="bold" fill="#7c3aed">ERP 系統</text>
+
+                    <!-- MES 區域 -->
+                    <rect x="280" y="30" width="550" height="200" rx="10" fill="#dbeafe" stroke="#3b82f6" stroke-width="2"/>
+                    <text x="555" y="55" text-anchor="middle" font-size="14" font-weight="bold" fill="#3b82f6">MES 系統</text>
+
+                    <!-- ERP 節點 -->
+                    <rect x="40" y="80" width="160" height="50" rx="6" fill="#7c3aed"/>
+                    <text x="120" y="100" text-anchor="middle" fill="white" font-size="11">1. 開立工單</text>
+                    <text x="120" y="118" text-anchor="middle" fill="white" font-size="9">(wo.create)</text>
+
+                    <!-- MES 節點 -->
+                    <rect x="300" y="80" width="120" height="50" rx="6" fill="#3b82f6"/>
+                    <text x="360" y="100" text-anchor="middle" fill="white" font-size="10">2. 驗證資料</text>
+                    <text x="360" y="118" text-anchor="middle" fill="white" font-size="9">(WoCreate)</text>
+
+                    <rect x="440" y="80" width="120" height="50" rx="6" fill="#3b82f6"/>
+                    <text x="500" y="100" text-anchor="middle" fill="white" font-size="10">3. 新增製令</text>
+                    <text x="500" y="118" text-anchor="middle" fill="white" font-size="9">(MODETAIL)</text>
+
+                    <rect x="580" y="80" width="110" height="50" rx="6" fill="#3b82f6"/>
+                    <text x="635" y="100" text-anchor="middle" fill="white" font-size="10">4. 建立批次</text>
+                    <text x="635" y="118" text-anchor="middle" fill="white" font-size="9">(LOT)</text>
+
+                    <rect x="710" y="80" width="100" height="50" rx="6" fill="#10b981"/>
+                    <text x="760" y="100" text-anchor="middle" fill="white" font-size="10">5. 初始化</text>
+                    <text x="760" y="118" text-anchor="middle" fill="white" font-size="9">(製程)</text>
+
+                    <!-- 連接線 -->
+                    <line x1="200" y1="105" x2="295" y2="105" stroke="#7c3aed" stroke-width="2" stroke-dasharray="5,5" marker-end="url(#arrow)"/>
+                    <line x1="420" y1="105" x2="435" y2="105" stroke="#3b82f6" stroke-width="2" marker-end="url(#arrow)"/>
+                    <line x1="560" y1="105" x2="575" y2="105" stroke="#3b82f6" stroke-width="2" marker-end="url(#arrow)"/>
+                    <line x1="690" y1="105" x2="705" y2="105" stroke="#3b82f6" stroke-width="2" marker-end="url(#arrow)"/>
+
+                    <!-- 下方說明 -->
+                    <rect x="300" y="155" width="230" height="60" rx="6" fill="#dcfce7" stroke="#10b981"/>
+                    <text x="415" y="175" text-anchor="middle" fill="#059669" font-size="10">initOpRealRun_SftBommf()</text>
+                    <text x="415" y="192" text-anchor="middle" fill="#059669" font-size="10">initProcessTime()</text>
+                    <text x="415" y="209" text-anchor="middle" fill="#059669" font-size="9">→ SFT_OP_REALRUN 初始化</text>
+
+                    <!-- 圖例 -->
+                    <text x="425" y="260" text-anchor="middle" font-size="11" fill="#64748b">程式位置: WoCreate.java → RegularESB.upModetail() → ESBapi.java:975-1007</text>
+                </svg>
+            </div>
+
+            <div class="info-box info">
+                <strong>程式碼對應</strong>
+                <ul style="margin-top:10px; margin-left:20px;">
+                    <li>API 入口: <code>WoCreate.java</code> (SFT_ERPIntegrate)</li>
+                    <li>核心邏輯: <code>RegularESB.upModetail()</code> (SFT_dataImport)</li>
+                    <li>SQL 執行: <code>ESBapi.java:975-1007</code> (KMI_Restful)</li>
+                    <li>製程初始化: <code>dataMantain.initOpRealRun_SftBommf()</code></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Request 規格 -->
+        <div class="card" id="request">
+            <h2>3. Request 規格</h2>
+
+            <div class="info-box success">
+                <strong>傳輸格式: JSON</strong><br>
+                <code>Content-Type: application/json</code>
+            </div>
+
+            <h3>3.1 外層結構</h3>
+            <table>
+                <tr><th>欄位</th><th>型別</th><th>必填</th><th>說明</th></tr>
+                <tr><td>CompanyID</td><td>string</td><td><span class="required">Y</span></td><td>公司代號</td></tr>
+                <tr><td>OperationType</td><td>int</td><td><span class="required">Y</span></td><td>操作類型（1=新增）</td></tr>
+                <tr><td>content</td><td>array</td><td><span class="required">Y</span></td><td>工單資料陣列</td></tr>
+            </table>
+
+            <h3>3.2 content 陣列內容</h3>
+            <table>
+                <tr><th>欄位</th><th>型別</th><th>長度</th><th>必填</th><th>說明</th><th>MES 欄位</th></tr>
+                <tr><td>wo_no</td><td>string</td><td>40</td><td><span class="required">Y</span></td><td>製令編號（單別-單號）</td><td>CMOID</td></tr>
+                <tr><td>item_no</td><td>string</td><td>40</td><td><span class="required">Y</span></td><td>品號</td><td>ITEMID</td></tr>
+                <tr><td>unit_no</td><td>string</td><td>10</td><td><span class="required">Y</span></td><td>單位代號</td><td>UNIT</td></tr>
+                <tr><td>plan_date_s</td><td>string</td><td>19</td><td><span class="required">Y</span></td><td>預計開工日（yyyy-MM-dd HH:mm:ss）</td><td>PLANPROCESSST</td></tr>
+                <tr><td>plan_date_e</td><td>string</td><td>19</td><td><span class="required">Y</span></td><td>預計完工日（yyyy-MM-dd HH:mm:ss）</td><td>DUEDATETIME</td></tr>
+                <tr><td>wo_qty</td><td>decimal</td><td>-</td><td><span class="required">Y</span></td><td>預計產量</td><td>QTY / PLANRELEASEQTY</td></tr>
+                <tr><td>so_no</td><td>string</td><td>40</td><td><span class="optional">N</span></td><td>訂單單號</td><td>DOID</td></tr>
+                <tr><td>so_seq</td><td>string</td><td>10</td><td><span class="optional">N</span></td><td>訂單項次</td><td>SEQUENCE</td></tr>
+                <tr><td>factory_no</td><td>string</td><td>10</td><td><span class="required">Y</span></td><td>廠別代號</td><td>FACTORYID</td></tr>
+                <tr><td>warehouse_no</td><td>string</td><td>10</td><td><span class="optional">N</span></td><td>庫別代號</td><td>WAREHOUSEID</td></tr>
+                <tr><td>remark</td><td>string</td><td>500</td><td><span class="optional">N</span></td><td>備註</td><td>DESCRIPTION</td></tr>
+                <tr><td>priority</td><td>string</td><td>1</td><td><span class="optional">N</span></td><td>優先級（1=急料，0=否）</td><td>MO032</td></tr>
+            </table>
+        </div>
+
+        <!-- Response -->
+        <div class="card" id="response">
+            <h2>4. Response 規格</h2>
+            <table>
+                <tr><th>欄位</th><th>型別</th><th>說明</th></tr>
+                <tr><td>code</td><td>string</td><td>200=成功，500=失敗</td></tr>
+                <tr><td>msg</td><td>string</td><td>處理結果訊息（成功時回傳製令編號）</td></tr>
+                <tr><td>query</td><td>array</td><td>查詢結果（通常為空陣列）</td></tr>
+            </table>
+
+            <h3>成功行為</h3>
+            <ul style="margin-left: 20px; margin-top: 10px;">
+                <li>INSERT MODETAIL（製令主檔）</li>
+                <li>INSERT LOT（批次記錄）</li>
+                <li>初始化 SFT_OP_REALRUN（製程實績記錄）</li>
+                <li>計算製程時間（initProcessTime）</li>
+            </ul>
+        </div>
+
+        <!-- 檢核規則 -->
+        <div class="card" id="rules">
+            <h2>5. 檢核規則</h2>
+            <table>
+                <tr><th>#</th><th>檢核項目</th><th>規則</th><th>錯誤代碼</th></tr>
+                <tr><td>1</td><td>製令編號重複</td><td>CMOID 不可重複存在於 MODETAIL</td><td>JS_0126_00061</td></tr>
+                <tr><td>2</td><td>品號存在</td><td>ITEMID 必須存在於 ITEM 表</td><td>JS_0096_00058</td></tr>
+                <tr><td>3</td><td>單位存在</td><td>unit_no 必須存在於 UnitBasis</td><td>JS_0016_00134</td></tr>
+                <tr><td>4</td><td>廠別存在</td><td>factory_no 必須存在於 FACTORY</td><td>JS_0016_00115</td></tr>
+                <tr><td>5</td><td>庫別存在</td><td>warehouse_no（若有值）必須存在於 WAREHOUSE</td><td>JS_0135_00036</td></tr>
+                <tr><td>6</td><td>數量檢核</td><td>wo_qty 必須大於 0</td><td>-</td></tr>
+            </table>
+        </div>
+
+        <!-- 錯誤代碼 -->
+        <div class="card" id="errors">
+            <h2>6. 錯誤代碼</h2>
+            <table>
+                <tr><th>代碼</th><th>訊息</th><th>說明</th></tr>
+                <tr><td>JS_0126_00061</td><td>製令編號已存在，無法進行新增</td><td>CMOID 重複</td></tr>
+                <tr><td>JS_0096_00058</td><td>此品號不存在</td><td>ITEM 表無此品號</td></tr>
+                <tr><td>JS_0016_00134</td><td>單位不存在，請確認</td><td>UnitBasis 無此單位</td></tr>
+                <tr><td>JS_0016_00115</td><td>廠別代號不存在</td><td>FACTORY 無此廠別</td></tr>
+                <tr><td>JS_0135_00036</td><td>此庫別代號不存在</td><td>WAREHOUSE 無此庫別</td></tr>
+                <tr><td>remind_001</td><td>資料已存在</td><td>重複新增</td></tr>
+            </table>
+        </div>
+
+        <!-- JSON 範例 -->
+        <div class="card" id="example">
+            <h2>7. JSON 範例</h2>
+
+            <h3>Request</h3>
+            <div class="code-block">
+<pre>{
+  <span class="key">"CompanyID"</span>: <span class="string">"COMP01"</span>,
+  <span class="key">"OperationType"</span>: <span class="number">1</span>,
+  <span class="key">"content"</span>: [{
+    <span class="key">"wo_no"</span>: <span class="string">"5101-20260319001"</span>,
+    <span class="key">"item_no"</span>: <span class="string">"FG-A001-001"</span>,
+    <span class="key">"unit_no"</span>: <span class="string">"PCS"</span>,
+    <span class="key">"plan_date_s"</span>: <span class="string">"2026-03-19 08:00:00"</span>,
+    <span class="key">"plan_date_e"</span>: <span class="string">"2026-03-20 17:00:00"</span>,
+    <span class="key">"wo_qty"</span>: <span class="number">1000</span>,
+    <span class="key">"so_no"</span>: <span class="string">"SO20260301001"</span>,
+    <span class="key">"so_seq"</span>: <span class="string">"001"</span>,
+    <span class="key">"factory_no"</span>: <span class="string">"P001"</span>,
+    <span class="key">"warehouse_no"</span>: <span class="string">"FG01"</span>,
+    <span class="key">"remark"</span>: <span class="string">"急單"</span>,
+    <span class="key">"priority"</span>: <span class="string">"1"</span>
+  }]
+}</pre>
+            </div>
+
+            <h3>Response (成功)</h3>
+            <div class="code-block">
+<pre>{
+  <span class="key">"code"</span>: <span class="string">"200"</span>,
+  <span class="key">"msg"</span>: <span class="string">"[\"5101-20260319001\"]"</span>,
+  <span class="key">"query"</span>: []
+}</pre>
+            </div>
+
+            <h3>Response (失敗 - 製令已存在)</h3>
+            <div class="code-block">
+<pre>{
+  <span class="key">"code"</span>: <span class="string">"500"</span>,
+  <span class="key">"msg"</span>: <span class="string">"JS_0126_00061"</span>,
+  <span class="key">"query"</span>: []
+}</pre>
+            </div>
+        </div>
+
+        <!-- 資料表 -->
+        <div class="card" id="tables">
+            <h2>8. 相關資料表</h2>
+
+            <h3>8.1 MODETAIL（製令主檔）</h3>
+            <table>
+                <tr><th>欄位</th><th>類型</th><th>說明</th></tr>
+                <tr><td>CMOID</td><td>NVARCHAR(40)</td><td>PK: 製令編號（單別-單號）</td></tr>
+                <tr><td>MO004</td><td>NVARCHAR(10)</td><td>製令單別</td></tr>
+                <tr><td>MO005</td><td>NVARCHAR(20)</td><td>製令單號</td></tr>
+                <tr><td>ITEMID</td><td>NVARCHAR(40)</td><td>品號</td></tr>
+                <tr><td>QTY</td><td>FLOAT</td><td>預計產量</td></tr>
+                <tr><td>PLANRELEASEQTY</td><td>FLOAT</td><td>預計發放量</td></tr>
+                <tr><td>RELEASEDQTY</td><td>FLOAT</td><td>已發放量</td></tr>
+                <tr><td>STATUS</td><td>INT</td><td>狀態（1=未生產 2=生產中 99=結案 100=取消）</td></tr>
+                <tr><td>PLANPROCESSST</td><td>DATETIME</td><td>預計開工日</td></tr>
+                <tr><td>DUEDATETIME</td><td>DATETIME</td><td>預計完工日</td></tr>
+                <tr><td>FLAG</td><td>INT</td><td>版本號</td></tr>
+            </table>
+
+            <h3>8.2 LOT（批次記錄）</h3>
+            <table>
+                <tr><th>欄位</th><th>類型</th><th>說明</th></tr>
+                <tr><td>ID</td><td>NVARCHAR(40)</td><td>PK: 批次編號（通常=CMOID）</td></tr>
+                <tr><td>MOID</td><td>NVARCHAR(40)</td><td>FK: 製令編號</td></tr>
+                <tr><td>TYPE</td><td>INT</td><td>批次類型（1=計劃批）</td></tr>
+                <tr><td>LOTSIZE</td><td>FLOAT</td><td>批次數量（待發放量）</td></tr>
+                <tr><td>STATUS</td><td>INT</td><td>狀態（0=待發放 1=已發放）</td></tr>
+                <tr><td>LOCATION</td><td>NVARCHAR(20)</td><td>位置（通常='release'）</td></tr>
+            </table>
+        </div>
+
+    </div>
+</body>
+</html>

@@ -343,7 +343,58 @@
             </div>
         </div>
 
-        <!-- 一般入庫單 Category -->
+        <!-- 工單流程 Category (ERP → MES) -->
+        <div class="category">
+            <div class="category-header">
+                <div class="category-icon" style="background: linear-gradient(135deg, #7c3aed, #5b21b6);">
+                    📋
+                </div>
+                <div class="category-title">
+                    <h2>工單流程 (ERP → MES)</h2>
+                    <p>Work Order Management - 0189142</p>
+                </div>
+            </div>
+            <div class="api-grid">
+                <a href="wo-create.html" class="api-card">
+                    <div class="api-card-header">
+                        <h3>工單新增</h3>
+                        <span class="method method-post">POST</span>
+                    </div>
+                    <div class="code">wo.create</div>
+                    <p>ERP 開立工單後，同步至 MES 建立製令</p>
+                    <div class="tags">
+                        <span class="tag">ERP→MES</span>
+                        <span class="tag">MODETAIL</span>
+                    </div>
+                </a>
+                <a href="wo-update.html" class="api-card">
+                    <div class="api-card-header">
+                        <h3>工單更新</h3>
+                        <span class="method method-post">PUT</span>
+                    </div>
+                    <div class="code">wo.update</div>
+                    <p>ERP 修改工單數量或日期，同步至 MES</p>
+                    <div class="tags">
+                        <span class="tag">ERP→MES</span>
+                        <span class="tag">數量檢核</span>
+                    </div>
+                </a>
+                <a href="wo-status-process.html" class="api-card">
+                    <div class="api-card-header">
+                        <h3>工單狀態變更</h3>
+                        <span class="method method-delete">STATUS</span>
+                    </div>
+                    <div class="code">wo.status.process</div>
+                    <p>ERP 刪除/結案/取消結案工單</p>
+                    <div class="tags">
+                        <span class="tag">ERP→MES</span>
+                        <span class="tag">刪除/結案</span>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- 一般移轉單 Category -->
         <div class="category">
             <div class="category-header">
                 <div class="category-icon" style="background: linear-gradient(135deg, #3b82f6, #1e40af);">
@@ -372,7 +423,7 @@
         <!-- Stats -->
         <div class="stats">
             <div class="stat-item">
-                <div class="number">4</div>
+                <div class="number">7</div>
                 <div class="label">已完成 API</div>
             </div>
             <div class="stat-item">

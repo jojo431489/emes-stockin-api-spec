@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>wo.status.process - eMES API</title>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #1e40af;
+            --success-color: #16a34a;
+            --error-color: #dc2626;
+            --warning-color: #d97706;
+            --bg-color: #f8fafc;
+            --border-color: #e2e8f0;
+            --text-color: #1e293b;
+            --text-muted: #64748b;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+        }
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .navbar a { color: white; text-decoration: none; }
+        .navbar .brand { font-size: 1.2em; font-weight: 600; }
+        .navbar .back { opacity: 0.9; }
+        .navbar .back:hover { opacity: 1; }
+        .container { max-width: 1100px; margin: 0 auto; padding: 30px; }
+        .api-header {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .api-header h1 { color: var(--error-color); font-size: 1.8em; margin-bottom: 10px; }
+        .api-code {
+            font-family: 'Consolas', monospace;
+            background: var(--bg-color);
+            padding: 8px 15px;
+            border-radius: 6px;
+            display: inline-block;
+            color: var(--error-color);
+            font-size: 1.1em;
+        }
+        .badges { margin-top: 15px; display: flex; gap: 10px; flex-wrap: wrap; }
+        .badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+        .badge-post { background: #dcfce7; color: #16a34a; }
+        .badge-delete { background: #fee2e2; color: #dc2626; }
+        .badge-json { background: #dbeafe; color: #2563eb; }
+        .badge-sync { background: #fef3c7; color: #d97706; }
+        .badge-erp { background: #f3e8ff; color: #7c3aed; }
+        h2 {
+            color: var(--secondary-color);
+            font-size: 1.4em;
+            margin: 30px 0 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--border-color);
+        }
+        h3 { color: var(--text-color); font-size: 1.1em; margin: 20px 0 10px; }
+        h4 { color: var(--text-muted); font-size: 1em; margin: 15px 0 10px; }
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; font-size: 0.9em; }
+        th, td { border: 1px solid var(--border-color); padding: 10px 12px; text-align: left; }
+        th { background: var(--error-color); color: white; font-weight: 600; }
+        tr:nth-child(even) { background: var(--bg-color); }
+        tr:hover { background: #fee2e2; }
+        .required { background: var(--error-color); color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.75em; }
+        .optional { background: var(--text-muted); color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.75em; }
+        .code-block {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Consolas', monospace;
+            font-size: 0.85em;
+            line-height: 1.5;
+            margin: 15px 0;
+        }
+        .code-block .key { color: #7dd3fc; }
+        .code-block .string { color: #86efac; }
+        .code-block .number { color: #fbbf24; }
+        .code-block .comment { color: #64748b; font-style: italic; }
+        .info-box {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        .info-box.info { background: #dbeafe; border-left: 4px solid var(--primary-color); }
+        .info-box.warning { background: #fef3c7; border-left: 4px solid var(--warning-color); }
+        .info-box.danger { background: #fee2e2; border-left: 4px solid var(--error-color); }
+        .info-box.success { background: #dcfce7; border-left: 4px solid var(--success-color); }
+        .info-box.purple { background: #f3e8ff; border-left: 4px solid #7c3aed; }
+        .flow-diagram { text-align: center; margin: 20px 0; padding: 20px; background: white; border-radius: 10px; }
+        .toc {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .toc ul { list-style: none; display: flex; flex-wrap: wrap; gap: 15px; }
+        .toc a { color: var(--primary-color); text-decoration: none; }
+        .toc a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="index.html" class="back">← 返回 API 列表</a>
+        <span class="brand">eMES API 規格書</span>
+    </nav>
+
+    <div class="container">
+        <!-- API Header -->
+        <div class="api-header">
+            <h1>工單狀態變更</h1>
+            <div class="api-code">wo.status.process</div>
+            <div class="badges">
+                <span class="badge badge-post">POST</span>
+                <span class="badge badge-json">JSON</span>
+                <span class="badge badge-sync">同步</span>
+                <span class="badge badge-erp">ERP → MES</span>
+            </div>
+        </div>
+
+        <!-- TOC -->
+        <div class="toc">
+            <ul>
+                <li><a href="#basic">基本資訊</a></li>
+                <li><a href="#status">狀態對照</a></li>
+                <li><a href="#request">Request</a></li>
+                <li><a href="#response">Response</a></li>
+                <li><a href="#logic">處理邏輯</a></li>
+                <li><a href="#errors">錯誤代碼</a></li>
+                <li><a href="#example">JSON 範例</a></li>
+            </ul>
+        </div>
+
+        <!-- 基本資訊 -->
+        <div class="card" id="basic">
+            <h2>1. 基本資訊</h2>
+            <table>
+                <tr><th width="25%">項目</th><th>說明</th></tr>
+                <tr><td>API 中文名稱</td><td>工單狀態變更（刪除/結案/取消結案）</td></tr>
+                <tr><td>API 英文名稱</td><td>Work Order Status Process</td></tr>
+                <tr><td>API Code</td><td><code>wo.status.process</code></td></tr>
+                <tr><td>案號</td><td>0189142</td></tr>
+                <tr><td>REST Endpoint</td><td><code>POST /ESB/API/upModetailStatus</code></td></tr>
+                <tr><td>呼叫方向</td><td><strong>ERP → MES</strong></td></tr>
+                <tr><td>呼叫時機</td><td>ERP 刪除、結案或取消結案工單時</td></tr>
+                <tr><td>主要業務情境</td><td>ERP 變更製令狀態，同步更新 MES 的製令狀態或刪除製令資料</td></tr>
+                <tr><td>Request 格式</td><td><strong>JSON</strong> (Content-Type: application/json)</td></tr>
+                <tr><td>同步/非同步</td><td>同步呼叫</td></tr>
+            </table>
+
+            <div class="info-box purple">
+                <strong>呼叫方向說明</strong><br>
+                此 API 為 <strong>ERP → MES</strong> 單向推送。<br>
+                根據 status 參數執行不同操作：刪除(1)、結案(2)、取消結案(3)。
+            </div>
+        </div>
+
+        <!-- 狀態對照 -->
+        <div class="card" id="status">
+            <h2>2. 狀態對照表</h2>
+            <table>
+                <tr><th>status</th><th>操作</th><th>說明</th><th>MES 行為</th></tr>
+                <tr><td><strong>1</strong></td><td>刪除工單</td><td>刪除製令及相關批次</td><td>DELETE MODETAIL / LOT</td></tr>
+                <tr><td><strong>2</strong></td><td>結案</td><td>製令指定完工/結案</td><td>檢查未完工製程，變更狀態</td></tr>
+                <tr><td><strong>3</strong></td><td>取消結案</td><td>還原已結案的製令</td><td>還原 STATUS（99/100 → 原狀態）</td></tr>
+            </table>
+
+            <h3>MODETAIL.STATUS 定義</h3>
+            <table>
+                <tr><th>STATUS</th><th>說明</th></tr>
+                <tr><td>1</td><td>未生產</td></tr>
+                <tr><td>2</td><td>生產中</td></tr>
+                <tr><td>3</td><td>待結案</td></tr>
+                <tr><td>99</td><td>結案</td></tr>
+                <tr><td>100</td><td>取消</td></tr>
+            </table>
+        </div>
+
+        <!-- Request 規格 -->
+        <div class="card" id="request">
+            <h2>3. Request 規格</h2>
+
+            <div class="info-box success">
+                <strong>傳輸格式: JSON</strong><br>
+                <code>Content-Type: application/json</code>
+            </div>
+
+            <table>
+                <tr><th>欄位</th><th>型別</th><th>必填</th><th>說明</th><th>範例</th></tr>
+                <tr><td>CompanyId</td><td>string</td><td><span class="required">Y</span></td><td>公司代號</td><td>"COMP01"</td></tr>
+                <tr><td>lang</td><td>string</td><td><span class="optional">N</span></td><td>語系</td><td>"zh_TW"</td></tr>
+                <tr><td>wo_no</td><td>string</td><td><span class="required">Y</span></td><td>製令編號（單別-單號）</td><td>"5101-20260319001"</td></tr>
+                <tr><td>status</td><td>string</td><td><span class="required">Y</span></td><td>操作類型（1/2/3）</td><td>"1"</td></tr>
+            </table>
+        </div>
+
+        <!-- Response -->
+        <div class="card" id="response">
+            <h2>4. Response 規格</h2>
+            <table>
+                <tr><th>欄位</th><th>型別</th><th>說明</th></tr>
+                <tr><td>code</td><td>string</td><td>200=成功，500=失敗</td></tr>
+                <tr><td>msg</td><td>string</td><td>處理結果訊息或錯誤代碼</td></tr>
+            </table>
+        </div>
+
+        <!-- 處理邏輯 -->
+        <div class="card" id="logic">
+            <h2>5. 處理邏輯</h2>
+
+            <h3>5.1 status=1 刪除工單</h3>
+            <div class="flow-diagram">
+                <svg width="700" height="180" viewBox="0 0 700 180" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <marker id="arrow" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#dc2626"/>
+                        </marker>
+                    </defs>
+                    <rect x="20" y="50" width="130" height="50" rx="6" fill="#dc2626"/>
+                    <text x="85" y="80" text-anchor="middle" fill="white" font-size="11">status=1 刪除</text>
+
+                    <polygon points="220,50 300,75 220,100 140,75" fill="#f97316"/>
+                    <text x="220" y="80" text-anchor="middle" fill="white" font-size="10">已發放?</text>
+                    <line x1="150" y1="75" x2="175" y2="75" stroke="#dc2626" stroke-width="2" marker-end="url(#arrow)"/>
+
+                    <rect x="350" y="30" width="150" height="40" rx="6" fill="#dc2626"/>
+                    <text x="425" y="55" text-anchor="middle" fill="white" font-size="10">JS_0126_00062</text>
+                    <line x1="300" y1="60" x2="345" y2="50" stroke="#f97316" stroke-width="2" marker-end="url(#arrow)"/>
+                    <text x="320" y="50" font-size="9" fill="#f97316">是</text>
+
+                    <rect x="350" y="90" width="150" height="40" rx="6" fill="#10b981"/>
+                    <text x="425" y="110" text-anchor="middle" fill="white" font-size="10">DELETE MODETAIL</text>
+                    <text x="425" y="122" text-anchor="middle" fill="white" font-size="9">DELETE LOT</text>
+                    <line x1="300" y1="85" x2="345" y2="100" stroke="#f97316" stroke-width="2" marker-end="url(#arrow)"/>
+                    <text x="320" y="100" font-size="9" fill="#f97316">否</text>
+
+                    <rect x="550" y="90" width="100" height="40" rx="6" fill="#059669"/>
+                    <text x="600" y="115" text-anchor="middle" fill="white" font-size="10">完成</text>
+                    <line x1="500" y1="110" x2="545" y2="110" stroke="#10b981" stroke-width="2" marker-end="url(#arrow)"/>
+
+                    <text x="350" y="165" text-anchor="middle" font-size="10" fill="#64748b">檢查 SFT_WS_RUN.EXECUTETYPE='release'</text>
+                </svg>
+            </div>
+
+            <div class="info-box danger">
+                <strong>刪除限制</strong><br>
+                若製令已進行發放（SFT_WS_RUN 有 EXECUTETYPE='release' 的記錄），則無法刪除，會拋出錯誤 <code>JS_0126_00062</code>。
+            </div>
+
+            <h3>5.2 status=2 結案</h3>
+            <div class="flow-diagram">
+                <svg width="700" height="200" viewBox="0 0 700 200" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="20" y="60" width="110" height="50" rx="6" fill="#f97316"/>
+                    <text x="75" y="90" text-anchor="middle" fill="white" font-size="11">status=2 結案</text>
+
+                    <polygon points="200,60 270,85 200,110 130,85" fill="#f59e0b"/>
+                    <text x="200" y="90" text-anchor="middle" fill="white" font-size="10">暫停中?</text>
+                    <line x1="130" y1="85" x2="160" y2="85" stroke="#f97316" stroke-width="2" marker-end="url(#arrow)"/>
+
+                    <rect x="310" y="40" width="130" height="35" rx="6" fill="#dc2626"/>
+                    <text x="375" y="62" text-anchor="middle" fill="white" font-size="9">JS_0115_00014</text>
+                    <line x1="270" y1="70" x2="305" y2="57" stroke="#f59e0b" stroke-width="2" marker-end="url(#arrow)"/>
+                    <text x="285" y="60" font-size="9" fill="#f59e0b">是</text>
+
+                    <polygon points="370,100 440,125 370,150 300,125" fill="#f59e0b"/>
+                    <text x="370" y="125" text-anchor="middle" fill="white" font-size="9">未完工製程?</text>
+                    <line x1="270" y1="100" x2="330" y2="125" stroke="#f59e0b" stroke-width="2" marker-end="url(#arrow)"/>
+                    <text x="290" y="115" font-size="9" fill="#f59e0b">否</text>
+
+                    <rect x="490" y="80" width="130" height="35" rx="6" fill="#dc2626"/>
+                    <text x="555" y="102" text-anchor="middle" fill="white" font-size="9">JS_0115_00017</text>
+                    <line x1="440" y1="110" x2="485" y2="97" stroke="#f59e0b" stroke-width="2" marker-end="url(#arrow)"/>
+                    <text x="460" y="100" font-size="9" fill="#f59e0b">是</text>
+
+                    <rect x="490" y="135" width="130" height="35" rx="6" fill="#10b981"/>
+                    <text x="555" y="157" text-anchor="middle" fill="white" font-size="10">執行結案流程</text>
+                    <line x1="440" y1="140" x2="485" y2="152" stroke="#f59e0b" stroke-width="2" marker-end="url(#arrow)"/>
+                    <text x="460" y="155" font-size="9" fill="#f59e0b">否</text>
+
+                    <text x="350" y="185" text-anchor="middle" font-size="10" fill="#64748b">檢查 SFT_HOLD_REC (暫停) 和 SFT_OP_REALRUN (未完工)</text>
+                </svg>
+            </div>
+
+            <div class="info-box warning">
+                <strong>結案檢核</strong>
+                <ul style="margin-top:10px; margin-left:20px;">
+                    <li>檢查 SFT_HOLD_REC：製令是否暫停中</li>
+                    <li>檢查 SFT_OP_REALRUN：是否有未完工製程</li>
+                </ul>
+            </div>
+
+            <h3>5.3 status=3 取消結案</h3>
+            <div class="flow-diagram">
+                <svg width="600" height="150" viewBox="0 0 600 150" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="20" y="50" width="140" height="50" rx="6" fill="#10b981"/>
+                    <text x="90" y="80" text-anchor="middle" fill="white" font-size="11">status=3 取消結案</text>
+
+                    <polygon points="230,50 310,75 230,100 150,75" fill="#059669"/>
+                    <text x="230" y="72" text-anchor="middle" fill="white" font-size="10">STATUS</text>
+                    <text x="230" y="85" text-anchor="middle" fill="white" font-size="10">∈(99,100)?</text>
+                    <line x1="160" y1="75" x2="185" y2="75" stroke="#10b981" stroke-width="2" marker-end="url(#arrow)"/>
+
+                    <rect x="360" y="30" width="130" height="35" rx="6" fill="#dc2626"/>
+                    <text x="425" y="52" text-anchor="middle" fill="white" font-size="9">JS_0126_00059</text>
+                    <line x1="310" y1="60" x2="355" y2="47" stroke="#059669" stroke-width="2" marker-end="url(#arrow)"/>
+                    <text x="330" y="50" font-size="9" fill="#059669">否</text>
+
+                    <rect x="360" y="85" width="130" height="35" rx="6" fill="#10b981"/>
+                    <text x="425" y="107" text-anchor="middle" fill="white" font-size="10">還原結案狀態</text>
+                    <line x1="310" y1="90" x2="355" y2="102" stroke="#059669" stroke-width="2" marker-end="url(#arrow)"/>
+                    <text x="330" y="105" font-size="9" fill="#059669">是</text>
+
+                    <text x="300" y="140" text-anchor="middle" font-size="10" fill="#64748b">檢查 MODETAIL.STATUS 是否為結案/取消狀態</text>
+                </svg>
+            </div>
+
+            <div class="info-box info">
+                <strong>取消結案條件</strong><br>
+                只有 STATUS=99（結案）或 STATUS=100（取消）的製令才能執行取消結案操作。
+            </div>
+        </div>
+
+        <!-- 錯誤代碼 -->
+        <div class="card" id="errors">
+            <h2>6. 錯誤代碼</h2>
+            <table>
+                <tr><th>代碼</th><th>訊息</th><th>觸發條件</th><th>對應 status</th></tr>
+                <tr><td>JS_0126_00062</td><td>製令已進行發放，無法進行製令刪除</td><td>SFT_WS_RUN 有發放記錄</td><td>status=1</td></tr>
+                <tr><td>JS_0115_00014</td><td>製令暫停中，請先解除暫停再執行指定完工</td><td>SFT_HOLD_REC 有暫停記錄</td><td>status=2</td></tr>
+                <tr><td>JS_0115_00017</td><td>此單據有製程未完工資料，請先將製程完工再作製令完工</td><td>SFT_OP_REALRUN 有未完工製程</td><td>status=2</td></tr>
+                <tr><td>JS_0126_00059</td><td>eMES 製令未結案，不可取消</td><td>MODETAIL.STATUS 不在 (99,100)</td><td>status=3</td></tr>
+                <tr><td>remind_002</td><td>資料不存在</td><td>製令編號不存在</td><td>all</td></tr>
+            </table>
+        </div>
+
+        <!-- JSON 範例 -->
+        <div class="card" id="example">
+            <h2>7. JSON 範例</h2>
+
+            <h3>Request - 刪除工單 (status=1)</h3>
+            <div class="code-block">
+<pre>{
+  <span class="key">"CompanyId"</span>: <span class="string">"COMP01"</span>,
+  <span class="key">"lang"</span>: <span class="string">"zh_TW"</span>,
+  <span class="key">"wo_no"</span>: <span class="string">"5101-20260319001"</span>,
+  <span class="key">"status"</span>: <span class="string">"1"</span>  <span class="comment">// 刪除</span>
+}</pre>
+            </div>
+
+            <h3>Request - 結案 (status=2)</h3>
+            <div class="code-block">
+<pre>{
+  <span class="key">"CompanyId"</span>: <span class="string">"COMP01"</span>,
+  <span class="key">"lang"</span>: <span class="string">"zh_TW"</span>,
+  <span class="key">"wo_no"</span>: <span class="string">"5101-20260319001"</span>,
+  <span class="key">"status"</span>: <span class="string">"2"</span>  <span class="comment">// 結案</span>
+}</pre>
+            </div>
+
+            <h3>Request - 取消結案 (status=3)</h3>
+            <div class="code-block">
+<pre>{
+  <span class="key">"CompanyId"</span>: <span class="string">"COMP01"</span>,
+  <span class="key">"lang"</span>: <span class="string">"zh_TW"</span>,
+  <span class="key">"wo_no"</span>: <span class="string">"5101-20260319001"</span>,
+  <span class="key">"status"</span>: <span class="string">"3"</span>  <span class="comment">// 取消結案</span>
+}</pre>
+            </div>
+
+            <h3>Response (成功)</h3>
+            <div class="code-block">
+<pre>{
+  <span class="key">"code"</span>: <span class="string">"200"</span>,
+  <span class="key">"msg"</span>: <span class="string">"success"</span>
+}</pre>
+            </div>
+
+            <h3>Response (失敗 - 已發放無法刪除)</h3>
+            <div class="code-block">
+<pre>{
+  <span class="key">"code"</span>: <span class="string">"500"</span>,
+  <span class="key">"msg"</span>: <span class="string">"JS_0126_00062"</span>
+}</pre>
+            </div>
+
+            <h3>Response (失敗 - 暫停中無法結案)</h3>
+            <div class="code-block">
+<pre>{
+  <span class="key">"code"</span>: <span class="string">"500"</span>,
+  <span class="key">"msg"</span>: <span class="string">"JS_0115_00014"</span>
+}</pre>
+            </div>
+
+            <h3>Response (失敗 - 未結案不可取消)</h3>
+            <div class="code-block">
+<pre>{
+  <span class="key">"code"</span>: <span class="string">"500"</span>,
+  <span class="key">"msg"</span>: <span class="string">"JS_0126_00059"</span>
+}</pre>
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>
