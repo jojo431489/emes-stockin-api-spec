@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>outsourcing.process - eMES API</title>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #1e40af;
+            --success-color: #16a34a;
+            --error-color: #dc2626;
+            --warning-color: #d97706;
+            --bg-color: #f8fafc;
+            --border-color: #e2e8f0;
+            --text-color: #1e293b;
+            --text-muted: #64748b;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+        }
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .navbar a { color: white; text-decoration: none; }
+        .navbar .brand { font-size: 1.2em; font-weight: 600; }
+        .navbar .back { opacity: 0.9; }
+        .navbar .back:hover { opacity: 1; }
+        .container { max-width: 1100px; margin: 0 auto; padding: 30px; }
+        .api-header {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .api-header h1 { color: var(--error-color); font-size: 1.8em; margin-bottom: 10px; }
+        .api-code {
+            font-family: 'Consolas', monospace;
+            background: var(--bg-color);
+            padding: 8px 15px;
+            border-radius: 6px;
+            display: inline-block;
+            color: var(--error-color);
+            font-size: 1.1em;
+        }
+        .badges { margin-top: 15px; display: flex; gap: 10px; flex-wrap: wrap; }
+        .badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+        .badge-delete { background: #fee2e2; color: #dc2626; }
+        .badge-json { background: #dbeafe; color: #2563eb; }
+        .badge-sync { background: #fef3c7; color: #d97706; }
+        h2 {
+            color: var(--secondary-color);
+            font-size: 1.4em;
+            margin: 30px 0 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--border-color);
+        }
+        h3 { color: var(--text-color); font-size: 1.1em; margin: 20px 0 10px; }
+        h4 { color: var(--text-muted); font-size: 1em; margin: 15px 0 10px; }
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; font-size: 0.9em; }
+        th, td { border: 1px solid var(--border-color); padding: 10px 12px; text-align: left; }
+        th { background: var(--error-color); color: white; font-weight: 600; }
+        tr:nth-child(even) { background: var(--bg-color); }
+        tr:hover { background: #fee2e2; }
+        .required { background: var(--error-color); color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.75em; }
+        .optional { background: var(--text-muted); color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.75em; }
+        .code-block {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Consolas', monospace;
+            font-size: 0.85em;
+            line-height: 1.5;
+            margin: 15px 0;
+        }
+        .code-block .key { color: #7dd3fc; }
+        .code-block .string { color: #86efac; }
+        .code-block .number { color: #fbbf24; }
+        .code-block .comment { color: #64748b; font-style: italic; }
+        .info-box {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        .info-box.info { background: #dbeafe; border-left: 4px solid var(--primary-color); }
+        .info-box.warning { background: #fef3c7; border-left: 4px solid var(--warning-color); }
+        .info-box.danger { background: #fee2e2; border-left: 4px solid var(--error-color); }
+        .info-box.success { background: #dcfce7; border-left: 4px solid var(--success-color); }
+        .flow-diagram { text-align: center; margin: 20px 0; padding: 20px; background: white; border-radius: 10px; }
+        .toc {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .toc ul { list-style: none; display: flex; flex-wrap: wrap; gap: 15px; }
+        .toc a { color: var(--primary-color); text-decoration: none; }
+        .toc a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="index.html" class="back">← 返回 API 列表</a>
+        <span class="brand">eMES API 規格書</span>
+    </nav>
+
+    <div class="container">
+        <!-- API Header -->
+        <div class="api-header">
+            <h1>取消委外進貨單</h1>
+            <div class="api-code">outsourcing.process</div>
+            <div class="badges">
+                <span class="badge badge-delete">CANCEL</span>
+                <span class="badge badge-json">JSON</span>
+                <span class="badge badge-sync">同步</span>
+            </div>
+        </div>
+
+        <!-- TOC -->
+        <div class="toc">
+            <ul>
+                <li><a href="#basic">基本資訊</a></li>
+                <li><a href="#flow">業務流程</a></li>
+                <li><a href="#request">Request</a></li>
+                <li><a href="#response">Response</a></li>
+                <li><a href="#rules">檢核規則</a></li>
+                <li><a href="#errors">錯誤代碼</a></li>
+                <li><a href="#example">JSON 範例</a></li>
+                <li><a href="#race">Race Condition</a></li>
+            </ul>
+        </div>
+
+        <!-- 基本資訊 -->
+        <div class="card" id="basic">
+            <h2>1. 基本資訊</h2>
+            <table>
+                <tr><th width="25%">項目</th><th>說明</th></tr>
+                <tr><td>API 中文名稱</td><td>取消委外進貨單（委外採購收貨還原）</td></tr>
+                <tr><td>CROSS API Code</td><td><code>outsourcing.process</code></td></tr>
+                <tr><td>MES taskName</td><td><code>outsourcingProcess</code></td></tr>
+                <tr><td>ESB 路徑</td><td><code>/outsourcingProcess</code></td></tr>
+                <tr><td>DSMS 參考</td><td>api-2058</td></tr>
+                <tr><td>呼叫方向</td><td>MES → ERP</td></tr>
+                <tr><td>觸發條件</td><td><code>TRANSORDERTYPE = "59"</code> + TL011/TL012 不為空</td></tr>
+                <tr><td>Request 格式</td><td><strong>JSON</strong> (Content-Type: application/json)</td></tr>
+                <tr><td>傳輸方式</td><td>HTTP POST via ESB</td></tr>
+                <tr><td>同步/非同步</td><td>同步呼叫</td></tr>
+            </table>
+
+            <h3>source_type 參數對照</h3>
+            <table>
+                <tr><th>source_type</th><th>說明</th><th>使用情境</th></tr>
+                <tr><td>0</td><td>出貨還原</td><td>取消出站（委外送出）</td></tr>
+                <tr><td>1</td><td>回貨還原</td><td>取消入站（委外回收）</td></tr>
+                <tr><td>2</td><td>退貨還原</td><td>取消退貨</td></tr>
+            </table>
+        </div>
+
+        <!-- 業務流程 -->
+        <div class="card" id="flow">
+            <h2>2. 業務流程</h2>
+            <div class="flow-diagram">
+                <svg width="850" height="250" viewBox="0 0 850 250" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <marker id="arrow" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#dc2626"/>
+                        </marker>
+                    </defs>
+                    <!-- Steps -->
+                    <rect x="20" y="60" width="120" height="60" rx="8" fill="#dc2626"/>
+                    <text x="80" y="95" text-anchor="middle" fill="white" font-size="12">取消出站</text>
+
+                    <rect x="170" y="60" width="130" height="60" rx="8" fill="#f97316"/>
+                    <text x="235" y="85" text-anchor="middle" fill="white" font-size="11">檢查 TL011/TL012</text>
+                    <text x="235" y="105" text-anchor="middle" fill="white" font-size="10">是否有值</text>
+
+                    <rect x="330" y="60" width="130" height="60" rx="8" fill="#8b5cf6"/>
+                    <text x="395" y="85" text-anchor="middle" fill="white" font-size="11">判斷</text>
+                    <text x="395" y="105" text-anchor="middle" fill="white" font-size="10">TRANSORDERTYPE</text>
+
+                    <rect x="490" y="60" width="120" height="60" rx="8" fill="#6366f1"/>
+                    <text x="550" y="85" text-anchor="middle" fill="white" font-size="11">= "59"</text>
+                    <text x="550" y="105" text-anchor="middle" fill="white" font-size="10">outsourcingProcess</text>
+
+                    <rect x="640" y="60" width="100" height="60" rx="8" fill="#10b981"/>
+                    <text x="690" y="85" text-anchor="middle" fill="white" font-size="11">呼叫 ERP</text>
+                    <text x="690" y="105" text-anchor="middle" fill="white" font-size="9">還原入庫</text>
+
+                    <rect x="770" y="60" width="60" height="60" rx="8" fill="#059669"/>
+                    <text x="800" y="95" text-anchor="middle" fill="white" font-size="10">完成</text>
+
+                    <!-- Alternative path -->
+                    <rect x="490" y="160" width="120" height="50" rx="8" fill="#64748b"/>
+                    <text x="550" y="190" text-anchor="middle" fill="white" font-size="10">其他: cancelStockIn</text>
+
+                    <!-- Arrows -->
+                    <line x1="140" y1="90" x2="165" y2="90" stroke="#dc2626" stroke-width="2" marker-end="url(#arrow)"/>
+                    <line x1="300" y1="90" x2="325" y2="90" stroke="#dc2626" stroke-width="2" marker-end="url(#arrow)"/>
+                    <line x1="460" y1="90" x2="485" y2="90" stroke="#dc2626" stroke-width="2" marker-end="url(#arrow)"/>
+                    <line x1="610" y1="90" x2="635" y2="90" stroke="#dc2626" stroke-width="2" marker-end="url(#arrow)"/>
+                    <line x1="740" y1="90" x2="765" y2="90" stroke="#dc2626" stroke-width="2" marker-end="url(#arrow)"/>
+
+                    <!-- Alternative arrow -->
+                    <line x1="395" y1="120" x2="395" y2="155" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+                    <text x="420" y="145" font-size="10" fill="#64748b">!= "59"</text>
+
+                    <!-- Labels -->
+                    <text x="425" y="230" text-anchor="middle" font-size="11" fill="#64748b">程式位置: GeneralUpdater.java:1571-1605</text>
+                </svg>
+            </div>
+
+            <div class="info-box info">
+                <strong>程式碼對應</strong>
+                <ul style="margin-top:10px; margin-left:20px;">
+                    <li>取消判斷: <code>GeneralUpdater.java:1571-1605</code></li>
+                    <li>TL011/TL012 檢查: <code>GeneralUpdater.java:1571</code></li>
+                    <li>TRANSORDERTYPE 判斷: <code>GeneralUpdater.java:1577</code></li>
+                    <li>JSON 組裝: <code>transOrder.put("outsource_no", stock_in_no)</code></li>
+                </ul>
+            </div>
+
+            <div class="info-box warning">
+                <strong>關聯 API</strong><br>
+                取消委外進貨單 (outsourcingProcess) 與建立委外進貨單 (outsourcingPurchaseStockinCreate) 成對使用。<br>
+                取消時需使用建立成功後 ERP 回傳的 TB001/TB002 (存於 TL011/TL012)。
+            </div>
+        </div>
+
+        <!-- Request 規格 -->
+        <div class="card" id="request">
+            <h2>3. Request 規格</h2>
+
+            <div class="info-box success">
+                <strong>傳輸格式: JSON</strong><br>
+                <code>Content-Type: application/json</code> (HttpClient.java:25)
+            </div>
+
+            <h3>Request 欄位</h3>
+            <table>
+                <tr><th>欄位</th><th>型別</th><th>必填</th><th>說明</th><th>MES 來源</th></tr>
+                <tr><td>companyID</td><td>string</td><td><span class="required">Y</span></td><td>公司別</td><td>COMPANYID</td></tr>
+                <tr><td>userId</td><td>string</td><td><span class="required">Y</span></td><td>操作人員</td><td>當前登入者</td></tr>
+                <tr><td>outsource_no</td><td>string</td><td><span class="required">Y</span></td><td>委外進貨單號（單別-單號）</td><td>TL011 + "-" + TL012</td></tr>
+                <tr><td>source_type</td><td>string</td><td><span class="required">Y</span></td><td>還原類型（0/1/2）</td><td>"0" (出貨還原)</td></tr>
+            </table>
+
+            <h3>欄位來源說明</h3>
+            <div class="info-box info">
+                <code>outsource_no</code> = <code>SFT_TRANSORDER_LINE.TL011</code> + "-" + <code>SFT_TRANSORDER_LINE.TL012</code><br><br>
+                TL011/TL012 是由 <code>outsourcingPurchaseStockinCreate</code> 成功後，ERP 回傳的 TB001/TB002 所寫入。
+            </div>
+        </div>
+
+        <!-- Response -->
+        <div class="card" id="response">
+            <h2>4. Response 規格</h2>
+            <table>
+                <tr><th>欄位</th><th>型別</th><th>說明</th></tr>
+                <tr><td>code</td><td>int</td><td>200=成功，其他=失敗</td></tr>
+                <tr><td>msg</td><td>string</td><td>處理結果訊息</td></tr>
+            </table>
+
+            <h3>成功行為</h3>
+            <ul style="margin-left: 20px; margin-top: 10px;">
+                <li>ERP 委外進貨單作廢/還原</li>
+                <li>庫存數量還原</li>
+                <li>MES 出站記錄取消</li>
+            </ul>
+        </div>
+
+        <!-- 檢核規則 -->
+        <div class="card" id="rules">
+            <h2>5. 檢核規則</h2>
+            <table>
+                <tr><th>#</th><th>檢核項目</th><th>規則</th><th>程式位置</th></tr>
+                <tr><td>1</td><td>TL011 不為空</td><td>必須有 ERP 單別</td><td>GeneralUpdater.java:1571</td></tr>
+                <tr><td>2</td><td>TL012 不為空</td><td>必須有 ERP 單號</td><td>GeneralUpdater.java:1571</td></tr>
+                <tr><td>3</td><td>TRANSORDERTYPE = "59"</td><td>委外單類型判斷</td><td>GeneralUpdater.java:1577</td></tr>
+                <tr><td>4</td><td>原始單據存在</td><td>ERP 端單據須存在</td><td>ERP 端檢核</td></tr>
+                <tr><td>5</td><td>單據狀態允許取消</td><td>未過帳才可還原</td><td>ERP 端檢核</td></tr>
+            </table>
+
+            <div class="info-box danger">
+                <strong>重要：TL011/TL012 為空時不會呼叫 ERP</strong><br>
+                程式邏輯中，只有當 <code>TL011</code> 和 <code>TL012</code> 都不為空時，才會呼叫 <code>outsourcingProcess</code>。<br>
+                若為空，取消出站動作僅在 MES 端執行，ERP 端不受影響。
+            </div>
+        </div>
+
+        <!-- 錯誤代碼 -->
+        <div class="card" id="errors">
+            <h2>6. 錯誤代碼</h2>
+            <table>
+                <tr><th>代碼</th><th>訊息</th><th>說明</th></tr>
+                <tr><td>E001</td><td>必填欄位缺失</td><td>outsource_no 或 source_type 為空</td></tr>
+                <tr><td>E002</td><td>委外進貨單不存在</td><td>outsource_no 對應單據不存在</td></tr>
+                <tr><td>E003</td><td>單據已過帳不可取消</td><td>ERP 單據已過帳，無法還原</td></tr>
+                <tr><td>E004</td><td>單據已取消</td><td>重複取消</td></tr>
+                <tr><td>E005</td><td>source_type 不正確</td><td>值不在 0/1/2 範圍</td></tr>
+                <tr><td>E999</td><td>系統錯誤</td><td>Timeout、連線異常</td></tr>
+            </table>
+        </div>
+
+        <!-- JSON 範例 -->
+        <div class="card" id="example">
+            <h2>7. JSON 範例</h2>
+
+            <h3>Request</h3>
+            <div class="code-block">
+<pre>{
+  <span class="key">"companyID"</span>: <span class="string">"COMP01"</span>,
+  <span class="key">"userId"</span>: <span class="string">"EMP001"</span>,
+  <span class="key">"outsource_no"</span>: <span class="string">"5902-20260319001"</span>,
+  <span class="key">"source_type"</span>: <span class="string">"0"</span>
+}</pre>
+            </div>
+
+            <h3>Response (成功)</h3>
+            <div class="code-block">
+<pre>{
+  <span class="key">"code"</span>: <span class="number">200</span>,
+  <span class="key">"msg"</span>: <span class="string">"委外進貨單還原成功"</span>
+}</pre>
+            </div>
+
+            <h3>Response (失敗)</h3>
+            <div class="code-block">
+<pre>{
+  <span class="key">"code"</span>: <span class="number">500</span>,
+  <span class="key">"msg"</span>: <span class="string">"單據已過帳不可取消 5902-20260319001"</span>
+}</pre>
+            </div>
+        </div>
+
+        <!-- Race Condition -->
+        <div class="card" id="race">
+            <h2>8. Race Condition 風險說明</h2>
+
+            <div class="info-box danger">
+                <strong>已知問題：取消出站時 TL011/TL012 為空</strong><br><br>
+                當使用者在 ERP 回傳之前取消出站時，由於 TL011/TL012 尚未被回寫，<code>outsourcingProcess</code> 不會被呼叫。<br>
+                這會導致 MES 與 ERP 資料不一致。
+            </div>
+
+            <h3>時間線範例</h3>
+            <div class="flow-diagram">
+                <svg width="750" height="200" viewBox="0 0 750 200" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Timeline -->
+                    <line x1="50" y1="100" x2="700" y2="100" stroke="#e2e8f0" stroke-width="3"/>
+
+                    <!-- Events -->
+                    <circle cx="100" cy="100" r="8" fill="#3b82f6"/>
+                    <text x="100" y="70" text-anchor="middle" font-size="11" fill="#1e293b">16:29:46</text>
+                    <text x="100" y="130" text-anchor="middle" font-size="10" fill="#64748b">MES 出站</text>
+                    <text x="100" y="145" text-anchor="middle" font-size="9" fill="#64748b">送 ERP</text>
+
+                    <circle cx="300" cy="100" r="8" fill="#dc2626"/>
+                    <text x="300" y="70" text-anchor="middle" font-size="11" fill="#1e293b">16:31:08</text>
+                    <text x="300" y="130" text-anchor="middle" font-size="10" fill="#dc2626" font-weight="bold">取消出站</text>
+                    <text x="300" y="145" text-anchor="middle" font-size="9" fill="#dc2626">TL011/TL012 為空!</text>
+
+                    <circle cx="500" cy="100" r="8" fill="#10b981"/>
+                    <text x="500" y="70" text-anchor="middle" font-size="11" fill="#1e293b">16:31:49</text>
+                    <text x="500" y="130" text-anchor="middle" font-size="10" fill="#64748b">ERP 回傳</text>
+                    <text x="500" y="145" text-anchor="middle" font-size="9" fill="#64748b">5902-20260310069</text>
+
+                    <!-- Result -->
+                    <rect x="550" y="140" width="150" height="40" rx="5" fill="#fee2e2" stroke="#dc2626"/>
+                    <text x="625" y="165" text-anchor="middle" font-size="10" fill="#dc2626">ERP 單據未被取消</text>
+                </svg>
+            </div>
+
+            <h3>問題原因</h3>
+            <div class="code-block">
+<pre><span class="comment">// GeneralUpdater.java:1571</span>
+<span class="key">if</span>(!SftTransorderLine.getTl011().equals("") && !SftTransorderLine.getTl012().equals("")){
+    <span class="comment">// 只有 TL011/TL012 不為空時，才呼叫 outsourcingProcess</span>
+    <span class="comment">// 若在 ERP 回傳前取消，此 if 為 false，跳過 ERP 呼叫</span>
+}</pre>
+            </div>
+
+            <h3>處理建議</h3>
+            <table>
+                <tr><th>方案</th><th>說明</th><th>影響</th></tr>
+                <tr><td><strong>立即處理</strong></td><td>手動至 ERP 作廢該委外進貨單</td><td>需人工介入</td></tr>
+                <tr><td>等待機制</td><td>取消出站時等待 ERP 回傳完成</td><td>需程式修改</td></tr>
+                <tr><td>Lock 機制</td><td>出站進行中禁止取消操作</td><td>需程式修改</td></tr>
+                <tr><td>定期比對</td><td>排程比對 MES 與 ERP 單據狀態</td><td>需新增功能</td></tr>
+            </table>
+        </div>
+
+    </div>
+</body>
+</html>

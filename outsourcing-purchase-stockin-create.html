@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>outsourcing.purchase.stockin.create - eMES API</title>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #1e40af;
+            --success-color: #16a34a;
+            --error-color: #dc2626;
+            --warning-color: #d97706;
+            --bg-color: #f8fafc;
+            --border-color: #e2e8f0;
+            --text-color: #1e293b;
+            --text-muted: #64748b;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+        }
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .navbar a { color: white; text-decoration: none; }
+        .navbar .brand { font-size: 1.2em; font-weight: 600; }
+        .navbar .back { opacity: 0.9; }
+        .navbar .back:hover { opacity: 1; }
+        .container { max-width: 1100px; margin: 0 auto; padding: 30px; }
+        .api-header {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .api-header h1 { color: var(--primary-color); font-size: 1.8em; margin-bottom: 10px; }
+        .api-code {
+            font-family: 'Consolas', monospace;
+            background: var(--bg-color);
+            padding: 8px 15px;
+            border-radius: 6px;
+            display: inline-block;
+            color: var(--primary-color);
+            font-size: 1.1em;
+        }
+        .badges { margin-top: 15px; display: flex; gap: 10px; flex-wrap: wrap; }
+        .badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+        .badge-post { background: #dcfce7; color: #16a34a; }
+        .badge-json { background: #dbeafe; color: #2563eb; }
+        .badge-sync { background: #fef3c7; color: #d97706; }
+        h2 {
+            color: var(--secondary-color);
+            font-size: 1.4em;
+            margin: 30px 0 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--border-color);
+        }
+        h3 { color: var(--text-color); font-size: 1.1em; margin: 20px 0 10px; }
+        h4 { color: var(--text-muted); font-size: 1em; margin: 15px 0 10px; }
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; font-size: 0.9em; }
+        th, td { border: 1px solid var(--border-color); padding: 10px 12px; text-align: left; }
+        th { background: var(--primary-color); color: white; font-weight: 600; }
+        tr:nth-child(even) { background: var(--bg-color); }
+        tr:hover { background: #e0e7ff; }
+        .required { background: var(--error-color); color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.75em; }
+        .optional { background: var(--text-muted); color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.75em; }
+        .code-block {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Consolas', monospace;
+            font-size: 0.85em;
+            line-height: 1.5;
+            margin: 15px 0;
+        }
+        .code-block .key { color: #7dd3fc; }
+        .code-block .string { color: #86efac; }
+        .code-block .number { color: #fbbf24; }
+        .code-block .comment { color: #64748b; font-style: italic; }
+        .info-box {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        .info-box.info { background: #dbeafe; border-left: 4px solid var(--primary-color); }
+        .info-box.warning { background: #fef3c7; border-left: 4px solid var(--warning-color); }
+        .info-box.success { background: #dcfce7; border-left: 4px solid var(--success-color); }
+        .flow-diagram { text-align: center; margin: 20px 0; padding: 20px; background: white; border-radius: 10px; }
+        .toc {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .toc ul { list-style: none; display: flex; flex-wrap: wrap; gap: 15px; }
+        .toc a { color: var(--primary-color); text-decoration: none; }
+        .toc a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="index.html" class="back">← 返回 API 列表</a>
+        <span class="brand">eMES API 規格書</span>
+    </nav>
+
+    <div class="container">
+        <!-- API Header -->
+        <div class="api-header">
+            <h1>建立委外收貨單資料</h1>
+            <div class="api-code">outsourcing.purchase.stockin.create</div>
+            <div class="badges">
+                <span class="badge badge-post">POST</span>
+                <span class="badge badge-json">JSON</span>
+                <span class="badge badge-sync">同步</span>
+            </div>
+        </div>
+
+        <!-- TOC -->
+        <div class="toc">
+            <ul>
+                <li><a href="#basic">基本資訊</a></li>
+                <li><a href="#flow">業務流程</a></li>
+                <li><a href="#request">Request</a></li>
+                <li><a href="#response">Response</a></li>
+                <li><a href="#rules">檢核規則</a></li>
+                <li><a href="#errors">錯誤代碼</a></li>
+                <li><a href="#example">JSON 範例</a></li>
+            </ul>
+        </div>
+
+        <!-- 基本資訊 -->
+        <div class="card" id="basic">
+            <h2>1. 基本資訊</h2>
+            <table>
+                <tr><th width="25%">項目</th><th>說明</th></tr>
+                <tr><td>API 中文名稱</td><td>建立委外收貨單資料（託外進貨單）</td></tr>
+                <tr><td>CROSS API Code</td><td><code>outsourcing.purchase.stockin.create</code></td></tr>
+                <tr><td>MES taskName</td><td><code>outsourcingPurchaseStockinCreate</code></td></tr>
+                <tr><td>ESB 路徑</td><td><code>/outsourcingPurchaseStockinCreate</code></td></tr>
+                <tr><td>DSMS 參考</td><td>api-2062 / vid-4462</td></tr>
+                <tr><td>呼叫方向</td><td>MES → ERP</td></tr>
+                <tr><td>觸發條件</td><td><code>TRANSTYPE = "59"</code></td></tr>
+                <tr><td>Request 格式</td><td><strong>JSON</strong> (Content-Type: application/json)</td></tr>
+                <tr><td>傳輸方式</td><td>HTTP POST via ESB</td></tr>
+                <tr><td>同步/非同步</td><td>同步呼叫</td></tr>
+            </table>
+        </div>
+
+        <!-- 業務流程 -->
+        <div class="card" id="flow">
+            <h2>2. 業務流程</h2>
+            <div class="flow-diagram">
+                <svg width="800" height="200" viewBox="0 0 800 200" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <marker id="arrow" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#6366f1"/>
+                        </marker>
+                    </defs>
+                    <!-- Steps -->
+                    <rect x="20" y="60" width="120" height="60" rx="8" fill="#3b82f6"/>
+                    <text x="80" y="95" text-anchor="middle" fill="white" font-size="12">委外站出站</text>
+
+                    <rect x="180" y="60" width="120" height="60" rx="8" fill="#8b5cf6"/>
+                    <text x="240" y="85" text-anchor="middle" fill="white" font-size="11">判斷 TRANSTYPE</text>
+                    <text x="240" y="105" text-anchor="middle" fill="white" font-size="10">= "59"</text>
+
+                    <rect x="340" y="60" width="120" height="60" rx="8" fill="#6366f1"/>
+                    <text x="400" y="95" text-anchor="middle" fill="white" font-size="11">組裝 JSON</text>
+
+                    <rect x="500" y="60" width="120" height="60" rx="8" fill="#10b981"/>
+                    <text x="560" y="85" text-anchor="middle" fill="white" font-size="11">呼叫 ERP</text>
+                    <text x="560" y="105" text-anchor="middle" fill="white" font-size="9">via ESB</text>
+
+                    <rect x="660" y="60" width="120" height="60" rx="8" fill="#059669"/>
+                    <text x="720" y="85" text-anchor="middle" fill="white" font-size="11">回寫</text>
+                    <text x="720" y="105" text-anchor="middle" fill="white" font-size="10">TL011/TL012</text>
+
+                    <!-- Arrows -->
+                    <line x1="140" y1="90" x2="175" y2="90" stroke="#6366f1" stroke-width="2" marker-end="url(#arrow)"/>
+                    <line x1="300" y1="90" x2="335" y2="90" stroke="#6366f1" stroke-width="2" marker-end="url(#arrow)"/>
+                    <line x1="460" y1="90" x2="495" y2="90" stroke="#6366f1" stroke-width="2" marker-end="url(#arrow)"/>
+                    <line x1="620" y1="90" x2="655" y2="90" stroke="#6366f1" stroke-width="2" marker-end="url(#arrow)"/>
+
+                    <!-- Labels -->
+                    <text x="400" y="160" text-anchor="middle" font-size="11" fill="#64748b">程式位置: TransOrderDataToJson.java:648</text>
+                </svg>
+            </div>
+
+            <div class="info-box info">
+                <strong>程式碼對應</strong>
+                <ul style="margin-top:10px; margin-left:20px;">
+                    <li>路由判斷: <code>TransOrderDataToJson.java:648</code></li>
+                    <li>JSON 組裝: <code>SendFormSbyJson.transferFormToJson()</code></li>
+                    <li>欄位映射: <code>SendFormElementbyJson.getTransferFormHead/Body()</code></li>
+                    <li>HTTP 傳送: <code>XmlToERP_handler.sendToErpByESB()</code></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Request 規格 -->
+        <div class="card" id="request">
+            <h2>3. Request 規格</h2>
+
+            <div class="info-box success">
+                <strong>傳輸格式: JSON</strong><br>
+                <code>Content-Type: application/json</code> (HttpClient.java:25)
+            </div>
+
+            <h3>3.1 外層結構</h3>
+            <table>
+                <tr><th>欄位</th><th>型別</th><th>必填</th><th>說明</th><th>MES 來源</th></tr>
+                <tr><td>companyID</td><td>string</td><td><span class="required">Y</span></td><td>公司別</td><td>COMPANYID</td></tr>
+                <tr><td>userId</td><td>string</td><td><span class="required">Y</span></td><td>操作人員</td><td>CONFIRMER</td></tr>
+                <tr><td>doAction</td><td>string</td><td><span class="required">Y</span></td><td>2=移轉單</td><td>DOACTION</td></tr>
+                <tr><td>docase</td><td>string</td><td><span class="required">Y</span></td><td>1=新增</td><td>DOCASE</td></tr>
+                <tr><td>head</td><td>object</td><td><span class="required">Y</span></td><td>表頭資料</td><td>-</td></tr>
+                <tr><td>line</td><td>array</td><td><span class="required">Y</span></td><td>表身明細</td><td>-</td></tr>
+            </table>
+
+            <h3>3.2 表頭（head）</h3>
+            <table>
+                <tr><th>欄位</th><th>型別</th><th>必填</th><th>說明</th><th>MES 來源</th></tr>
+                <tr><td>transferType</td><td>string</td><td><span class="required">Y</span></td><td>移轉單別（59=委外）</td><td>TRANSTYPE</td></tr>
+                <tr><td>date</td><td>string</td><td><span class="required">Y</span></td><td>單據日期 YYYY-MM-DD</td><td>TRANSDATE</td></tr>
+                <tr><td>moveOutType</td><td>string</td><td><span class="required">Y</span></td><td>移出類型</td><td>OUTTYPE</td></tr>
+                <tr><td>moveOutCode</td><td>string</td><td><span class="required">Y</span></td><td>移出代碼</td><td>OUTDEPID</td></tr>
+                <tr><td>moveInType</td><td>string</td><td><span class="required">Y</span></td><td>移入類型</td><td>INTYPE</td></tr>
+                <tr><td>moveInCode</td><td>string</td><td><span class="required">Y</span></td><td>移入代碼（倉庫）</td><td>INDEPID</td></tr>
+                <tr><td>factoryCode</td><td>string</td><td><span class="required">Y</span></td><td>廠別</td><td>FACTORYID</td></tr>
+                <tr><td>eMESTransferType</td><td>string</td><td><span class="required">Y</span></td><td>MES 單別</td><td>TRANSTYPE</td></tr>
+                <tr><td>eMESTransferCode</td><td>string</td><td><span class="required">Y</span></td><td>MES 單號</td><td>TRANSNO</td></tr>
+            </table>
+
+            <h3>3.3 表身（line）- 陣列</h3>
+            <table>
+                <tr><th>欄位</th><th>型別</th><th>必填</th><th>說明</th><th>MES 來源</th></tr>
+                <tr><td>moType</td><td>string</td><td><span class="required">Y</span></td><td>工單類別</td><td>MOTYPE</td></tr>
+                <tr><td>moCode</td><td>string</td><td><span class="required">Y</span></td><td>工單號碼</td><td>MONO</td></tr>
+                <tr><td>moveOutOpSeq</td><td>string</td><td><span class="required">Y</span></td><td>移出製程序</td><td>OUTOPSEQ</td></tr>
+                <tr><td>moveOutOpId</td><td>string</td><td><span class="required">Y</span></td><td>移出製程</td><td>OUTOP</td></tr>
+                <tr><td>qty</td><td>decimal</td><td><span class="required">Y</span></td><td>數量</td><td>TRANSQTY</td></tr>
+                <tr><td>unit</td><td>string</td><td><span class="required">Y</span></td><td>單位</td><td>UNIT</td></tr>
+                <tr><td>batchCode</td><td>string</td><td><span class="required">Y</span></td><td>批號</td><td>LOTNO</td></tr>
+                <tr><td>prodCode</td><td>string</td><td><span class="required">Y</span></td><td>品號</td><td>ITEMID</td></tr>
+                <tr><td>outSourceType</td><td>string</td><td><span class="optional">N</span></td><td>託工單別</td><td>OUTORDERTYPE</td></tr>
+                <tr><td>outSourceCode</td><td>string</td><td><span class="optional">N</span></td><td>託工單號</td><td>OUTORDERNO</td></tr>
+            </table>
+        </div>
+
+        <!-- Response -->
+        <div class="card" id="response">
+            <h2>4. Response 規格</h2>
+            <table>
+                <tr><th>欄位</th><th>型別</th><th>說明</th></tr>
+                <tr><td>code</td><td>int</td><td>200=成功，其他=失敗</td></tr>
+                <tr><td>msg</td><td>string</td><td>處理結果訊息</td></tr>
+                <tr><td>TB001</td><td>string</td><td>ERP 單別 → 回寫 TL011</td></tr>
+                <tr><td>TB002</td><td>string</td><td>ERP 單號 → 回寫 TL012</td></tr>
+            </table>
+        </div>
+
+        <!-- 檢核規則 -->
+        <div class="card" id="rules">
+            <h2>5. 檢核規則</h2>
+            <table>
+                <tr><th>#</th><th>檢核項目</th><th>規則</th><th>程式位置</th></tr>
+                <tr><td>1</td><td>TRANSTYPE 判斷</td><td>= "59" 才用委外 API</td><td>TransOrderDataToJson.java:648</td></tr>
+                <tr><td>2</td><td>TO013 檢查</td><td>= 1 時才送 ERP</td><td>TransOrderDataToJson.java:612</td></tr>
+                <tr><td>3</td><td>明細資料存在</td><td>SFT_TRANSORDER_LINE_GRID 不可空</td><td>TransOrderDataToJson.java:609</td></tr>
+                <tr><td>4</td><td>ERP 連線</td><td>SFTConfig.isHasERP() = true</td><td>TransOrderDataToJson.java:646</td></tr>
+            </table>
+        </div>
+
+        <!-- 錯誤代碼 -->
+        <div class="card" id="errors">
+            <h2>6. 錯誤代碼</h2>
+            <table>
+                <tr><th>代碼</th><th>訊息</th><th>說明</th></tr>
+                <tr><td>E001</td><td>必填欄位缺失</td><td>Request 缺少必要欄位</td></tr>
+                <tr><td>E002</td><td>委外工單不存在</td><td>MOTYPE-MONO 錯誤</td></tr>
+                <tr><td>E003</td><td>委外工單狀態不允許</td><td>工單已結案或取消</td></tr>
+                <tr><td>E004</td><td>數量必須大於零</td><td>qty ≤ 0</td></tr>
+                <tr><td>E005</td><td>數量超過餘量</td><td>超過委外工單可入庫量</td></tr>
+                <tr><td>E999</td><td>系統錯誤</td><td>Timeout、連線異常</td></tr>
+            </table>
+        </div>
+
+        <!-- JSON 範例 -->
+        <div class="card" id="example">
+            <h2>7. JSON 範例</h2>
+
+            <h3>Request</h3>
+            <div class="code-block">
+<pre>{
+  <span class="key">"companyID"</span>: <span class="string">"COMP01"</span>,
+  <span class="key">"userId"</span>: <span class="string">"EMP001"</span>,
+  <span class="key">"doAction"</span>: <span class="string">"2"</span>,
+  <span class="key">"docase"</span>: <span class="string">"1"</span>,
+  <span class="key">"head"</span>: {
+    <span class="key">"transferType"</span>: <span class="string">"59"</span>,
+    <span class="key">"date"</span>: <span class="string">"2026-03-19"</span>,
+    <span class="key">"moveOutType"</span>: <span class="string">"1"</span>,
+    <span class="key">"moveOutCode"</span>: <span class="string">"OS001"</span>,
+    <span class="key">"moveInType"</span>: <span class="string">"2"</span>,
+    <span class="key">"moveInCode"</span>: <span class="string">"FG01"</span>,
+    <span class="key">"factoryCode"</span>: <span class="string">"P001"</span>,
+    <span class="key">"eMESTransferType"</span>: <span class="string">"59"</span>,
+    <span class="key">"eMESTransferCode"</span>: <span class="string">"T20260319001"</span>
+  },
+  <span class="key">"line"</span>: [{
+    <span class="key">"moType"</span>: <span class="string">"5101"</span>,
+    <span class="key">"moCode"</span>: <span class="string">"20260319001"</span>,
+    <span class="key">"moveOutOpSeq"</span>: <span class="string">"0020"</span>,
+    <span class="key">"moveOutOpId"</span>: <span class="string">"OS-OP"</span>,
+    <span class="key">"qty"</span>: <span class="number">100</span>,
+    <span class="key">"unit"</span>: <span class="string">"PCS"</span>,
+    <span class="key">"batchCode"</span>: <span class="string">"LOT20260319001"</span>,
+    <span class="key">"prodCode"</span>: <span class="string">"FG-A001-001"</span>,
+    <span class="key">"outSourceType"</span>: <span class="string">"5902"</span>,
+    <span class="key">"outSourceCode"</span>: <span class="string">"20260319001"</span>
+  }]
+}</pre>
+            </div>
+
+            <h3>Response (成功)</h3>
+            <div class="code-block">
+<pre>{
+  <span class="key">"code"</span>: <span class="number">200</span>,
+  <span class="key">"msg"</span>: <span class="string">"委外進貨單建立成功"</span>,
+  <span class="key">"TB001"</span>: <span class="string">"5902"</span>,
+  <span class="key">"TB002"</span>: <span class="string">"20260319001"</span>
+}</pre>
+            </div>
+
+            <h3>Response (失敗)</h3>
+            <div class="code-block">
+<pre>{
+  <span class="key">"code"</span>: <span class="number">500</span>,
+  <span class="key">"msg"</span>: <span class="string">"委外工單不存在 5101-20260319999"</span>
+}</pre>
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>
