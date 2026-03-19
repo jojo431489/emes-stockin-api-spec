@@ -180,6 +180,50 @@ WHERE ID = :ID</pre>
                     • ITEM005 = 1 (換算率分母)
                 </div>
             </div>
+
+            <h3 style="margin-top: 30px; padding-top: 20px; border-top: 1px dashed #e2e8f0;">material_catalog 表（item_sort = "M"）</h3>
+
+            <h3>判斷新增或修改</h3>
+            <pre>SELECT COUNT(1) FROM material_catalog WITH (NOLOCK)
+WHERE material_id = N'{item_no}'
+-- count > 0 → UPDATE, count = 0 → INSERT</pre>
+
+            <h3>INSERT（新增物料）</h3>
+            <pre>INSERT INTO material_catalog (
+    material_id, material_name, norm, unit_no,
+    oper_date, oper_id, ENABLED, MODI_DATE
+) VALUES (
+    :ID,                    -- 品號 (item_no)
+    :NAME,                  -- 品名 (item_name)
+    :DESCRIPTION,           -- 規格 (item_spec)
+    :UNIT,                  -- 單位 (unit_no)
+    N'{當前時間}',
+    :userid,
+    :ENABLED,               -- Y/N (tran_status: AU→Y, D→N)
+    N'{當前時間}'
+)</pre>
+
+            <h3>UPDATE（修改物料）</h3>
+            <pre>UPDATE material_catalog SET
+    material_name = :NAME,
+    norm = :DESCRIPTION,
+    unit_no = :UNIT,
+    ENABLED = :ENABLED,
+    MODI_DATE = N'{當前時間}'
+WHERE material_id = :ID</pre>
+
+            <div class="note">
+                <div class="note-title">material_catalog 欄位對應</div>
+                <div class="note-content">
+                    <table style="margin-top: 10px;">
+                        <tr><td><code class="code-inline">material_id</code></td><td>← item_no</td><td>品號（主鍵）</td></tr>
+                        <tr><td><code class="code-inline">material_name</code></td><td>← item_name</td><td>品名</td></tr>
+                        <tr><td><code class="code-inline">norm</code></td><td>← item_spec</td><td>規格</td></tr>
+                        <tr><td><code class="code-inline">unit_no</code></td><td>← unit_no</td><td>單位</td></tr>
+                        <tr><td><code class="code-inline">ENABLED</code></td><td>← tran_status</td><td>啟用狀態 (AU→Y, D→N)</td></tr>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
 
