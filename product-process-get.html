@@ -115,6 +115,62 @@
   ]
 }</pre>
         </div>
+
+        <div class="section">
+            <h2>資料庫更新 SQL</h2>
+            <h3 style="font-size: 1.1em; margin: 20px 0 10px;">途程表頭 SFT_BOMME（先刪後新增）</h3>
+            <pre>-- 刪除舊資料
+DELETE FROM SFT_BOMME WHERE ME001 = :ME001 AND ME002 = :ME002
+
+-- 新增表頭
+INSERT INTO SFT_BOMME (
+    ME001, ME002, ME003, ME004, ME007,
+    MES001, MES004, CREATER, CREATE_DATE, FLAG
+) VALUES (
+    :ME001, :ME002, :ME003, :ME004, :ME007,
+    'N', 'N', :userid, N'{當前時間}', 0
+)</pre>
+
+            <h3 style="font-size: 1.1em; margin: 20px 0 10px;">途程表身 SFT_BOMMF（先刪後新增）</h3>
+            <pre>-- 刪除舊明細
+DELETE FROM SFT_BOMMF WHERE MF001 = :MF001 AND MF002 = :MF002
+
+-- 新增明細（每道製程）
+INSERT INTO SFT_BOMMF (
+    MF001, MF002, MF003, MF004, MF005, MF006, MF007, MF008,
+    MF009, MF010, MF011, MF012, MF013, MF014, MF015, MF016,
+    MF017, MF018, MF019, MF020, MF021, MF022, MF023, MF024,
+    MF025, MF026, MF027, MF029, CONVERTUNIT, ITEM004, ITEM005
+) VALUES (
+    :MF001, :MF002, :MF003, :MF004, :MF005, :MF006, :MF007, :MF008,
+    {MF009}, {MF010}, :MF011, :MF012, :MF013, :MF014, :MF015, 1,
+    :MF017, :MF018, :MF019, :MF020, 'N', :MF022, :MF023, {MF024},
+    {MF025}, :MF026, :MF027, :MF029, :CONVERTUNIT, :ITEM004, :ITEM005
+)</pre>
+
+            <h3 style="font-size: 1.1em; margin: 20px 0 10px;">OPERATION 連動新增</h3>
+            <pre>-- 檢查製程是否存在
+SELECT COUNT(*) FROM OPERATION
+WHERE ERP_OPID = N'{MF004}' AND ERP_WSID = N'{MF006}'
+
+-- 若不存在則自動新增
+INSERT INTO OPERATION (
+    ID, NAME, DESCRIPTION, COMPLEXION,
+    ERP_OPID, WORKSTATIONID, ERP_WSID,
+    LASTMAINTAINUSER, LASTMAINTAINDATETIME, FLAG
+) VALUES (
+    :MF004---:MF006,
+    :OpName,
+    :OpDESCRIPTION,
+    :MF005,
+    :MF004,
+    :MF006,
+    :MF006,
+    :userid,
+    N'{當前時間}',
+    0
+)</pre>
+        </div>
     </div>
 
     <div class="footer">

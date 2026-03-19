@@ -105,6 +105,39 @@
                 </tbody>
             </table>
         </div>
+
+        <div class="section">
+            <h2>資料庫更新 SQL</h2>
+            <h3 style="font-size: 1.1em; margin: 20px 0 10px;">判斷新增或修改</h3>
+            <pre>SELECT COUNT(1) FROM MoldInfo WHERE moldId = N'{mold_fixture_no}'
+-- count > 0 → UPDATE, count = 0 → INSERT</pre>
+
+            <h3 style="font-size: 1.1em; margin: 20px 0 10px;">INSERT（新增模具）</h3>
+            <pre>-- MoldInfo 表
+INSERT INTO MoldInfo (
+    moldId, moldName, remark, belongings, productionLine, status
+) VALUES (
+    :moldId,
+    :moldName,
+    :remark,
+    :belongings,
+    :productionLine,
+    :status
+)
+
+-- MoldStatus 表（連動建立）
+INSERT INTO MoldStatus (moldId, fail, produced, moldState)
+VALUES (:moldId, 2, 0, 1)</pre>
+
+            <h3 style="font-size: 1.1em; margin: 20px 0 10px;">UPDATE（修改模具）</h3>
+            <pre>UPDATE MoldInfo SET
+    moldName = :moldName,
+    remark = :remark,
+    belongings = :belongings,
+    productionLine = :productionLine,
+    status = :status
+WHERE moldId = :moldId</pre>
+        </div>
     </div>
 
     <div class="footer">

@@ -104,6 +104,40 @@
                 </div>
             </div>
         </div>
+
+        <div class="section">
+            <h2>資料庫更新 SQL</h2>
+            <h3 style="font-size: 1.1em; margin: 20px 0 10px;">判斷新增或修改</h3>
+            <pre>SELECT COUNT(1) FROM ITEM_CONVERSION_UNIT
+WHERE ITEM_NO = N'{item_no}' AND CONVERSION_UNIT = N'{conversion_unit}'
+-- count > 0 → UPDATE, count = 0 → INSERT</pre>
+
+            <h3 style="font-size: 1.1em; margin: 20px 0 10px;">INSERT（新增換算單位）</h3>
+            <pre>INSERT INTO ITEM_CONVERSION_UNIT (
+    ITEM_NO, CONVERSION_UNIT,
+    CONVERSION_RATE_MOLECULAR, CONVERSION_RATE_DENOMINATOR,
+    REMARK, TRAN_STATUS, SYNC_TIME, CREATE_TIME, UPDATE_TIME
+) VALUES (
+    :ITEM_NO,
+    :CONVERSION_UNIT,
+    :molecular,
+    :denominator,
+    :remark,
+    :tran_status,
+    N'{當前時間}',
+    N'{當前時間}',
+    N'{當前時間}'
+)</pre>
+
+            <h3 style="font-size: 1.1em; margin: 20px 0 10px;">UPDATE（修改換算單位）</h3>
+            <pre>UPDATE ITEM_CONVERSION_UNIT SET
+    CONVERSION_RATE_MOLECULAR = :molecular,
+    CONVERSION_RATE_DENOMINATOR = :denominator,
+    REMARK = :remark,
+    TRAN_STATUS = :tran_status,
+    UPDATE_TIME = N'{當前時間}'
+WHERE ITEM_NO = :ITEM_NO AND CONVERSION_UNIT = :CONVERSION_UNIT</pre>
+        </div>
     </div>
 
     <div class="footer">

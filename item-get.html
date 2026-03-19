@@ -129,16 +129,57 @@
                     </ul>
                 </div>
             </div>
-            <pre>// 判斷新增或修改
-String sql = "SELECT COUNT(1) FROM ITEM WHERE ID = :item_no";
-if (count > 0) {
-    // UPDATE
-} else {
-    // INSERT
-}
+        </div>
 
-// 單引號轉義處理
-String itemName = con.getString("item_name").trim().replace("'", "''");</pre>
+        <div class="section">
+            <h2>資料庫更新 SQL</h2>
+            <h3>判斷新增或修改</h3>
+            <pre>SELECT COUNT(1) FROM ITEM WHERE ID = N'{item_no}'
+-- count > 0 → UPDATE, count = 0 → INSERT</pre>
+
+            <h3>INSERT（新增品號）</h3>
+            <pre>INSERT INTO ITEM (
+    ID, NAME, DESCRIPTION, UNIT, RELEASEUNIT,
+    STDROUTEITEMID, STDROUTEID, ITEM001, ITEM002,
+    ITEM004, ITEM005, CONVERTUNIT,
+    LASTMAINTAINUSER, LASTMAINTAINDATETIME, FLAG
+) VALUES (
+    :ID, :NAME, :DESCRIPTION, :UNIT, :UNIT,
+    :STDROUTEITEMID, :STDROUTEID, :ITEM001, :ITEM002,
+    :ITEM004, :ITEM005, :CONVERTUNIT,
+    :userid, N'{當前時間}', 0
+)</pre>
+
+            <h3>UPDATE（修改品號）</h3>
+            <pre>UPDATE ITEM SET
+    NAME = :NAME,
+    DESCRIPTION = :DESCRIPTION,
+    UNIT = :UNIT,
+    RELEASEUNIT = :UNIT,
+    STDROUTEITEMID = CASE WHEN STDROUTEITEMID IS NULL OR STDROUTEITEMID = ''
+                     THEN :STDROUTEITEMID ELSE STDROUTEITEMID END,
+    STDROUTEID = CASE WHEN STDROUTEID IS NULL OR STDROUTEID = ''
+                 THEN :STDROUTEID ELSE STDROUTEID END,
+    ITEM001 = :ITEM001,
+    ITEM002 = :ITEM002,
+    ITEM004 = :ITEM004,
+    ITEM005 = :ITEM005,
+    CONVERTUNIT = :CONVERTUNIT,
+    LASTMAINTAINUSER = :userid,
+    LASTMAINTAINDATETIME = N'{當前時間}',
+    FLAG = (SELECT MAX(FLAG)+1 FROM ITEM WHERE ID = :ID)
+WHERE ID = :ID</pre>
+
+            <div class="note">
+                <div class="note-title">欄位預設值</div>
+                <div class="note-content">
+                    新增時若欄位為空，自動帶入以下預設值：<br>
+                    • ITEM001 = '' (空字串)<br>
+                    • ITEM002 = 'N'<br>
+                    • ITEM004 = 1 (換算率分子)<br>
+                    • ITEM005 = 1 (換算率分母)
+                </div>
+            </div>
         </div>
     </div>
 

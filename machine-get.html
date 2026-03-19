@@ -91,6 +91,53 @@
         </div>
 
         <div class="section">
+            <h2>資料庫更新 SQL</h2>
+            <h3 style="font-size: 1.1em; margin: 20px 0 10px;">判斷新增或修改</h3>
+            <pre>SELECT COUNT(1) FROM EQUIPMENT WHERE ID = N'{machine_no}'
+-- count > 0 → UPDATE, count = 0 → INSERT</pre>
+
+            <h3 style="font-size: 1.1em; margin: 20px 0 10px;">INSERT（新增設備）</h3>
+            <pre>INSERT INTO EQUIPMENT (
+    ID, LOCATION, NAME, DESCRIPTION, CALENDARID, EQ001,
+    EQ003, EQ006, EQ007, EQ008, EQ010, EQ011, EQ012,
+    ENDEFFECTDATETIME, LASTMAINTAINUSER, LASTMAINTAINDATETIME
+) VALUES (
+    :EQID,
+    :WSID,              -- 工作站位置
+    :Eqname,
+    :description,
+    '24Hour',           -- 預設行事曆
+    '0',                -- 機台狀態
+    :EQ003,             -- 日產能
+    :EQ006,             -- 點檢表
+    :EQ007,             -- 預定工時
+    :EQ008,             -- 可用工時
+    :EQ010,             -- 是否計算盤點
+    :EQ011,             -- 是否計算工時
+    :EQ012,             -- 失效日期（空=有效）
+    '2049-12-31 00:00:00.000',
+    :userid,
+    '{當前時間}'
+)</pre>
+
+            <h3 style="font-size: 1.1em; margin: 20px 0 10px;">UPDATE（修改設備）</h3>
+            <pre>UPDATE EQUIPMENT SET
+    NAME = :Eqname,
+    DESCRIPTION = :description,
+    EQ003 = :EQ003,
+    EQ006 = :EQ006,
+    EQ007 = :EQ007,
+    EQ008 = :EQ008,
+    EQ010 = :EQ010,
+    EQ011 = :EQ011,
+    EQ012 = :EQ012,
+    ENDEFFECTDATETIME = '2049-12-31 00:00:00.000',
+    LASTMAINTAINUSER = :userid,
+    LASTMAINTAINDATETIME = '{當前時間}'
+WHERE ID = :EQID AND LOCATION = :WSID</pre>
+        </div>
+
+        <div class="section">
             <h2>MES 預設值</h2>
             <table>
                 <thead><tr><th>欄位</th><th>預設值</th><th>說明</th></tr></thead>

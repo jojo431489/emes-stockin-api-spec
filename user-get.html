@@ -89,6 +89,49 @@
   ]
 }</pre>
         </div>
+
+        <div class="section">
+            <h2>資料庫更新 SQL</h2>
+            <h3 style="font-size: 1.1em; margin: 20px 0 10px;">判斷新增或修改</h3>
+            <pre>SELECT COUNT(1) FROM ERP_CMSMV WHERE MV001 = N'{employee_no}'
+-- count > 0 → UPDATE, count = 0 → INSERT</pre>
+
+            <h3 style="font-size: 1.1em; margin: 20px 0 10px;">INSERT（新增員工）</h3>
+            <pre>INSERT INTO ERP_CMSMV (MV001, MV002, MV004, MV020, MV022)
+VALUES (
+    :userId,
+    :userName,
+    '',             -- 部門預設空
+    '',             -- 郵件預設空
+    ''              -- 離職日期預設空
+)</pre>
+
+            <h3 style="font-size: 1.1em; margin: 20px 0 10px;">UPDATE（修改員工）</h3>
+            <pre>UPDATE ERP_CMSMV SET
+    MV002 = :userName
+WHERE MV001 = :userId</pre>
+
+            <h3 style="font-size: 1.1em; margin: 20px 0 10px;">SFT_PRINCIPAL（系統帳號連動）</h3>
+            <pre>-- 新增系統帳號
+INSERT INTO {EMESSYS}..SFT_PRINCIPAL (
+    AUTH_ID, AUTH_NAME, AUTH_PASSWORD, USEDSTATE,
+    AUTH_DESCRIPTION, Creator, CreateDate, PHONE, MAIL, WECHAT
+) VALUES (
+    :userId, :userName, :encryptPassWord, :status,
+    :description, 'ESB', GETDATE(), :phone, :mail, :weChat
+)
+
+-- 修改系統帳號
+UPDATE {EMESSYS}..SFT_PRINCIPAL SET
+    AUTH_NAME = :userName,
+    AUTH_PASSWORD = :encryptPassWord,
+    USEDSTATE = :status,
+    AUTH_DESCRIPTION = :description,
+    PHONE = :phone,
+    MAIL = :mail,
+    WECHAT = :weChat
+WHERE AUTH_ID = :userId</pre>
+        </div>
     </div>
 
     <div class="footer">

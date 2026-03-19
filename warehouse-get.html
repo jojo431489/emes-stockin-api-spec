@@ -89,6 +89,45 @@
         </div>
 
         <div class="section">
+            <h2>資料庫更新 SQL</h2>
+            <h3 style="font-size: 1.1em; margin: 20px 0 10px;">判斷新增或修改</h3>
+            <pre>SELECT COUNT(1) FROM WAREHOUSE WHERE ID = N'{warehouse_no}'
+-- count > 0 → UPDATE, count = 0 → INSERT</pre>
+
+            <h3 style="font-size: 1.1em; margin: 20px 0 10px;">INSERT（新增倉庫）</h3>
+            <pre>INSERT INTO WAREHOUSE (
+    ID, NAME, FACTORYID, WAREHOUSETYPE,
+    LASTMAINTAINUSER, LASTMAINTAINDATETIME, STORAGE_SPACES
+) VALUES (
+    :ID,
+    :NAME,
+    :FACTORYID,
+    :WAREHOUSETYPE,
+    :userid,
+    N'{當前時間}',
+    :STORAGE_SPACES
+)</pre>
+
+            <h3 style="font-size: 1.1em; margin: 20px 0 10px;">UPDATE（修改倉庫）</h3>
+            <pre>UPDATE WAREHOUSE SET
+    NAME = :NAME,
+    FACTORYID = :FACTORYID,
+    WAREHOUSETYPE = :WAREHOUSETYPE,
+    LASTMAINTAINUSER = :userid,
+    LASTMAINTAINDATETIME = N'{當前時間}',
+    STORAGE_SPACES = :STORAGE_SPACES
+WHERE ID = :ID</pre>
+
+            <h3 style="font-size: 1.1em; margin: 20px 0 10px;">CMSNL 儲位資料（連動更新）</h3>
+            <pre>-- 修改時先刪除舊儲位
+DELETE CMSNL WHERE NL001 = :ID
+
+-- 新增儲位明細
+INSERT INTO CMSNL (NL001, NL002, NL003)
+VALUES (:ID, :NL002, :NL003)</pre>
+        </div>
+
+        <div class="section">
             <h2>MES 預設值</h2>
             <table>
                 <thead><tr><th>欄位</th><th>預設值</th><th>說明</th></tr></thead>

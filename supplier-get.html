@@ -99,6 +99,39 @@
                 </div>
             </div>
         </div>
+
+        <div class="section">
+            <h2>資料庫更新 SQL</h2>
+            <h3 style="font-size: 1.1em; margin: 20px 0 10px;">判斷新增或修改</h3>
+            <pre>SELECT COUNT(1) FROM WORKSTATION WHERE ID = N'{supplier_no}'
+-- count > 0 → UPDATE, count = 0 → INSERT</pre>
+
+            <h3 style="font-size: 1.1em; margin: 20px 0 10px;">INSERT（新增供應商）</h3>
+            <pre>INSERT INTO WORKSTATION (
+    ID, NAME, DESCRIPTION, LOCATION,
+    LASTMAINTAINUSER, LASTMAINTAINDATETIME,
+    WS002, WS003, WS004, WS005, WS006, WS007,
+    WS008, WS009, WS010, WS011, WS012, WS013,
+    BARCODEUSE, DISPATCHUSE
+) VALUES (
+    :ID,
+    :NAME,
+    '',
+    'outSource',           -- 委外標記
+    :userid,
+    N'{當前時間}',
+    'N', 'Y', 'N', 'N', 'N', 'Y',
+    'N', 'N', 'N', 'N', 'N', 'N',
+    2, 2
+)</pre>
+
+            <h3 style="font-size: 1.1em; margin: 20px 0 10px;">UPDATE（修改供應商）</h3>
+            <pre>UPDATE WORKSTATION SET
+    NAME = :NAME,
+    LASTMAINTAINUSER = :userid,
+    LASTMAINTAINDATETIME = N'{當前時間}'
+WHERE ID = :ID AND LOCATION = 'outSource'</pre>
+        </div>
     </div>
 
     <div class="footer">

@@ -87,6 +87,41 @@
   ]
 }</pre>
         </div>
+
+        <div class="section">
+            <h2>資料庫更新 SQL</h2>
+            <h3 style="font-size: 1.1em; margin: 20px 0 10px;">判斷新增或修改</h3>
+            <pre>SELECT COUNT(1) FROM WORKSTATION WHERE ID = N'{workstation_no}'
+-- count > 0 → UPDATE, count = 0 → INSERT</pre>
+
+            <h3 style="font-size: 1.1em; margin: 20px 0 10px;">INSERT（新增工作站）</h3>
+            <pre>INSERT INTO WORKSTATION (
+    ID, NAME, DESCRIPTION, LOCATION,
+    LASTMAINTAINUSER, LASTMAINTAINDATETIME,
+    WS002, WS003, WS004, WS007, BARCODEUSE, DISPATCHUSE
+) VALUES (
+    :WSID,
+    :WSNAME,
+    :WSDESCRIPTION,
+    :WSLOCATION,          -- 所屬工廠
+    :userid,
+    N'{當前時間}',
+    'N',                  -- WS002
+    'Y',                  -- WS003
+    'N',                  -- WS004
+    'Y',                  -- WS007
+    2,                    -- BARCODEUSE
+    2                     -- DISPATCHUSE
+)</pre>
+
+            <h3 style="font-size: 1.1em; margin: 20px 0 10px;">UPDATE（修改工作站）</h3>
+            <pre>UPDATE WORKSTATION SET
+    NAME = :WSNAME,
+    DESCRIPTION = :WSDESCRIPTION,
+    LASTMAINTAINUSER = :userid,
+    LASTMAINTAINDATETIME = N'{當前時間}'
+WHERE ID = :WSID AND LOCATION = :WSLOCATION</pre>
+        </div>
     </div>
 
     <div class="footer">

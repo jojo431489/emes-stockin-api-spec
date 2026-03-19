@@ -96,16 +96,49 @@
                     若 ITEM 表中不存在該品號，則跳過該筆資料（continue）。
                 </div>
             </div>
-            <pre>// 先查詢 ITEM 表取得基本資訊
-String sql = "SELECT NAME, DESCRIPTION, UNIT FROM ITEM WHERE ID = :item_no";
-Map itemInfo = conm.queryForSingleMap(sql, params);
+        </div>
 
-if (itemInfo == null) {
-    // ITEM 不存在，跳過
-    continue;
-}
+        <div class="section">
+            <h2>資料庫更新 SQL</h2>
+            <h3 style="font-size: 1.1em; margin: 20px 0 10px;">前置查詢 ITEM 表</h3>
+            <pre>-- 先取得品號基本資訊
+SELECT NAME, DESCRIPTION, UNIT FROM ITEM WHERE ID = :item_no
 
-// 然後新增或更新 material_catalog</pre>
+-- 若 ITEM 不存在則跳過（continue）</pre>
+
+            <h3 style="font-size: 1.1em; margin: 20px 0 10px;">判斷新增或修改</h3>
+            <pre>SELECT COUNT(1) FROM material_catalog WHERE material_id = N'{item_no}'
+-- count > 0 → UPDATE, count = 0 → INSERT</pre>
+
+            <h3 style="font-size: 1.1em; margin: 20px 0 10px;">INSERT（新增料件供應商）</h3>
+            <pre>INSERT INTO material_catalog (
+    material_id, material_name, norm, unit_no,
+    operation_id, operation_name, oper_date, oper_id,
+    mc01, mc02, mc03, mc04
+) VALUES (
+    :material_id,
+    :material_name,        -- 從 ITEM.NAME 取得
+    :norm,                 -- 從 ITEM.DESCRIPTION 取得
+    :unit_no,              -- 從 ITEM.UNIT 取得
+    :operation_id,
+    :operation_name,
+    N'{當前時間}',
+    :oper_id,
+    :mc01, :mc02, :mc03, :mc04
+)</pre>
+
+            <h3 style="font-size: 1.1em; margin: 20px 0 10px;">UPDATE（修改料件供應商）</h3>
+            <pre>UPDATE material_catalog SET
+    material_name = :material_name,
+    norm = :norm,
+    unit_no = :unit_no,
+    operation_id = :operation_id,
+    operation_name = :operation_name,
+    mc01 = :mc01,
+    mc02 = :mc02,
+    mc03 = :mc03,
+    mc04 = :mc04
+WHERE material_id = :material_id</pre>
         </div>
     </div>
 

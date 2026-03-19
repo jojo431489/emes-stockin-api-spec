@@ -90,6 +90,45 @@
         </div>
 
         <div class="section">
+            <h2>資料庫更新 SQL</h2>
+            <h3 style="font-size: 1.1em; margin: 20px 0 10px;">判斷新增或修改</h3>
+            <pre>SELECT COUNT(1) FROM CUSTOMER WHERE ID = N'{customer_no}'
+-- count > 0 → UPDATE, count = 0 → INSERT</pre>
+
+            <h3 style="font-size: 1.1em; margin: 20px 0 10px;">INSERT（新增客戶）</h3>
+            <pre>INSERT INTO CUSTOMER (
+    ID, SHOTNAME, NAME, TEL, FAX, EMAIL,
+    AREA_ID, AREA_NAME, ADDRESS,
+    CHECKMAINTAINNO, LASTMAINTAINUSER, LASTMAINTAINDATETIME
+) VALUES (
+    :CUSTOMERID,
+    :SHOTNAME,
+    :CUSTOMER_NAME,
+    :TEL,
+    :FAX,
+    :EMAIL,
+    :AREA_ID,
+    :AREA_NAME,
+    :ADDRESS,
+    1,
+    :Creator,
+    GETDATE()
+)</pre>
+
+            <h3 style="font-size: 1.1em; margin: 20px 0 10px;">UPDATE（修改客戶）</h3>
+            <pre>UPDATE CUSTOMER SET
+    SHOTNAME = :SHOTNAME,
+    NAME = :CUSTOMER_NAME,
+    TEL = :TEL,
+    FAX = :FAX,
+    EMAIL = :EMAIL,
+    AREA_ID = :AREA_ID,
+    AREA_NAME = :AREA_NAME,
+    ADDRESS = :ADDRESS
+WHERE ID = :CUSTOMERID</pre>
+        </div>
+
+        <div class="section">
             <h2>MES 預設值</h2>
             <table>
                 <thead><tr><th>欄位</th><th>預設值</th></tr></thead>

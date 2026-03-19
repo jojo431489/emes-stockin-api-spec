@@ -112,6 +112,30 @@
                 </div>
             </div>
         </div>
+
+        <div class="section">
+            <h2>資料庫更新 SQL</h2>
+            <h3 style="font-size: 1.1em; margin: 20px 0 10px;">查詢工單</h3>
+            <pre>-- 組合工單編號 CMOID = wo_no
+SELECT COUNT(1) FROM MODETAIL WHERE CMOID = N'{wo_no}'</pre>
+
+            <h3 style="font-size: 1.1em; margin: 20px 0 10px;">UPDATE（更新備料狀態）</h3>
+            <pre>UPDATE MODETAIL SET
+    ISSUE_STATUS = :issue_status,
+    ISSUE_DATE = :issue_date,
+    ISSUE_QTY = :issue_qty,
+    LASTMAINTAINUSER = :userid,
+    LASTMAINTAINDATETIME = N'{當前時間}'
+WHERE CMOID = :wo_no</pre>
+
+            <h3 style="font-size: 1.1em; margin: 20px 0 10px;">SFT_WO_ISSUE 連動（若有）</h3>
+            <pre>-- 若有 SFT_WO_ISSUE 表則一併更新
+UPDATE SFT_WO_ISSUE SET
+    ISSUE_STATUS = :issue_status,
+    ISSUE_DATE = :issue_date,
+    ISSUE_QTY = :issue_qty
+WHERE WO_NO = :wo_no</pre>
+        </div>
     </div>
 
     <div class="footer">

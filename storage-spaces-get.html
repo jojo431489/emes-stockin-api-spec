@@ -98,6 +98,21 @@
                 </div>
             </div>
         </div>
+
+        <div class="section">
+            <h2>資料庫更新 SQL</h2>
+            <h3 style="font-size: 1.1em; margin: 20px 0 10px;">刪除舊資料</h3>
+            <pre>-- 刪除該倉庫下所有儲位
+DELETE CMSNL WHERE NL001 = :warehouse_no</pre>
+
+            <h3 style="font-size: 1.1em; margin: 20px 0 10px;">INSERT（新增儲位）</h3>
+            <pre>INSERT INTO CMSNL (NL001, NL002, NL003)
+VALUES (
+    :NL001,      -- 倉庫編號
+    :NL002,      -- 儲位編號
+    :NL003       -- 儲位名稱
+)</pre>
+        </div>
     </div>
 
     <div class="footer">

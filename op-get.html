@@ -112,6 +112,47 @@
                 </div>
             </div>
         </div>
+
+        <div class="section">
+            <h2>資料庫更新 SQL</h2>
+            <h3 style="font-size: 1.1em; margin: 20px 0 10px;">判斷新增或修改</h3>
+            <pre>SELECT COUNT(1) FROM OPERATION
+WHERE ERP_OPID = N'{op_no}' AND ERP_WSID = N'{workstation_no}'
+-- count > 0 → UPDATE, count = 0 → INSERT</pre>
+
+            <h3 style="font-size: 1.1em; margin: 20px 0 10px;">INSERT（新增製程）</h3>
+            <pre>INSERT INTO OPERATION (
+    ID, NAME, DESCRIPTION, COMPLEXION,
+    ERP_OPID, WORKSTATIONID, ERP_WSID,
+    LASTMAINTAINUSER, LASTMAINTAINDATETIME, FLAG
+) VALUES (
+    :Opid---:Wsid,          -- 複合 ID
+    :Opname,
+    :Opdescription,
+    :Opcomplexion,          -- 1=內製, 2=委外
+    :Opid,
+    :Wsid,
+    :Wsid,
+    :userid,
+    N'{當前時間}',
+    0
+)</pre>
+
+            <h3 style="font-size: 1.1em; margin: 20px 0 10px;">UPDATE（修改製程）</h3>
+            <pre>UPDATE OPERATION SET
+    ID = :newid,
+    NAME = :Opname,
+    DESCRIPTION = :Opdescription,
+    COMPLEXION = :Opcomplexion,
+    ERP_OPID = :Opid,
+    WORKSTATIONID = :Wsid,
+    ERP_WSID = :Wsid,
+    LASTMAINTAINUSER = :userid,
+    LASTMAINTAINDATETIME = N'{當前時間}',
+    FLAG = (SELECT MAX(FLAG)+1 FROM OPERATION
+            WHERE ERP_OPID = :Opid AND ERP_WSID = :Wsid)
+WHERE ID IN (:id)</pre>
+        </div>
     </div>
 
     <div class="footer">
