@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>workstation.get - 生產線基本資料 | eMES API 規格書</title>
+    <style>
+        :root { --primary-color: #2563eb; --bg-color: #f8fafc; --border-color: #e2e8f0; --text-color: #1e293b; --text-muted: #64748b; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif; line-height: 1.6; color: var(--text-color); background: var(--bg-color); }
+        .header { background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); color: white; padding: 40px 20px; }
+        .header-content { max-width: 1200px; margin: 0 auto; }
+        .back-link { color: rgba(255,255,255,0.8); text-decoration: none; display: inline-flex; align-items: center; gap: 5px; margin-bottom: 20px; font-size: 0.9em; }
+        .api-title { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
+        .api-title h1 { font-size: 2em; margin: 0; }
+        .method-badge { background: rgba(255,255,255,0.2); padding: 5px 15px; border-radius: 20px; font-size: 0.9em; font-weight: 600; }
+        .api-code { font-family: 'Consolas', monospace; background: rgba(0,0,0,0.2); padding: 10px 20px; border-radius: 8px; margin-top: 15px; font-size: 1.1em; display: inline-block; }
+        .api-desc { margin-top: 15px; opacity: 0.9; max-width: 800px; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+        .section { background: white; border-radius: 12px; padding: 30px; margin-bottom: 30px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .section h2 { font-size: 1.4em; color: var(--text-color); margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid var(--bg-color); }
+        .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+        .info-item { background: var(--bg-color); padding: 15px; border-radius: 8px; }
+        .info-item .label { font-size: 0.85em; color: var(--text-muted); margin-bottom: 5px; }
+        .info-item .value { font-weight: 600; color: var(--text-color); }
+        table { width: 100%; border-collapse: collapse; font-size: 0.95em; }
+        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid var(--border-color); }
+        th { background: var(--bg-color); font-weight: 600; }
+        tr:hover { background: #f1f5f9; }
+        pre { background: #1e293b; color: #e2e8f0; padding: 20px; border-radius: 8px; overflow-x: auto; font-family: 'Consolas', monospace; font-size: 0.9em; }
+        .code-inline { background: #f1f5f9; padding: 2px 6px; border-radius: 4px; font-family: 'Consolas', monospace; font-size: 0.9em; color: var(--primary-color); }
+        .footer { text-align: center; padding: 40px 20px; color: var(--text-muted); font-size: 0.9em; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <a href="index.html" class="back-link">← 返回 API 列表</a>
+            <div class="api-title">
+                <h1>生產線基本資料</h1>
+                <span class="method-badge">GET</span>
+                <span class="method-badge">ERP → MES</span>
+            </div>
+            <div class="api-code">workstation.get</div>
+            <p class="api-desc">從 ERP 同步生產線/工作站基本資料至 MES 的 WORKSTATION 資料表。</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="section">
+            <h2>基本資訊</h2>
+            <div class="info-grid">
+                <div class="info-item"><div class="label">API 名稱</div><div class="value">workstation.get</div></div>
+                <div class="info-item"><div class="label">方法名稱</div><div class="value">upWorkStationCROSS_workstation</div></div>
+                <div class="info-item"><div class="label">目標資料表</div><div class="value">WORKSTATION</div></div>
+                <div class="info-item"><div class="label">JSON 節點</div><div class="value">workstation_data</div></div>
+                <div class="info-item"><div class="label">主鍵</div><div class="value">ID</div></div>
+                <div class="info-item"><div class="label">程式位置</div><div class="value">RegularESB.java:3830</div></div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>回應欄位</h2>
+            <table>
+                <thead><tr><th>ERP 欄位</th><th>MES 欄位</th><th>說明</th></tr></thead>
+                <tbody>
+                    <tr><td><code class="code-inline">workstation_no</code></td><td>ID</td><td>工作站編號（主鍵）</td></tr>
+                    <tr><td><code class="code-inline">workstation_name</code></td><td>NAME</td><td>工作站名稱</td></tr>
+                    <tr><td><code class="code-inline">factory_no</code></td><td>FACTORYID</td><td>工廠編號</td></tr>
+                    <tr><td><code class="code-inline">modify_no</code></td><td>-</td><td>異動人員</td></tr>
+                    <tr><td><code class="code-inline">tran_status</code></td><td>TRAN_STATUS</td><td>交易狀態</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2>回應範例</h2>
+            <pre>{
+  "workstation_data": [
+    {
+      "workstation_no": "WS001",
+      "workstation_name": "組裝線A",
+      "factory_no": "FACTORY01",
+      "modify_no": "USER001",
+      "tran_status": "AU"
+    }
+  ]
+}</pre>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>eMES API 規格書 | 基本資料同步 | 更新日期: 2026-03-19</p>
+    </div>
+</body>
+</html>

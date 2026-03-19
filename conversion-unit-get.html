@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>conversion.unit.get - 品號換算單位 | eMES API 規格書</title>
+    <style>
+        :root { --primary-color: #2563eb; --bg-color: #f8fafc; --border-color: #e2e8f0; --text-color: #1e293b; --text-muted: #64748b; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif; line-height: 1.6; color: var(--text-color); background: var(--bg-color); }
+        .header { background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); color: white; padding: 40px 20px; }
+        .header-content { max-width: 1200px; margin: 0 auto; }
+        .back-link { color: rgba(255,255,255,0.8); text-decoration: none; display: inline-flex; align-items: center; gap: 5px; margin-bottom: 20px; font-size: 0.9em; }
+        .api-title { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
+        .api-title h1 { font-size: 2em; margin: 0; }
+        .method-badge { background: rgba(255,255,255,0.2); padding: 5px 15px; border-radius: 20px; font-size: 0.9em; font-weight: 600; }
+        .api-code { font-family: 'Consolas', monospace; background: rgba(0,0,0,0.2); padding: 10px 20px; border-radius: 8px; margin-top: 15px; font-size: 1.1em; display: inline-block; }
+        .api-desc { margin-top: 15px; opacity: 0.9; max-width: 800px; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+        .section { background: white; border-radius: 12px; padding: 30px; margin-bottom: 30px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .section h2 { font-size: 1.4em; color: var(--text-color); margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid var(--bg-color); }
+        .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+        .info-item { background: var(--bg-color); padding: 15px; border-radius: 8px; }
+        .info-item .label { font-size: 0.85em; color: var(--text-muted); margin-bottom: 5px; }
+        .info-item .value { font-weight: 600; color: var(--text-color); }
+        table { width: 100%; border-collapse: collapse; font-size: 0.95em; }
+        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid var(--border-color); }
+        th { background: var(--bg-color); font-weight: 600; }
+        tr:hover { background: #f1f5f9; }
+        pre { background: #1e293b; color: #e2e8f0; padding: 20px; border-radius: 8px; overflow-x: auto; font-family: 'Consolas', monospace; font-size: 0.9em; }
+        .code-inline { background: #f1f5f9; padding: 2px 6px; border-radius: 4px; font-family: 'Consolas', monospace; font-size: 0.9em; color: var(--primary-color); }
+        .note { background: #dbeafe; border-left: 4px solid #3b82f6; padding: 15px 20px; border-radius: 0 8px 8px 0; margin: 20px 0; }
+        .note-title { font-weight: 600; color: #1e40af; margin-bottom: 5px; }
+        .note-content { color: #1e3a8a; font-size: 0.95em; }
+        .footer { text-align: center; padding: 40px 20px; color: var(--text-muted); font-size: 0.9em; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <a href="index.html" class="back-link">← 返回 API 列表</a>
+            <div class="api-title">
+                <h1>品號換算單位</h1>
+                <span class="method-badge">GET</span>
+                <span class="method-badge">ERP → MES</span>
+            </div>
+            <div class="api-code">conversion.unit.get</div>
+            <p class="api-desc">從 ERP 同步品號換算單位資料 (INVMD 表) 至 MES 的 ITEM_CONVERSION_UNIT 資料表。</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="section">
+            <h2>基本資訊</h2>
+            <div class="info-grid">
+                <div class="info-item"><div class="label">API 名稱</div><div class="value">conversion.unit.get</div></div>
+                <div class="info-item"><div class="label">方法名稱</div><div class="value">upConversionUnitCROSS</div></div>
+                <div class="info-item"><div class="label">目標資料表</div><div class="value">ITEM_CONVERSION_UNIT</div></div>
+                <div class="info-item"><div class="label">JSON 節點</div><div class="value">Conversionunit</div></div>
+                <div class="info-item"><div class="label">主鍵</div><div class="value">ITEM_NO + CONVERSION_UNIT</div></div>
+                <div class="info-item"><div class="label">程式位置</div><div class="value">RegularESB.java (新增)</div></div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>回應欄位</h2>
+            <table>
+                <thead><tr><th>ERP 欄位</th><th>MES 欄位</th><th>類型</th><th>說明</th></tr></thead>
+                <tbody>
+                    <tr><td><code class="code-inline">item_no</code></td><td>ITEM_NO</td><td>NVARCHAR(40)</td><td>品號（複合主鍵）</td></tr>
+                    <tr><td><code class="code-inline">conversion_unit</code></td><td>CONVERSION_UNIT</td><td>NVARCHAR(10)</td><td>換算單位（複合主鍵）</td></tr>
+                    <tr><td><code class="code-inline">molecular</code></td><td>CONVERSION_RATE_MOLECULAR</td><td>DECIMAL(18,6)</td><td>換算率分子</td></tr>
+                    <tr><td><code class="code-inline">denominator</code></td><td>CONVERSION_RATE_DENOMINATOR</td><td>DECIMAL(18,6)</td><td>換算率分母</td></tr>
+                    <tr><td><code class="code-inline">remark</code></td><td>REMARK</td><td>NVARCHAR(255)</td><td>備註</td></tr>
+                    <tr><td><code class="code-inline">tran_status</code></td><td>TRAN_STATUS</td><td>NVARCHAR(10)</td><td>交易狀態</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2>回應範例</h2>
+            <pre>{
+  "Conversionunit": [
+    {
+      "item_no": "ITEM-001",
+      "conversion_unit": "BOX",
+      "molecular": "1",
+      "denominator": "500",
+      "remark": "每箱500個",
+      "tran_status": "AU"
+    }
+  ]
+}</pre>
+        </div>
+
+        <div class="section">
+            <h2>換算率計算</h2>
+            <div class="note">
+                <div class="note-title">換算公式</div>
+                <div class="note-content">
+                    <code class="code-inline">換算率 = 分子 (MOLECULAR) ÷ 分母 (DENOMINATOR)</code><br><br>
+                    例如：500 PCS = 1 BOX<br>
+                    分子 = 1, 分母 = 500, 換算率 = 0.002
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>eMES API 規格書 | 基本資料同步 | 更新日期: 2026-03-19</p>
+    </div>
+</body>
+</html>

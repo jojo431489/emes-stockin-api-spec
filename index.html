@@ -472,6 +472,175 @@
             </div>
         </div>
 
+        <!-- 基本資料同步 Category -->
+        <div class="category">
+            <div class="category-header">
+                <div class="category-icon" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8);">
+                    📊
+                </div>
+                <div class="category-title">
+                    <h2>基本資料同步 (ERP → MES)</h2>
+                    <p>Master Data Sync - CROSS API</p>
+                </div>
+            </div>
+            <div class="api-grid">
+                <a href="item-get.html" class="api-card">
+                    <div class="api-card-header">
+                        <h3>品號基本資料</h3>
+                        <span class="method method-get">GET</span>
+                    </div>
+                    <div class="code">item.get</div>
+                    <p>同步品號/物料資料至 ITEM 或 material_catalog</p>
+                    <div class="tags">
+                        <span class="tag">ERP→MES</span>
+                    </div>
+                </a>
+                <a href="customer-get.html" class="api-card">
+                    <div class="api-card-header">
+                        <h3>客戶基本資料</h3>
+                        <span class="method method-get">GET</span>
+                    </div>
+                    <div class="code">customer.get</div>
+                    <p>同步客戶資料至 CUSTOMER 表</p>
+                    <div class="tags">
+                        <span class="tag">ERP→MES</span>
+                    </div>
+                </a>
+                <a href="supplier-get.html" class="api-card">
+                    <div class="api-card-header">
+                        <h3>供應商基本資料</h3>
+                        <span class="method method-get">GET</span>
+                    </div>
+                    <div class="code">supplier.get</div>
+                    <p>同步供應商資料至 WORKSTATION 表</p>
+                    <div class="tags">
+                        <span class="tag">ERP→MES</span>
+                    </div>
+                </a>
+                <a href="warehouse-get.html" class="api-card">
+                    <div class="api-card-header">
+                        <h3>倉庫基本資料</h3>
+                        <span class="method method-get">GET</span>
+                    </div>
+                    <div class="code">warehouse.get</div>
+                    <p>同步倉庫資料至 WAREHOUSE 表</p>
+                    <div class="tags">
+                        <span class="tag">ERP→MES</span>
+                    </div>
+                </a>
+                <a href="workstation-get.html" class="api-card">
+                    <div class="api-card-header">
+                        <h3>生產線基本資料</h3>
+                        <span class="method method-get">GET</span>
+                    </div>
+                    <div class="code">workstation.get</div>
+                    <p>同步工作站資料至 WORKSTATION 表</p>
+                    <div class="tags">
+                        <span class="tag">ERP→MES</span>
+                    </div>
+                </a>
+                <a href="machine-get.html" class="api-card">
+                    <div class="api-card-header">
+                        <h3>設備基本資料</h3>
+                        <span class="method method-get">GET</span>
+                    </div>
+                    <div class="code">machine.get</div>
+                    <p>同步設備/機台資料至 EQUIPMENT 表</p>
+                    <div class="tags">
+                        <span class="tag">ERP→MES</span>
+                    </div>
+                </a>
+                <a href="op-get.html" class="api-card">
+                    <div class="api-card-header">
+                        <h3>製程基本資料</h3>
+                        <span class="method method-get">GET</span>
+                    </div>
+                    <div class="code">op.get</div>
+                    <p>同步製程資料至 OPERATION 表</p>
+                    <div class="tags">
+                        <span class="tag">ERP→MES</span>
+                    </div>
+                </a>
+                <a href="user-get.html" class="api-card">
+                    <div class="api-card-header">
+                        <h3>使用者基本資料</h3>
+                        <span class="method method-get">GET</span>
+                    </div>
+                    <div class="code">user.get</div>
+                    <p>同步員工資料至 ERP_CMSMV 表</p>
+                    <div class="tags">
+                        <span class="tag">ERP→MES</span>
+                    </div>
+                </a>
+                <a href="storage-spaces-get.html" class="api-card">
+                    <div class="api-card-header">
+                        <h3>儲位基本資料</h3>
+                        <span class="method method-get">GET</span>
+                    </div>
+                    <div class="code">storage.spaces.get</div>
+                    <p>同步儲位資料至 CMSNL 表</p>
+                    <div class="tags">
+                        <span class="tag">ERP→MES</span>
+                    </div>
+                </a>
+                <a href="mold-fixture-get.html" class="api-card">
+                    <div class="api-card-header">
+                        <h3>模具基本資料</h3>
+                        <span class="method method-get">GET</span>
+                    </div>
+                    <div class="code">mold.fixture.get</div>
+                    <p>同步模具資料至 MoldInfo 表</p>
+                    <div class="tags">
+                        <span class="tag">ERP→MES</span>
+                    </div>
+                </a>
+                <a href="item-supplier-get.html" class="api-card">
+                    <div class="api-card-header">
+                        <h3>料件供應商資料</h3>
+                        <span class="method method-get">GET</span>
+                    </div>
+                    <div class="code">item.supplier.get</div>
+                    <p>同步料件供應商至 material_catalog 表</p>
+                    <div class="tags">
+                        <span class="tag">ERP→MES</span>
+                    </div>
+                </a>
+                <a href="product-process-get.html" class="api-card">
+                    <div class="api-card-header">
+                        <h3>產品途程資料</h3>
+                        <span class="method method-get">GET</span>
+                    </div>
+                    <div class="code">product.process.get</div>
+                    <p>同步途程 BOM 至 SFT_BOMME/MF 表</p>
+                    <div class="tags">
+                        <span class="tag">ERP→MES</span>
+                    </div>
+                </a>
+                <a href="conversion-unit-get.html" class="api-card">
+                    <div class="api-card-header">
+                        <h3>品號換算單位</h3>
+                        <span class="method method-get">GET</span>
+                    </div>
+                    <div class="code">conversion.unit.get</div>
+                    <p>同步換算單位至 ITEM_CONVERSION_UNIT</p>
+                    <div class="tags">
+                        <span class="tag">ERP→MES</span>
+                    </div>
+                </a>
+                <a href="issue-wo-item-process.html" class="api-card">
+                    <div class="api-card-header">
+                        <h3>工單備料狀態</h3>
+                        <span class="method method-post">POST</span>
+                    </div>
+                    <div class="code">issue.wo.item.process</div>
+                    <p>ERP 通知 MES 工單備料狀態變更</p>
+                    <div class="tags">
+                        <span class="tag">ERP→MES</span>
+                    </div>
+                </a>
+            </div>
+        </div>
+
         <!-- 一般移轉單 Category -->
         <div class="category">
             <div class="category-header">
@@ -501,7 +670,7 @@
         <!-- Stats -->
         <div class="stats">
             <div class="stat-item">
-                <div class="number">11</div>
+                <div class="number">25</div>
                 <div class="label">已完成 API</div>
             </div>
             <div class="stat-item">
@@ -516,7 +685,7 @@
 
         <!-- Footer -->
         <div class="footer">
-            <p>eMES API 規格書 v1.3 | 更新日期: 2026-03-19</p>
+            <p>eMES API 規格書 v1.4 | 更新日期: 2026-03-19</p>
             <p style="margin-top:5px;">傳輸格式: JSON (Content-Type: application/json)</p>
         </div>
     </div>
