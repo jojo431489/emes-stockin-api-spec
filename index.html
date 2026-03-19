@@ -304,6 +304,45 @@
             </div>
         </div>
 
+        <!-- 工單完工入庫 Category -->
+        <div class="category">
+            <div class="category-header">
+                <div class="category-icon" style="background: linear-gradient(135deg, #10b981, #059669);">
+                    ✅
+                </div>
+                <div class="category-title">
+                    <h2>工單完工入庫</h2>
+                    <p>Work Order Stock-In</p>
+                </div>
+            </div>
+            <div class="api-grid">
+                <a href="stockin-data-create.html" class="api-card">
+                    <div class="api-card-header">
+                        <h3>建立入庫單</h3>
+                        <span class="method method-post">POST</span>
+                    </div>
+                    <div class="code">stockin.data.create</div>
+                    <p>工單完工後，將入庫資料拋送至 ERP</p>
+                    <div class="tags">
+                        <span class="tag">sendTransForm</span>
+                        <span class="tag">TB001/TB002</span>
+                    </div>
+                </a>
+                <a href="stockin-data-process.html" class="api-card">
+                    <div class="api-card-header">
+                        <h3>取消入庫單</h3>
+                        <span class="method method-delete">CANCEL</span>
+                    </div>
+                    <div class="code">stockin.data.process</div>
+                    <p>取消已產生的 ERP 入庫單，還原庫存</p>
+                    <div class="tags">
+                        <span class="tag">cancelStockIn</span>
+                        <span class="tag">TL011/TL012</span>
+                    </div>
+                </a>
+            </div>
+        </div>
+
         <!-- 一般入庫單 Category -->
         <div class="category">
             <div class="category-header">
@@ -311,8 +350,8 @@
                     🏭
                 </div>
                 <div class="category-title">
-                    <h2>一般移轉單/入庫單</h2>
-                    <p>Transfer Form / Stock-In</p>
+                    <h2>一般移轉單</h2>
+                    <p>Transfer Form</p>
                 </div>
             </div>
             <div class="api-grid">
@@ -322,18 +361,7 @@
                         <span class="method method-post">POST</span>
                     </div>
                     <div class="code">generateTransferForm</div>
-                    <p>一般出站後產生入庫單/移轉單</p>
-                    <div class="tags">
-                        <span class="tag">規劃中</span>
-                    </div>
-                </a>
-                <a href="#" class="api-card" style="opacity:0.5; pointer-events:none;">
-                    <div class="api-card-header">
-                        <h3>取消入庫單</h3>
-                        <span class="method method-delete">CANCEL</span>
-                    </div>
-                    <div class="code">cancelStockIn</div>
-                    <p>取消一般入庫單</p>
+                    <p>一般出站後產生移轉單（非委外/非完工）</p>
                     <div class="tags">
                         <span class="tag">規劃中</span>
                     </div>
@@ -344,11 +372,11 @@
         <!-- Stats -->
         <div class="stats">
             <div class="stat-item">
-                <div class="number">2</div>
+                <div class="number">4</div>
                 <div class="label">已完成 API</div>
             </div>
             <div class="stat-item">
-                <div class="number">2</div>
+                <div class="number">1</div>
                 <div class="label">規劃中</div>
             </div>
             <div class="stat-item">
