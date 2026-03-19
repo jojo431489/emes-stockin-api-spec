@@ -262,14 +262,22 @@
                 <code>Content-Type: application/json</code> (HttpClient.java:25)
             </div>
 
-            <h3>Request 欄位</h3>
+            <h3>Request 欄位 (Parameter)</h3>
             <table>
                 <tr><th>欄位</th><th>型別</th><th>必填</th><th>說明</th><th>MES 來源</th></tr>
-                <tr><td>companyID</td><td>string</td><td><span class="required">Y</span></td><td>公司別</td><td>COMPANYID</td></tr>
-                <tr><td>userId</td><td>string</td><td><span class="required">Y</span></td><td>操作人員</td><td>當前登入者</td></tr>
-                <tr><td>outsource_no</td><td>string</td><td><span class="required">Y</span></td><td>委外進貨單號（單別-單號）</td><td>TL011 + "-" + TL012</td></tr>
-                <tr><td>source_no</td><td>string</td><td><span class="required">Y</span></td><td>來源單號（同 outsource_no）</td><td>outsource_no</td></tr>
+                <tr><td>enterprise_no</td><td>string</td><td><span class="required">Y</span></td><td>公司別</td><td>COMPANYID (sftcompany)</td></tr>
+                <tr><td>site_no</td><td>string</td><td><span class="required">Y</span></td><td>站點</td><td>COMPANYID (sftcompany)</td></tr>
+                <tr><td>source_no</td><td>string</td><td><span class="required">Y</span></td><td>來源單號（委外進貨單號）</td><td>outsource_no (TL011 + "-" + TL012)</td></tr>
                 <tr><td>source_type</td><td>string</td><td><span class="required">Y</span></td><td>還原類型（0/1/2）</td><td>"0" (出貨還原)</td></tr>
+                <tr><td>objective_doc_no</td><td>string</td><td><span class="required">Y</span></td><td>目標單據號（同 source_no）</td><td>outsource_no</td></tr>
+            </table>
+
+            <h3>outsourcing_info_data 結構</h3>
+            <table>
+                <tr><th>欄位</th><th>型別</th><th>必填</th><th>說明</th><th>MES 來源</th></tr>
+                <tr><td>source_no</td><td>string</td><td><span class="optional">N</span></td><td>來源單號</td><td>空字串</td></tr>
+                <tr><td>plot_no</td><td>string</td><td><span class="optional">N</span></td><td>批號</td><td>空字串</td></tr>
+                <tr><td>purchase_seq</td><td>numeric</td><td><span class="optional">N</span></td><td>採購序號</td><td>空字串</td></tr>
             </table>
 
             <h3>欄位來源說明</h3>
