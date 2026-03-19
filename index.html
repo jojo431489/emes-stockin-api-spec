@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MES 工單完工入庫 API 規格書</title>
+    <title>MES 委外進貨單 API 規格書</title>
     <style>
         :root {
             --primary-color: #2563eb;
@@ -151,6 +151,13 @@
             border-radius: 5px;
             display: inline-block;
             margin-top: 5px;
+        }
+
+        .api-card .api-link {
+            color: #fef08a;
+            font-size: 0.85em;
+            margin-top: 8px;
+            display: block;
         }
 
         .badge {
@@ -301,12 +308,6 @@
             text-decoration: underline;
         }
 
-        .highlight {
-            background: #fef08a;
-            padding: 2px 5px;
-            border-radius: 3px;
-        }
-
         @media print {
             body {
                 background: white;
@@ -323,12 +324,12 @@
     <div class="container">
         <!-- 文件標頭 -->
         <div class="header">
-            <h1>📋 MES 工單完工入庫 API 規格書</h1>
-            <p class="meta">MES → ERP 整合介面技術文件</p>
+            <h1>MES 委外進貨單 API 規格書</h1>
+            <p class="meta">MES - ERP 整合介面技術文件（CROSS API）</p>
             <div class="meta-table">
                 <div class="meta-item">
                     <label>文件版本</label>
-                    <span>v1.0</span>
+                    <span>v1.1</span>
                 </div>
                 <div class="meta-item">
                     <label>建立日期</label>
@@ -340,14 +341,14 @@
                 </div>
                 <div class="meta-item">
                     <label>適用系統</label>
-                    <span>eMES / ERP</span>
+                    <span>eMES / ERP(T100)</span>
                 </div>
             </div>
         </div>
 
         <!-- 目錄 -->
         <div class="toc">
-            <h3>📑 目錄</h3>
+            <h3>目錄</h3>
             <ul>
                 <li><a href="#section1">1. API 基本資訊</a></li>
                 <li><a href="#section2">2. 業務流程說明</a></li>
@@ -365,48 +366,54 @@
         <!-- 1. API 基本資訊 -->
         <h2 id="section1">1. API 基本資訊</h2>
 
-        <h3>1.1 抛送入庫單 API</h3>
+        <h3>1.1 拋送託外進貨單 API</h3>
         <div class="api-card">
-            <h3>工單完工入庫單資料新增</h3>
-            <p>Work Order Stock-In Data Create</p>
-            <div class="api-code">stockin.data.create</div>
+            <h3>建立委外收貨單資料</h3>
+            <p>Outsourcing Purchase Stock-In Create</p>
+            <div class="api-code">outsourcing.purchase.stockin.create</div>
+            <span class="api-link">DSMS API: api-2062/vid-4462</span>
         </div>
 
         <table>
             <tr><th width="25%">項目</th><th>說明</th></tr>
-            <tr><td>API 中文名稱</td><td>工單完工入庫單資料新增</td></tr>
-            <tr><td>API 英文名稱</td><td>Work Order Stock-In Data Create</td></tr>
-            <tr><td>API Code</td><td><code>stockin.data.create</code></td></tr>
-            <tr><td>對應 ESB 服務</td><td><code>/outsourcingPurchaseStockinCreate</code> (TRANSTYPE=59)<br><code>/sendTransForm</code> (其他)</td></tr>
-            <tr><td>API 用途說明</td><td>MES 工單完工後，將入庫資料拋送至 ERP，由 ERP 產生完工入庫單據</td></tr>
+            <tr><td>API 中文名稱</td><td>建立委外收貨單資料（託外進貨單）</td></tr>
+            <tr><td>API 英文名稱</td><td>Outsourcing Purchase Stock-In Create</td></tr>
+            <tr><td>CROSS API Code</td><td><code>outsourcing.purchase.stockin.create</code></td></tr>
+            <tr><td>MES taskName</td><td><code>outsourcingPurchaseStockinCreate</code></td></tr>
+            <tr><td>ESB 路徑</td><td><code>/outsourcingPurchaseStockinCreate</code></td></tr>
+            <tr><td>API 用途說明</td><td>MES 委外站出站後，將委外進貨資料拋送至 ERP，產生委外進貨單據</td></tr>
             <tr><td>呼叫方向</td><td>MES → ERP</td></tr>
-            <tr><td>呼叫時機</td><td>1. 工單最後一站出站完成時<br>2. 批次完工入庫作業時<br>3. 手動觸發入庫時</td></tr>
-            <tr><td>主要業務情境</td><td>製造完工後，將成品入庫至 ERP 指定倉庫，更新 ERP 庫存數量與工單狀態</td></tr>
-            <tr><td>同步/非同步</td><td><span class="badge badge-success">同步呼叫</span></td></tr>
-            <tr><td>交易控管</td><td><span class="badge badge-required">需要</span> MES 與 ERP 需確保資料一致性</td></tr>
-            <tr><td>備註</td><td>回傳 TB001/TB002 為 ERP 產生的單據類別/單號，需回寫至 SFT_TRANSORDER_LINE.TL011/TL012</td></tr>
-        </table>
-
-        <h3>1.2 取消倉管入庫 API</h3>
-        <div class="api-card" style="background: linear-gradient(135deg, #f59e0b 0%, #dc2626 100%);">
-            <h3>工單完工入庫還原</h3>
-            <p>Work Order Stock-In Data Process (Cancel)</p>
-            <div class="api-code">stockin.data.process</div>
-        </div>
-
-        <table>
-            <tr><th width="25%">項目</th><th>說明</th></tr>
-            <tr><td>API 中文名稱</td><td>工單完工入庫還原</td></tr>
-            <tr><td>API 英文名稱</td><td>Work Order Stock-In Data Process (Cancel)</td></tr>
-            <tr><td>API Code</td><td><code>stockin.data.process</code></td></tr>
-            <tr><td>對應 ESB 服務</td><td><code>/outsourcingProcess</code> (TRANSORDERTYPE=59)<br><code>/cancelStockIn</code> (其他)</td></tr>
-            <tr><td>API 用途說明</td><td>取消已產生的 ERP 入庫單，還原庫存數量與工單狀態</td></tr>
-            <tr><td>呼叫方向</td><td>MES → ERP</td></tr>
-            <tr><td>呼叫時機</td><td>1. MES 執行取消出站作業時<br>2. 品質異常需退回重工時</td></tr>
-            <tr><td>主要業務情境</td><td>取消已完成的入庫作業，ERP 需還原庫存扣減並作廢原入庫單據</td></tr>
+            <tr><td>觸發條件</td><td><code>TRANSTYPE = "59"</code>（委外進貨單）</td></tr>
+            <tr><td>呼叫時機</td><td>1. 委外站出站完成時<br>2. 驗收入庫時</td></tr>
+            <tr><td>主要業務情境</td><td>委外加工完成後，將成品入庫至 ERP 指定倉庫，更新委外工單狀態</td></tr>
             <tr><td>同步/非同步</td><td><span class="badge badge-success">同步呼叫</span></td></tr>
             <tr><td>交易控管</td><td><span class="badge badge-required">需要</span></td></tr>
-            <tr><td>備註</td><td>取消前需檢查 TL011/TL012 是否有值，有值才呼叫 ERP</td></tr>
+            <tr><td>備註</td><td>回傳 TB001/TB002 回寫至 TL011/TL012</td></tr>
+        </table>
+
+        <h3>1.2 取消託外進貨單 API</h3>
+        <div class="api-card" style="background: linear-gradient(135deg, #f59e0b 0%, #dc2626 100%);">
+            <h3>委外採購收貨還原</h3>
+            <p>Outsourcing Process (Cancel)</p>
+            <div class="api-code">outsourcing.process</div>
+            <span class="api-link">DSMS API: api-2058/vid-4571</span>
+        </div>
+
+        <table>
+            <tr><th width="25%">項目</th><th>說明</th></tr>
+            <tr><td>API 中文名稱</td><td>委外採購收貨還原（取消託外進貨單）</td></tr>
+            <tr><td>API 英文名稱</td><td>Outsourcing Process</td></tr>
+            <tr><td>CROSS API Code</td><td><code>outsourcing.process</code></td></tr>
+            <tr><td>MES taskName</td><td><code>outsourcingProcess</code></td></tr>
+            <tr><td>ESB 路徑</td><td><code>/outsourcingProcess</code></td></tr>
+            <tr><td>API 用途說明</td><td>取消已產生的 ERP 委外進貨單，還原庫存與委外工單狀態</td></tr>
+            <tr><td>呼叫方向</td><td>MES → ERP</td></tr>
+            <tr><td>觸發條件</td><td><code>TRANSORDERTYPE = "59"</code>（委外單）</td></tr>
+            <tr><td>呼叫時機</td><td>1. MES 執行取消出站<br>2. 品質異常需退回時</td></tr>
+            <tr><td>主要業務情境</td><td>取消委外入庫，還原庫存與工單狀態</td></tr>
+            <tr><td>同步/非同步</td><td><span class="badge badge-success">同步呼叫</span></td></tr>
+            <tr><td>交易控管</td><td><span class="badge badge-required">需要</span></td></tr>
+            <tr><td>source_type 說明</td><td>0=出貨還原, 1=回貨還原, 2=退貨還原</td></tr>
         </table>
 
         <!-- 2. 業務流程說明 -->
@@ -414,8 +421,7 @@
 
         <h3>2.1 完整業務流程圖</h3>
         <div class="flow-diagram">
-            <svg width="900" height="500" viewBox="0 0 900 500" xmlns="http://www.w3.org/2000/svg">
-                <!-- 背景 -->
+            <svg width="950" height="550" viewBox="0 0 950 550" xmlns="http://www.w3.org/2000/svg">
                 <defs>
                     <linearGradient id="mesGradient" x1="0%" y1="0%" x2="100%" y2="0%">
                         <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:0.1" />
@@ -425,304 +431,299 @@
                         <stop offset="0%" style="stop-color:#10b981;stop-opacity:0.1" />
                         <stop offset="100%" style="stop-color:#10b981;stop-opacity:0.05" />
                     </linearGradient>
+                    <linearGradient id="esbGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" style="stop-color:#8b5cf6;stop-opacity:0.1" />
+                        <stop offset="100%" style="stop-color:#8b5cf6;stop-opacity:0.05" />
+                    </linearGradient>
                     <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
                         <polygon points="0 0, 10 3.5, 0 7" fill="#6366f1"/>
+                    </marker>
+                    <marker id="arrowhead-green" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                        <polygon points="0 0, 10 3.5, 0 7" fill="#10b981"/>
                     </marker>
                 </defs>
 
                 <!-- MES 區域 -->
-                <rect x="20" y="60" width="400" height="380" rx="10" fill="url(#mesGradient)" stroke="#3b82f6" stroke-width="2"/>
-                <text x="220" y="90" text-anchor="middle" font-size="18" font-weight="bold" fill="#3b82f6">MES 系統</text>
+                <rect x="20" y="60" width="280" height="420" rx="10" fill="url(#mesGradient)" stroke="#3b82f6" stroke-width="2"/>
+                <text x="160" y="90" text-anchor="middle" font-size="18" font-weight="bold" fill="#3b82f6">MES 系統</text>
+
+                <!-- ESB 區域 -->
+                <rect x="340" y="60" width="200" height="420" rx="10" fill="url(#esbGradient)" stroke="#8b5cf6" stroke-width="2"/>
+                <text x="440" y="90" text-anchor="middle" font-size="18" font-weight="bold" fill="#8b5cf6">ESB 中介層</text>
 
                 <!-- ERP 區域 -->
-                <rect x="480" y="60" width="400" height="380" rx="10" fill="url(#erpGradient)" stroke="#10b981" stroke-width="2"/>
-                <text x="680" y="90" text-anchor="middle" font-size="18" font-weight="bold" fill="#10b981">ERP 系統</text>
+                <rect x="580" y="60" width="350" height="420" rx="10" fill="url(#erpGradient)" stroke="#10b981" stroke-width="2"/>
+                <text x="755" y="90" text-anchor="middle" font-size="18" font-weight="bold" fill="#10b981">ERP 系統 (T100)</text>
 
                 <!-- MES 流程節點 -->
-                <rect x="60" y="120" width="140" height="50" rx="8" fill="#3b82f6"/>
-                <text x="130" y="150" text-anchor="middle" fill="white" font-size="13">1. 最後站出站</text>
+                <rect x="40" y="120" width="140" height="45" rx="8" fill="#3b82f6"/>
+                <text x="110" y="147" text-anchor="middle" fill="white" font-size="12">1. 委外站出站</text>
 
-                <rect x="60" y="200" width="140" height="50" rx="8" fill="#3b82f6"/>
-                <text x="130" y="225" text-anchor="middle" fill="white" font-size="12">2. 組裝入庫資料</text>
-                <text x="130" y="240" text-anchor="middle" fill="white" font-size="10">(TransOrderDataToJson)</text>
+                <rect x="40" y="185" width="140" height="45" rx="8" fill="#3b82f6"/>
+                <text x="110" y="205" text-anchor="middle" fill="white" font-size="11">2. 判斷 TRANSTYPE</text>
+                <text x="110" y="220" text-anchor="middle" fill="white" font-size="10">(=59 委外)</text>
 
-                <rect x="60" y="280" width="140" height="50" rx="8" fill="#6366f1"/>
-                <text x="130" y="305" text-anchor="middle" fill="white" font-size="12">3. 呼叫 ESB API</text>
-                <text x="130" y="320" text-anchor="middle" fill="white" font-size="10">(XmlToERP_handler)</text>
+                <rect x="40" y="250" width="140" height="45" rx="8" fill="#6366f1"/>
+                <text x="110" y="270" text-anchor="middle" fill="white" font-size="11">3. 組裝 JSON</text>
+                <text x="110" y="285" text-anchor="middle" fill="white" font-size="9">(SendFormSbyJson)</text>
 
-                <rect x="60" y="360" width="140" height="50" rx="8" fill="#3b82f6"/>
-                <text x="130" y="385" text-anchor="middle" fill="white" font-size="12">6. 更新 TL011/TL012</text>
-                <text x="130" y="400" text-anchor="middle" fill="white" font-size="10">(TRANSORDER_LINE)</text>
+                <rect x="40" y="315" width="240" height="45" rx="8" fill="#3b82f6"/>
+                <text x="160" y="335" text-anchor="middle" fill="white" font-size="11">4. 呼叫 outsourcingPurchaseStockinCreate</text>
+                <text x="160" y="350" text-anchor="middle" fill="white" font-size="9">(XmlToERP_handler.sendToErpByESB)</text>
 
-                <!-- ERP 流程節點 -->
-                <rect x="540" y="120" width="140" height="50" rx="8" fill="#10b981"/>
-                <text x="610" y="145" text-anchor="middle" fill="white" font-size="12">4. 接收並檢核</text>
-                <text x="610" y="160" text-anchor="middle" fill="white" font-size="10">(工單/數量)</text>
+                <rect x="40" y="400" width="140" height="45" rx="8" fill="#3b82f6"/>
+                <text x="110" y="420" text-anchor="middle" fill="white" font-size="11">7. 回寫 TL011/TL012</text>
+                <text x="110" y="435" text-anchor="middle" fill="white" font-size="9">(sentERPToidToSFT)</text>
 
-                <rect x="700" y="200" width="140" height="50" rx="8" fill="#10b981"/>
-                <text x="770" y="225" text-anchor="middle" fill="white" font-size="12">5a. 產生入庫單</text>
-                <text x="770" y="240" text-anchor="middle" fill="white" font-size="10">(TB001/TB002)</text>
+                <!-- ESB 節點 -->
+                <rect x="360" y="200" width="160" height="50" rx="8" fill="#8b5cf6"/>
+                <text x="440" y="220" text-anchor="middle" fill="white" font-size="11">ESB 路由</text>
+                <text x="440" y="235" text-anchor="middle" fill="white" font-size="9">/outsourcingPurchase...</text>
 
-                <rect x="540" y="280" width="140" height="50" rx="8" fill="#10b981"/>
-                <text x="610" y="305" text-anchor="middle" fill="white" font-size="12">5b. 更新庫存</text>
-                <text x="610" y="320" text-anchor="middle" fill="white" font-size="10">(增加成品)</text>
+                <rect x="360" y="280" width="160" height="50" rx="8" fill="#8b5cf6"/>
+                <text x="440" y="300" text-anchor="middle" fill="white" font-size="11">CROSS API 呼叫</text>
+                <text x="440" y="315" text-anchor="middle" fill="white" font-size="9">outsourcing.purchase...</text>
 
-                <rect x="700" y="360" width="140" height="50" rx="8" fill="#059669"/>
-                <text x="770" y="385" text-anchor="middle" fill="white" font-size="12">5c. 回傳結果</text>
-                <text x="770" y="400" text-anchor="middle" fill="white" font-size="10">(code=200)</text>
+                <!-- ERP 節點 -->
+                <rect x="600" y="130" width="150" height="45" rx="8" fill="#10b981"/>
+                <text x="675" y="150" text-anchor="middle" fill="white" font-size="11">5a. 接收並檢核</text>
+                <text x="675" y="165" text-anchor="middle" fill="white" font-size="9">(工單/數量)</text>
+
+                <rect x="770" y="200" width="150" height="45" rx="8" fill="#10b981"/>
+                <text x="845" y="220" text-anchor="middle" fill="white" font-size="11">5b. 產生委外進貨單</text>
+                <text x="845" y="235" text-anchor="middle" fill="white" font-size="9">(TB001/TB002)</text>
+
+                <rect x="600" y="270" width="150" height="45" rx="8" fill="#10b981"/>
+                <text x="675" y="290" text-anchor="middle" fill="white" font-size="11">5c. 更新庫存</text>
+                <text x="675" y="305" text-anchor="middle" fill="white" font-size="9">(增加成品)</text>
+
+                <rect x="770" y="340" width="150" height="45" rx="8" fill="#059669"/>
+                <text x="845" y="360" text-anchor="middle" fill="white" font-size="11">6. 回傳結果</text>
+                <text x="845" y="375" text-anchor="middle" fill="white" font-size="9">(code=200)</text>
 
                 <!-- 連接線 -->
-                <line x1="130" y1="170" x2="130" y2="200" stroke="#3b82f6" stroke-width="2" marker-end="url(#arrowhead)"/>
-                <line x1="130" y1="250" x2="130" y2="280" stroke="#3b82f6" stroke-width="2" marker-end="url(#arrowhead)"/>
-                <line x1="200" y1="305" x2="540" y2="145" stroke="#6366f1" stroke-width="2" stroke-dasharray="5,5" marker-end="url(#arrowhead)"/>
-
-                <line x1="610" y1="170" x2="700" y2="200" stroke="#10b981" stroke-width="2" marker-end="url(#arrowhead)"/>
-                <line x1="770" y1="250" x2="610" y2="280" stroke="#10b981" stroke-width="2" marker-end="url(#arrowhead)"/>
-                <line x1="610" y1="330" x2="700" y2="360" stroke="#10b981" stroke-width="2" marker-end="url(#arrowhead)"/>
-
-                <line x1="700" y1="385" x2="200" y2="385" stroke="#6366f1" stroke-width="2" stroke-dasharray="5,5" marker-end="url(#arrowhead)"/>
+                <line x1="110" y1="165" x2="110" y2="185" stroke="#3b82f6" stroke-width="2" marker-end="url(#arrowhead)"/>
+                <line x1="110" y1="230" x2="110" y2="250" stroke="#3b82f6" stroke-width="2" marker-end="url(#arrowhead)"/>
+                <line x1="110" y1="295" x2="160" y2="315" stroke="#3b82f6" stroke-width="2" marker-end="url(#arrowhead)"/>
+                <line x1="280" y1="337" x2="360" y2="225" stroke="#6366f1" stroke-width="2" stroke-dasharray="5,5" marker-end="url(#arrowhead)"/>
+                <line x1="520" y1="305" x2="600" y2="152" stroke="#8b5cf6" stroke-width="2" stroke-dasharray="5,5" marker-end="url(#arrowhead)"/>
+                <line x1="750" y1="152" x2="770" y2="200" stroke="#10b981" stroke-width="2" marker-end="url(#arrowhead-green)"/>
+                <line x1="845" y1="245" x2="675" y2="270" stroke="#10b981" stroke-width="2" marker-end="url(#arrowhead-green)"/>
+                <line x1="675" y1="315" x2="770" y2="340" stroke="#10b981" stroke-width="2" marker-end="url(#arrowhead-green)"/>
+                <line x1="770" y1="362" x2="180" y2="422" stroke="#10b981" stroke-width="2" stroke-dasharray="5,5" marker-end="url(#arrowhead-green)"/>
 
                 <!-- 圖例 -->
-                <rect x="250" y="450" width="15" height="15" fill="#3b82f6"/>
-                <text x="270" y="462" font-size="12">MES 處理</text>
-                <rect x="370" y="450" width="15" height="15" fill="#10b981"/>
-                <text x="390" y="462" font-size="12">ERP 處理</text>
-                <line x1="490" y1="457" x2="530" y2="457" stroke="#6366f1" stroke-width="2" stroke-dasharray="5,5"/>
-                <text x="540" y="462" font-size="12">API 呼叫</text>
+                <rect x="100" y="490" width="15" height="15" fill="#3b82f6"/>
+                <text x="120" y="502" font-size="11">MES 處理</text>
+                <rect x="220" y="490" width="15" height="15" fill="#8b5cf6"/>
+                <text x="240" y="502" font-size="11">ESB 中介</text>
+                <rect x="340" y="490" width="15" height="15" fill="#10b981"/>
+                <text x="360" y="502" font-size="11">ERP 處理</text>
+                <line x1="460" y1="497" x2="500" y2="497" stroke="#6366f1" stroke-width="2" stroke-dasharray="5,5"/>
+                <text x="510" y="502" font-size="11">API 呼叫</text>
             </svg>
         </div>
 
-        <h3>2.2 入庫類型判斷邏輯</h3>
+        <h3>2.2 API 路由判斷邏輯</h3>
         <div class="flow-diagram">
-            <svg width="700" height="280" viewBox="0 0 700 280" xmlns="http://www.w3.org/2000/svg">
-                <!-- 判斷菱形 -->
-                <polygon points="350,30 450,80 350,130 250,80" fill="#f59e0b" stroke="#d97706" stroke-width="2"/>
-                <text x="350" y="75" text-anchor="middle" fill="white" font-size="12">TRANSTYPE</text>
-                <text x="350" y="92" text-anchor="middle" fill="white" font-size="12">= 59 ?</text>
+            <svg width="800" height="350" viewBox="0 0 800 350" xmlns="http://www.w3.org/2000/svg">
+                <text x="400" y="30" text-anchor="middle" font-size="16" font-weight="bold" fill="#1e40af">建立委外進貨單 - API 路由判斷</text>
 
-                <!-- 是 - 委外 -->
-                <rect x="500" y="55" width="180" height="50" rx="8" fill="#dc2626"/>
-                <text x="590" y="80" text-anchor="middle" fill="white" font-size="12">委外進貨單</text>
-                <text x="590" y="95" text-anchor="middle" fill="white" font-size="10">outsourcingPurchaseStockinCreate</text>
-                <line x1="450" y1="80" x2="500" y2="80" stroke="#d97706" stroke-width="2" marker-end="url(#arrowhead)"/>
-                <text x="470" y="70" font-size="11" fill="#d97706">是</text>
+                <polygon points="200,60 300,100 200,140 100,100" fill="#f59e0b" stroke="#d97706" stroke-width="2"/>
+                <text x="200" y="95" text-anchor="middle" fill="white" font-size="11">TRANSTYPE</text>
+                <text x="200" y="110" text-anchor="middle" fill="white" font-size="11">= "59" ?</text>
 
-                <!-- 否 - 一般 -->
-                <rect x="500" y="140" width="180" height="50" rx="8" fill="#3b82f6"/>
-                <text x="590" y="165" text-anchor="middle" fill="white" font-size="12">一般移轉單/入庫單</text>
-                <text x="590" y="180" text-anchor="middle" fill="white" font-size="10">generateTransferForm</text>
-                <line x1="350" y1="130" x2="350" y2="165" stroke="#d97706" stroke-width="2"/>
-                <line x1="350" y1="165" x2="500" y2="165" stroke="#d97706" stroke-width="2" marker-end="url(#arrowhead)"/>
-                <text x="360" y="150" font-size="11" fill="#d97706">否</text>
+                <rect x="350" y="75" width="200" height="50" rx="8" fill="#dc2626"/>
+                <text x="450" y="100" text-anchor="middle" fill="white" font-size="12">委外進貨單</text>
+                <text x="450" y="115" text-anchor="middle" fill="white" font-size="9">outsourcingPurchaseStockinCreate</text>
+                <line x1="300" y1="100" x2="350" y2="100" stroke="#d97706" stroke-width="2" marker-end="url(#arrowhead)"/>
+                <text x="320" y="90" font-size="11" fill="#d97706">是</text>
 
-                <!-- 程式碼引用 -->
-                <rect x="30" y="200" width="640" height="60" rx="5" fill="#1e293b"/>
-                <text x="50" y="225" fill="#7dd3fc" font-family="Consolas" font-size="11">// TransOrderDataToJson.java:648</text>
-                <text x="50" y="245" fill="#e2e8f0" font-family="Consolas" font-size="11">if (transOrderData.getString("TRANSTYPE").equals("59")) {</text>
-                <text x="70" y="255" fill="#86efac" font-family="Consolas" font-size="11">jsonObj.put("taskName", "outsourcingPurchaseStockinCreate");</text>
+                <rect x="350" y="150" width="200" height="50" rx="8" fill="#3b82f6"/>
+                <text x="450" y="175" text-anchor="middle" fill="white" font-size="12">一般移轉單/入庫單</text>
+                <text x="450" y="190" text-anchor="middle" fill="white" font-size="9">generateTransferForm</text>
+                <line x1="200" y1="140" x2="200" y2="175" stroke="#d97706" stroke-width="2"/>
+                <line x1="200" y1="175" x2="350" y2="175" stroke="#d97706" stroke-width="2" marker-end="url(#arrowhead)"/>
+                <text x="210" y="160" font-size="11" fill="#d97706">否</text>
+
+                <text x="400" y="230" text-anchor="middle" font-size="16" font-weight="bold" fill="#dc2626">取消委外進貨單 - API 路由判斷</text>
+
+                <polygon points="200,260 300,300 200,340 100,300" fill="#f59e0b" stroke="#d97706" stroke-width="2"/>
+                <text x="200" y="290" text-anchor="middle" fill="white" font-size="10">TRANSORDERTYPE</text>
+                <text x="200" y="308" text-anchor="middle" fill="white" font-size="11">= "59" ?</text>
+
+                <rect x="350" y="275" width="200" height="50" rx="8" fill="#dc2626"/>
+                <text x="450" y="295" text-anchor="middle" fill="white" font-size="12">取消委外單</text>
+                <text x="450" y="312" text-anchor="middle" fill="white" font-size="9">outsourcingProcess</text>
+                <line x1="300" y1="300" x2="350" y2="300" stroke="#d97706" stroke-width="2" marker-end="url(#arrowhead)"/>
+                <text x="320" y="290" font-size="11" fill="#d97706">是</text>
+
+                <rect x="580" y="60" width="200" height="70" rx="5" fill="#1e293b"/>
+                <text x="595" y="85" fill="#7dd3fc" font-family="Consolas" font-size="10">// TransOrderDataToJson:648</text>
+                <text x="595" y="100" fill="#e2e8f0" font-family="Consolas" font-size="9">if(TRANSTYPE=="59"){</text>
+                <text x="605" y="115" fill="#86efac" font-family="Consolas" font-size="9">taskName="outsourcing...</text>
+
+                <rect x="580" y="260" width="200" height="70" rx="5" fill="#1e293b"/>
+                <text x="595" y="285" fill="#7dd3fc" font-family="Consolas" font-size="10">// GeneralUpdater:1582</text>
+                <text x="595" y="300" fill="#e2e8f0" font-family="Consolas" font-size="9">if(TRANSORDERTYPE=="59"){</text>
+                <text x="605" y="315" fill="#86efac" font-family="Consolas" font-size="9">taskName="outsourcing...</text>
             </svg>
         </div>
 
-        <h3>2.3 取消入庫類型判斷邏輯</h3>
-        <div class="flow-diagram">
-            <svg width="700" height="280" viewBox="0 0 700 280" xmlns="http://www.w3.org/2000/svg">
-                <!-- 判斷菱形 -->
-                <polygon points="350,30 450,80 350,130 250,80" fill="#f59e0b" stroke="#d97706" stroke-width="2"/>
-                <text x="350" y="70" text-anchor="middle" fill="white" font-size="12">TRANSORDERTYPE</text>
-                <text x="350" y="90" text-anchor="middle" fill="white" font-size="12">= 59 ?</text>
-
-                <!-- 是 - 委外 -->
-                <rect x="500" y="55" width="180" height="50" rx="8" fill="#dc2626"/>
-                <text x="590" y="80" text-anchor="middle" fill="white" font-size="12">取消委外單</text>
-                <text x="590" y="95" text-anchor="middle" fill="white" font-size="10">outsourcingProcess</text>
-                <line x1="450" y1="80" x2="500" y2="80" stroke="#d97706" stroke-width="2" marker-end="url(#arrowhead)"/>
-                <text x="470" y="70" font-size="11" fill="#d97706">是</text>
-
-                <!-- 否 - 一般 -->
-                <rect x="500" y="140" width="180" height="50" rx="8" fill="#3b82f6"/>
-                <text x="590" y="165" text-anchor="middle" fill="white" font-size="12">取消倉管</text>
-                <text x="590" y="180" text-anchor="middle" fill="white" font-size="10">cancelStockIn</text>
-                <line x1="350" y1="130" x2="350" y2="165" stroke="#d97706" stroke-width="2"/>
-                <line x1="350" y1="165" x2="500" y2="165" stroke="#d97706" stroke-width="2" marker-end="url(#arrowhead)"/>
-                <text x="360" y="150" font-size="11" fill="#d97706">否</text>
-
-                <!-- 程式碼引用 -->
-                <rect x="30" y="200" width="640" height="60" rx="5" fill="#1e293b"/>
-                <text x="50" y="225" fill="#7dd3fc" font-family="Consolas" font-size="11">// GeneralUpdater.java:1582</text>
-                <text x="50" y="245" fill="#e2e8f0" font-family="Consolas" font-size="11">if(conm.queryForSingleString(querysql, null).equals("59")) {</text>
-                <text x="70" y="255" fill="#86efac" font-family="Consolas" font-size="11">jsonObj.put("taskName", "outsourcingProcess");</text>
-            </svg>
-        </div>
-
-        <h3>2.4 前置條件與限制條件</h3>
+        <h3>2.3 前置條件與限制條件</h3>
         <div class="two-column">
             <div>
-                <h4>✅ 新增入庫前置條件</h4>
+                <h4>建立委外進貨單前置條件</h4>
                 <table>
                     <tr><th>條件</th><th>說明</th></tr>
-                    <tr><td>工單存在</td><td>ERP 工單必須存在且狀態允許入庫</td></tr>
-                    <tr><td>途程完成</td><td>MES 最後一站已完成出站</td></tr>
-                    <tr><td>數量合理</td><td>入庫數量 > 0 且 ≤ 工單可入庫餘量</td></tr>
-                    <tr><td>TRANSORDER_LINE</td><td>明細資料必須存在且有效</td></tr>
-                    <tr><td>TO013 檢查</td><td>TO013=1 時才送 ERP</td></tr>
+                    <tr><td>TRANSTYPE = 59</td><td>必須為委外進貨單類型</td></tr>
+                    <tr><td>TO013 = 1</td><td>才會送 ERP</td></tr>
+                    <tr><td>明細資料存在</td><td>SFT_TRANSORDER_LINE_GRID 不可空</td></tr>
+                    <tr><td>委外工單存在</td><td>ERP 委外工單必須存在</td></tr>
+                    <tr><td>數量合理</td><td>入庫數量 > 0</td></tr>
                 </table>
             </div>
             <div>
-                <h4>⚠️ 取消入庫前置條件</h4>
+                <h4>取消委外進貨單前置條件</h4>
                 <table>
                     <tr><th>條件</th><th>說明</th></tr>
-                    <tr><td>TL011/TL012 有值</td><td>必須有 ERP 回傳的單據編號</td></tr>
-                    <tr><td>入庫單存在</td><td>原入庫單號必須存在於 ERP</td></tr>
-                    <tr><td>狀態允許</td><td>入庫單未過帳或未確認</td></tr>
-                    <tr><td>無後續異動</td><td>入庫單未被其他單據引用</td></tr>
+                    <tr><td>TL011/TL012 有值</td><td>必須有 ERP 單據編號</td></tr>
+                    <tr><td>TRANSORDERTYPE = 59</td><td>委外單才用此 API</td></tr>
+                    <tr><td>進貨單未過帳</td><td>已過帳無法取消</td></tr>
+                    <tr><td>無後續異動</td><td>未被其他單據引用</td></tr>
                 </table>
             </div>
         </div>
 
         <div class="info-box warning">
-            <strong>⚠️ 重要提醒：Race Condition 風險</strong><br>
-            取消出站時，若 ERP 尚未回傳入庫單號（TL011/TL012 為空），將無法正確呼叫取消 API。
-            建議在取消出站前，先確認 ERP 回傳已完成。
+            <strong>重要提醒：Race Condition 風險</strong><br>
+            取消出站時，若 ERP 尚未回傳進貨單號（TL011/TL012 為空），將無法正確呼叫取消 API。
             <br><br>
-            <strong>參考案例：</strong>CLAUDE.md 中 2026-03-12 記錄的「0000675600 取消出站 outsourcingProcess 未呼叫問題」
+            <strong>程式碼位置：</strong>GeneralUpdater.java:1571
+            <pre style="background:#1e293b;color:#e2e8f0;padding:10px;border-radius:5px;margin-top:10px;font-size:12px;">if(!SftTransorderLine.getTl011().equals("") && !SftTransorderLine.getTl012().equals("")){
+    // 只有 TL011/TL012 都有值時才呼叫取消 API
+}</pre>
         </div>
 
         <!-- 3. Request 規格 -->
         <h2 id="section3">3. Request 規格</h2>
 
-        <h3>3.1 stockin.data.create Request 規格</h3>
+        <h3>3.1 outsourcing.purchase.stockin.create Request 規格</h3>
 
         <div class="info-box info">
-            <strong>📌 實際程式對應</strong><br>
-            JSON 組裝邏輯位於：<code>SendFormElementbyJson.java</code> 的 <code>getTransferFormHead()</code> 和 <code>getTransferFormBody()</code> 方法
+            <strong>程式對應</strong><br>
+            JSON 組裝：<code>SendFormSbyJson.transferFormToJson()</code><br>
+            欄位映射：<code>SendFormElementbyJson.getTransferFormHead()</code> + <code>getTransferFormBody()</code>
         </div>
 
-        <h4>3.1.1 表頭（Header）- getTransferFormHead()</h4>
+        <h4>3.1.1 外層結構</h4>
         <table>
-            <tr>
-                <th>欄位代碼</th>
-                <th>欄位名稱</th>
-                <th>型別</th>
-                <th>長度</th>
-                <th>必填</th>
-                <th>說明</th>
-                <th>MES 來源欄位</th>
-            </tr>
-            <tr><td>companyID</td><td>公司別</td><td>string</td><td>10</td><td><span class="badge badge-required">Y</span></td><td>ERP 公司代碼</td><td>COMPANYID</td></tr>
-            <tr><td>userId</td><td>操作人員</td><td>string</td><td>20</td><td><span class="badge badge-required">Y</span></td><td>確認人員工號</td><td>CONFIRMER</td></tr>
-            <tr><td>doAction</td><td>動作類型</td><td>string</td><td>2</td><td><span class="badge badge-required">Y</span></td><td>2=移轉單</td><td>DOACTION</td></tr>
-            <tr><td>docase</td><td>操作類型</td><td>string</td><td>2</td><td><span class="badge badge-required">Y</span></td><td>1=新增, 2=修改, 3=刪除</td><td>DOCASE</td></tr>
-            <tr><td>transferType</td><td>移轉單別</td><td>string</td><td>10</td><td><span class="badge badge-required">Y</span></td><td>單據類別代碼</td><td>TRANSTYPE</td></tr>
-            <tr><td>transferCode</td><td>移轉單號</td><td>string</td><td>30</td><td><span class="badge badge-optional">N</span></td><td>修改時需傳入</td><td>TO008</td></tr>
-            <tr><td>date</td><td>單據日期</td><td>string</td><td>10</td><td><span class="badge badge-required">Y</span></td><td>格式：YYYY-MM-DD</td><td>TRANSDATE</td></tr>
-            <tr><td>moveOutType</td><td>移出類型</td><td>string</td><td>2</td><td><span class="badge badge-required">Y</span></td><td>1=工作站, 2=倉庫, 3=部門</td><td>OUTTYPE</td></tr>
-            <tr><td>moveOutCode</td><td>移出代碼</td><td>string</td><td>20</td><td><span class="badge badge-required">Y</span></td><td>移出部門/倉庫代碼</td><td>OUTDEPID</td></tr>
-            <tr><td>moveOutName</td><td>移出名稱</td><td>string</td><td>50</td><td><span class="badge badge-optional">N</span></td><td>移出部門/倉庫名稱</td><td>OUTDEPNAME</td></tr>
-            <tr><td>moveInType</td><td>移入類型</td><td>string</td><td>2</td><td><span class="badge badge-required">Y</span></td><td>1=工作站, 2=倉庫, 3=部門</td><td>INTYPE</td></tr>
-            <tr><td>moveInCode</td><td>移入代碼</td><td>string</td><td>20</td><td><span class="badge badge-required">Y</span></td><td>移入部門/倉庫代碼</td><td>INDEPID</td></tr>
-            <tr><td>moveInName</td><td>移入名稱</td><td>string</td><td>50</td><td><span class="badge badge-optional">N</span></td><td>移入部門/倉庫名稱</td><td>INDEPNAME</td></tr>
-            <tr><td>factoryCode</td><td>廠別</td><td>string</td><td>10</td><td><span class="badge badge-required">Y</span></td><td>工廠代碼</td><td>FACTORYID</td></tr>
-            <tr><td>confirmationCode</td><td>確認碼</td><td>string</td><td>20</td><td><span class="badge badge-optional">N</span></td><td>確認代碼</td><td>CONFIRMCODE</td></tr>
-            <tr><td>remark</td><td>備註</td><td>string</td><td>255</td><td><span class="badge badge-optional">N</span></td><td>單據備註</td><td>COMMENT</td></tr>
-            <tr><td>orderDate</td><td>訂單日期</td><td>string</td><td>10</td><td><span class="badge badge-optional">N</span></td><td>文件日期</td><td>DOCUMENTDATE</td></tr>
-            <tr><td>eMESTransferType</td><td>MES單別</td><td>string</td><td>10</td><td><span class="badge badge-required">Y</span></td><td>MES 移轉單別</td><td>TRANSTYPE</td></tr>
-            <tr><td>eMESTransferCode</td><td>MES單號</td><td>string</td><td>30</td><td><span class="badge badge-required">Y</span></td><td>MES 移轉單號</td><td>TRANSNO</td></tr>
+            <tr><th>欄位</th><th>型別</th><th>必填</th><th>說明</th><th>MES 來源</th></tr>
+            <tr><td>companyID</td><td>string</td><td><span class="badge badge-required">Y</span></td><td>公司別</td><td>COMPANYID</td></tr>
+            <tr><td>userId</td><td>string</td><td><span class="badge badge-required">Y</span></td><td>操作人員</td><td>CONFIRMER</td></tr>
+            <tr><td>doAction</td><td>string</td><td><span class="badge badge-required">Y</span></td><td>2=移轉單</td><td>DOACTION</td></tr>
+            <tr><td>docase</td><td>string</td><td><span class="badge badge-required">Y</span></td><td>1=新增</td><td>DOCASE</td></tr>
+            <tr><td>head</td><td>object</td><td><span class="badge badge-required">Y</span></td><td>表頭資料</td><td>-</td></tr>
+            <tr><td>line</td><td>array</td><td><span class="badge badge-required">Y</span></td><td>表身明細</td><td>-</td></tr>
         </table>
 
-        <h4>3.1.2 表身（Detail / line）- getTransferFormBody()</h4>
+        <h4>3.1.2 表頭（head）</h4>
         <table>
-            <tr>
-                <th>欄位代碼</th>
-                <th>欄位名稱</th>
-                <th>型別</th>
-                <th>必填</th>
-                <th>說明</th>
-                <th>MES 來源欄位</th>
-            </tr>
-            <tr><td>moType</td><td>工單類別</td><td>string</td><td><span class="badge badge-required">Y</span></td><td>製令單別</td><td>MOTYPE</td></tr>
-            <tr><td>moCode</td><td>工單號碼</td><td>string</td><td><span class="badge badge-required">Y</span></td><td>製令單號</td><td>MONO</td></tr>
-            <tr><td>moveOutOpSeq</td><td>移出製程序</td><td>string</td><td><span class="badge badge-required">Y</span></td><td>出站製程序號</td><td>OUTOPSEQ</td></tr>
-            <tr><td>moveOutOpId</td><td>移出製程</td><td>string</td><td><span class="badge badge-required">Y</span></td><td>出站製程代碼</td><td>OUTOP</td></tr>
-            <tr><td>moveInOpSeq</td><td>移入製程序</td><td>string</td><td><span class="badge badge-optional">N</span></td><td>入站製程序號</td><td>INOPSEQ</td></tr>
-            <tr><td>moveInOpId</td><td>移入製程</td><td>string</td><td><span class="badge badge-optional">N</span></td><td>入站製程代碼</td><td>INOP</td></tr>
-            <tr><td>qty</td><td>數量</td><td>decimal</td><td><span class="badge badge-required">Y</span></td><td>移轉數量</td><td>TRANSQTY</td></tr>
-            <tr><td>unit</td><td>單位</td><td>string</td><td><span class="badge badge-required">Y</span></td><td>庫存單位</td><td>UNIT</td></tr>
-            <tr><td>batchCode</td><td>批號</td><td>string</td><td><span class="badge badge-required">Y</span></td><td>MES 批號</td><td>LOTNO</td></tr>
-            <tr><td>state</td><td>狀態</td><td>string</td><td><span class="badge badge-required">Y</span></td><td>移轉類型(PATTERN)</td><td>PATTERN</td></tr>
-            <tr><td>acceptanceQty</td><td>驗收數量</td><td>decimal</td><td><span class="badge badge-optional">N</span></td><td>驗收包裝數量</td><td>TL002</td></tr>
-            <tr><td>scrapQty</td><td>報廢數量</td><td>decimal</td><td><span class="badge badge-optional">N</span></td><td>報廢數量</td><td>SCRAPQTY</td></tr>
-            <tr><td>inspectionReturnQty</td><td>驗退數量</td><td>decimal</td><td><span class="badge badge-optional">N</span></td><td>驗退數量</td><td>TL003</td></tr>
-            <tr><td>prodCode</td><td>品號</td><td>string</td><td><span class="badge badge-required">Y</span></td><td>產品料號</td><td>ITEMID</td></tr>
-            <tr><td>prodName</td><td>品名</td><td>string</td><td><span class="badge badge-optional">N</span></td><td>產品名稱</td><td>ITEMNAME</td></tr>
-            <tr><td>prodSpec</td><td>規格</td><td>string</td><td><span class="badge badge-optional">N</span></td><td>產品規格</td><td>ITEMDESCRIPTION</td></tr>
-            <tr><td>moveInCode</td><td>移入部門</td><td>string</td><td><span class="badge badge-optional">N</span></td><td>移入倉庫/部門</td><td>INDEP</td></tr>
-            <tr><td>moveInLocation</td><td>移入儲位</td><td>string</td><td><span class="badge badge-optional">N</span></td><td>目標儲位</td><td>INSTORAGESPACE</td></tr>
-            <tr><td>useTime</td><td>人工工時</td><td>decimal</td><td><span class="badge badge-optional">N</span></td><td>人工使用時間</td><td>LABORHOUR</td></tr>
-            <tr><td>useMachineTime</td><td>機器工時</td><td>decimal</td><td><span class="badge badge-optional">N</span></td><td>機器使用時間</td><td>MACHINEHOUR</td></tr>
-            <tr><td>remark</td><td>備註</td><td>string</td><td><span class="badge badge-optional">N</span></td><td>明細備註</td><td>NOTE</td></tr>
-            <tr><td>manufactureDualUnit</td><td>製造雙單位</td><td>string</td><td><span class="badge badge-optional">N</span></td><td>雙單位</td><td>TWINUNIT</td></tr>
+            <tr><th>欄位</th><th>型別</th><th>必填</th><th>說明</th><th>MES 來源</th></tr>
+            <tr><td>transferType</td><td>string</td><td><span class="badge badge-required">Y</span></td><td>移轉單別（59=委外）</td><td>TRANSTYPE</td></tr>
+            <tr><td>date</td><td>string</td><td><span class="badge badge-required">Y</span></td><td>單據日期 YYYY-MM-DD</td><td>TRANSDATE</td></tr>
+            <tr><td>moveOutType</td><td>string</td><td><span class="badge badge-required">Y</span></td><td>移出類型</td><td>OUTTYPE</td></tr>
+            <tr><td>moveOutCode</td><td>string</td><td><span class="badge badge-required">Y</span></td><td>移出代碼</td><td>OUTDEPID</td></tr>
+            <tr><td>moveOutName</td><td>string</td><td><span class="badge badge-optional">N</span></td><td>移出名稱</td><td>OUTDEPNAME</td></tr>
+            <tr><td>moveInType</td><td>string</td><td><span class="badge badge-required">Y</span></td><td>移入類型</td><td>INTYPE</td></tr>
+            <tr><td>moveInCode</td><td>string</td><td><span class="badge badge-required">Y</span></td><td>移入代碼（倉庫）</td><td>INDEPID</td></tr>
+            <tr><td>moveInName</td><td>string</td><td><span class="badge badge-optional">N</span></td><td>移入名稱</td><td>INDEPNAME</td></tr>
+            <tr><td>factoryCode</td><td>string</td><td><span class="badge badge-required">Y</span></td><td>廠別</td><td>FACTORYID</td></tr>
+            <tr><td>remark</td><td>string</td><td><span class="badge badge-optional">N</span></td><td>備註</td><td>COMMENT</td></tr>
+            <tr><td>eMESTransferType</td><td>string</td><td><span class="badge badge-required">Y</span></td><td>MES 單別</td><td>TRANSTYPE</td></tr>
+            <tr><td>eMESTransferCode</td><td>string</td><td><span class="badge badge-required">Y</span></td><td>MES 單號</td><td>TRANSNO</td></tr>
         </table>
 
-        <h3>3.2 stockin.data.process Request 規格</h3>
-
-        <h4>3.2.1 取消倉管 (cancelStockIn)</h4>
+        <h4>3.1.3 表身（line）- 陣列</h4>
         <table>
-            <tr><th>欄位代碼</th><th>欄位名稱</th><th>型別</th><th>必填</th><th>說明</th></tr>
-            <tr><td>stock_in_no</td><td>入庫單號</td><td>string</td><td><span class="badge badge-required">Y</span></td><td>格式：{TL011}-{TL012}</td></tr>
+            <tr><th>欄位</th><th>型別</th><th>必填</th><th>說明</th><th>MES 來源</th></tr>
+            <tr><td>moType</td><td>string</td><td><span class="badge badge-required">Y</span></td><td>工單類別</td><td>MOTYPE</td></tr>
+            <tr><td>moCode</td><td>string</td><td><span class="badge badge-required">Y</span></td><td>工單號碼</td><td>MONO</td></tr>
+            <tr><td>moveOutOpSeq</td><td>string</td><td><span class="badge badge-required">Y</span></td><td>移出製程序</td><td>OUTOPSEQ</td></tr>
+            <tr><td>moveOutOpId</td><td>string</td><td><span class="badge badge-required">Y</span></td><td>移出製程</td><td>OUTOP</td></tr>
+            <tr><td>qty</td><td>decimal</td><td><span class="badge badge-required">Y</span></td><td>數量</td><td>TRANSQTY</td></tr>
+            <tr><td>unit</td><td>string</td><td><span class="badge badge-required">Y</span></td><td>單位</td><td>UNIT</td></tr>
+            <tr><td>batchCode</td><td>string</td><td><span class="badge badge-required">Y</span></td><td>批號</td><td>LOTNO</td></tr>
+            <tr><td>state</td><td>string</td><td><span class="badge badge-required">Y</span></td><td>狀態(PATTERN)</td><td>PATTERN</td></tr>
+            <tr><td>prodCode</td><td>string</td><td><span class="badge badge-required">Y</span></td><td>品號</td><td>ITEMID</td></tr>
+            <tr><td>prodName</td><td>string</td><td><span class="badge badge-optional">N</span></td><td>品名</td><td>ITEMNAME</td></tr>
+            <tr><td>outSourceType</td><td>string</td><td><span class="badge badge-optional">N</span></td><td>託工單別</td><td>OUTORDERTYPE</td></tr>
+            <tr><td>outSourceCode</td><td>string</td><td><span class="badge badge-optional">N</span></td><td>託工單號</td><td>OUTORDERNO</td></tr>
+            <tr><td>outSourceSeq</td><td>string</td><td><span class="badge badge-optional">N</span></td><td>託工序號</td><td>OUTORDERSEQ</td></tr>
+            <tr><td>moveInCode</td><td>string</td><td><span class="badge badge-optional">N</span></td><td>移入部門</td><td>INDEP</td></tr>
+            <tr><td>moveInLocation</td><td>string</td><td><span class="badge badge-optional">N</span></td><td>移入儲位</td><td>INSTORAGESPACE</td></tr>
         </table>
 
-        <h4>3.2.2 取消委外單 (outsourcingProcess)</h4>
+        <h3>3.2 outsourcing.process Request 規格</h3>
+
+        <div class="info-box info">
+            <strong>程式對應</strong><br>
+            組裝位置：<code>GeneralUpdater.java:1583-1584</code>
+        </div>
+
         <table>
-            <tr><th>欄位代碼</th><th>欄位名稱</th><th>型別</th><th>必填</th><th>說明</th></tr>
-            <tr><td>outsource_no</td><td>委外單號</td><td>string</td><td><span class="badge badge-required">Y</span></td><td>格式：{TL011}-{TL012}</td></tr>
-            <tr><td>source_type</td><td>來源類型</td><td>string</td><td><span class="badge badge-required">Y</span></td><td>0=出貨還原, 1=回貨還原, 2=退貨還原</td></tr>
+            <tr><th>欄位</th><th>型別</th><th>必填</th><th>說明</th><th>範例值</th></tr>
+            <tr><td>outsource_no</td><td>string</td><td><span class="badge badge-required">Y</span></td><td>委外單號（TL011-TL012）</td><td>"5902-20260319001"</td></tr>
+            <tr><td>source_type</td><td>string</td><td><span class="badge badge-required">Y</span></td><td>來源類型</td><td>"0"</td></tr>
+        </table>
+
+        <h4>source_type 說明</h4>
+        <table>
+            <tr><th>值</th><th>說明</th><th>使用情境</th></tr>
+            <tr><td>0</td><td>出貨還原</td><td>取消委外出站時使用</td></tr>
+            <tr><td>1</td><td>回貨還原</td><td>取消委外回貨時使用</td></tr>
+            <tr><td>2</td><td>退貨還原</td><td>取消委外退貨時使用</td></tr>
         </table>
 
         <!-- 4. Response 規格 -->
         <h2 id="section4">4. Response 規格</h2>
 
         <h3>4.1 共用 Response 結構</h3>
-        <div class="info-box info">
-            <strong>📌 實際程式對應</strong><br>
-            Response 解析邏輯位於：<code>XmlToERP_handler.java:102-114</code>
-        </div>
-
         <table>
-            <tr><th>欄位代碼</th><th>欄位名稱</th><th>型別</th><th>說明</th></tr>
-            <tr><td>code</td><td>回應代碼</td><td>int</td><td>200=成功，其他=失敗</td></tr>
-            <tr><td>msg</td><td>訊息</td><td>string</td><td>處理結果訊息</td></tr>
-            <tr><td>TB001</td><td>ERP單別</td><td>string</td><td>ERP 產生的單據類別</td></tr>
-            <tr><td>TB002</td><td>ERP單號</td><td>string</td><td>ERP 產生的單據號碼</td></tr>
+            <tr><th>欄位</th><th>型別</th><th>說明</th></tr>
+            <tr><td>code</td><td>int</td><td>200=成功，其他=失敗</td></tr>
+            <tr><td>msg</td><td>string</td><td>處理結果訊息</td></tr>
+            <tr><td>TB001</td><td>string</td><td>ERP 單別（成功時回傳）</td></tr>
+            <tr><td>TB002</td><td>string</td><td>ERP 單號（成功時回傳）</td></tr>
         </table>
 
         <h3>4.2 MES 內部處理結果</h3>
         <table>
-            <tr><th>欄位代碼</th><th>說明</th></tr>
+            <tr><th>欄位</th><th>說明</th></tr>
             <tr><td>ISOK</td><td>true=成功, false=失敗</td></tr>
             <tr><td>Msg</td><td>處理訊息</td></tr>
-            <tr><td>TB001</td><td>回寫至 TL011</td></tr>
-            <tr><td>TB002</td><td>回寫至 TL012</td></tr>
+            <tr><td>TB001</td><td>回寫至 SFT_TRANSORDER_LINE.TL011</td></tr>
+            <tr><td>TB002</td><td>回寫至 SFT_TRANSORDER_LINE.TL012</td></tr>
         </table>
 
         <!-- 5. API 規則與檢核邏輯 -->
         <h2 id="section5">5. API 規則與檢核邏輯</h2>
 
-        <h3>5.1 stockin.data.create 檢核規則</h3>
+        <h3>5.1 建立委外進貨單檢核規則</h3>
         <table>
-            <tr><th>序號</th><th>檢核項目</th><th>檢核規則</th><th>程式位置</th></tr>
-            <tr><td>1</td><td>明細資料存在</td><td>SFT_TRANSORDER_LINE_GRID 不可為空</td><td>TransOrderDataToJson.java:609</td></tr>
-            <tr><td>2</td><td>TO013 檢查</td><td>TO013=1 時才送 generateTransferForm</td><td>TransOrderDataToJson.java:612</td></tr>
-            <tr><td>3</td><td>ERP 連線</td><td>SFTConfig.isHasERP() 需為 true</td><td>TransOrderDataToJson.java:646</td></tr>
-            <tr><td>4</td><td>TRANSTYPE 判斷</td><td>59=委外進貨, 其他=一般移轉</td><td>TransOrderDataToJson.java:648</td></tr>
-            <tr><td>5</td><td>工單完工檢查</td><td>canUpdateERP_TA_OP_Status100() 需為 true</td><td>TransOrderDataToJson.java:637</td></tr>
+            <tr><th>#</th><th>檢核項目</th><th>規則</th><th>程式位置</th></tr>
+            <tr><td>1</td><td>TRANSTYPE 判斷</td><td>= "59" 才用委外 API</td><td>TransOrderDataToJson.java:648</td></tr>
+            <tr><td>2</td><td>TO013 檢查</td><td>= 1 時才送 ERP</td><td>TransOrderDataToJson.java:612</td></tr>
+            <tr><td>3</td><td>明細資料存在</td><td>SFT_TRANSORDER_LINE_GRID 不可空</td><td>TransOrderDataToJson.java:609</td></tr>
+            <tr><td>4</td><td>ERP 連線</td><td>SFTConfig.isHasERP() = true</td><td>TransOrderDataToJson.java:646</td></tr>
         </table>
 
-        <h3>5.2 stockin.data.process 檢核規則</h3>
+        <h3>5.2 取消委外進貨單檢核規則</h3>
         <table>
-            <tr><th>序號</th><th>檢核項目</th><th>檢核規則</th><th>程式位置</th></tr>
-            <tr><td>1</td><td>TL011/TL012 有值</td><td>必須有 ERP 回傳的單據編號才能呼叫取消</td><td>GeneralUpdater.java:1571</td></tr>
-            <tr><td>2</td><td>TRANSORDERTYPE 判斷</td><td>59=outsourcingProcess, 其他=cancelStockIn</td><td>GeneralUpdater.java:1582</td></tr>
-            <tr><td>3</td><td>ERP 連線</td><td>SFTConfig.isHasERP() 需為 true</td><td>GeneralUpdater.java:1575</td></tr>
+            <tr><th>#</th><th>檢核項目</th><th>規則</th><th>程式位置</th></tr>
+            <tr><td>1</td><td>TL011/TL012 有值</td><td>兩者都不可為空</td><td>GeneralUpdater.java:1571</td></tr>
+            <tr><td>2</td><td>TRANSORDERTYPE 判斷</td><td>= "59" 才用委外取消 API</td><td>GeneralUpdater.java:1582</td></tr>
+            <tr><td>3</td><td>ERP 連線</td><td>SFTConfig.isHasERP() = true</td><td>GeneralUpdater.java:1575</td></tr>
         </table>
 
         <!-- 6. 錯誤代碼設計 -->
@@ -730,56 +731,57 @@
 
         <table>
             <tr><th>錯誤代碼</th><th>錯誤訊息</th><th>說明</th><th>發生情境</th></tr>
-            <tr><td>E001</td><td>必填欄位缺失</td><td>必填欄位未傳入或為空值</td><td>Request 缺少必要欄位</td></tr>
-            <tr><td>E002</td><td>工單不存在</td><td>傳入的工單號碼在 ERP 查無資料</td><td>MOTYPE-MONO 錯誤</td></tr>
-            <tr><td>E003</td><td>工單狀態不允許</td><td>工單已結案或取消</td><td>嘗試對已結案工單入庫</td></tr>
-            <tr><td>E004</td><td>數量必須大於零</td><td>qty ≤ 0</td><td>輸入數量為 0 或負數</td></tr>
-            <tr><td>E005</td><td>數量超過餘量</td><td>累計入庫數量超過工單數量</td><td>超量入庫</td></tr>
-            <tr><td>E006</td><td>倉庫不存在</td><td>moveInCode 無效</td><td>倉庫設定錯誤</td></tr>
-            <tr><td>E101</td><td>入庫單不存在</td><td>取消時找不到原單</td><td>TB001-TB002 錯誤</td></tr>
-            <tr><td>E102</td><td>入庫單已過帳</td><td>入庫單已完成過帳</td><td>嘗試取消已過帳單據</td></tr>
-            <tr><td>E103</td><td>入庫單已引用</td><td>有後續銷貨單或調撥單</td><td>庫存已被使用</td></tr>
-            <tr><td>E104</td><td>庫存不足</td><td>取消後庫存會變負數</td><td>庫存已被耗用</td></tr>
-            <tr><td>E999</td><td>系統錯誤</td><td>ERP 內部錯誤</td><td>資料庫異常、Timeout</td></tr>
-            <tr><td>Return result parsing error!</td><td>回傳解析失敗</td><td>ERP 回傳格式異常或連線失敗</td><td>XmlToERP_handler.java:117</td></tr>
+            <tr><td>E001</td><td>必填欄位缺失</td><td>必填欄位未傳入</td><td>Request 缺少必要欄位</td></tr>
+            <tr><td>E002</td><td>委外工單不存在</td><td>工單號在 ERP 查無資料</td><td>MOTYPE-MONO 錯誤</td></tr>
+            <tr><td>E003</td><td>委外工單狀態不允許</td><td>工單已結案或取消</td><td>工單狀態異常</td></tr>
+            <tr><td>E004</td><td>數量必須大於零</td><td>qty 小於等於 0</td><td>數量錯誤</td></tr>
+            <tr><td>E005</td><td>數量超過餘量</td><td>超過委外工單可入庫量</td><td>超量入庫</td></tr>
+            <tr><td>E101</td><td>委外進貨單不存在</td><td>取消時找不到原單</td><td>outsource_no 錯誤</td></tr>
+            <tr><td>E102</td><td>委外進貨單已過帳</td><td>已完成過帳</td><td>嘗試取消已過帳單據</td></tr>
+            <tr><td>E103</td><td>委外進貨單已引用</td><td>有後續單據</td><td>庫存已被使用</td></tr>
+            <tr><td>E104</td><td>庫存不足</td><td>取消後庫存會變負</td><td>庫存已耗用</td></tr>
+            <tr><td>E999</td><td>系統錯誤</td><td>ERP 內部錯誤</td><td>Timeout、連線異常</td></tr>
         </table>
 
         <!-- 7. JSON 範例 -->
         <h2 id="section7">7. JSON 範例</h2>
 
-        <h3>7.1 stockin.data.create Request 範例</h3>
+        <h3>7.1 outsourcing.purchase.stockin.create Request</h3>
         <div class="code-block">
 <pre>{
   <span class="key">"companyID"</span>: <span class="string">"COMP01"</span>,
   <span class="key">"userId"</span>: <span class="string">"EMP001"</span>,
-  <span class="key">"doAction"</span>: <span class="string">"2"</span>,           <span class="comment">// 2=移轉單</span>
-  <span class="key">"docase"</span>: <span class="string">"1"</span>,              <span class="comment">// 1=新增</span>
+  <span class="key">"doAction"</span>: <span class="string">"2"</span>,
+  <span class="key">"docase"</span>: <span class="string">"1"</span>,
   <span class="key">"head"</span>: {
-    <span class="key">"transferType"</span>: <span class="string">"51"</span>,
+    <span class="key">"transferType"</span>: <span class="string">"59"</span>,
     <span class="key">"date"</span>: <span class="string">"2026-03-19"</span>,
     <span class="key">"moveOutType"</span>: <span class="string">"1"</span>,
-    <span class="key">"moveOutCode"</span>: <span class="string">"WS001"</span>,
-    <span class="key">"moveOutName"</span>: <span class="string">"組裝站"</span>,
+    <span class="key">"moveOutCode"</span>: <span class="string">"OS001"</span>,
+    <span class="key">"moveOutName"</span>: <span class="string">"委外加工站"</span>,
     <span class="key">"moveInType"</span>: <span class="string">"2"</span>,
     <span class="key">"moveInCode"</span>: <span class="string">"FG01"</span>,
     <span class="key">"moveInName"</span>: <span class="string">"成品倉"</span>,
     <span class="key">"factoryCode"</span>: <span class="string">"P001"</span>,
-    <span class="key">"remark"</span>: <span class="string">"正常完工入庫"</span>,
-    <span class="key">"eMESTransferType"</span>: <span class="string">"51"</span>,
+    <span class="key">"remark"</span>: <span class="string">"委外加工完成入庫"</span>,
+    <span class="key">"eMESTransferType"</span>: <span class="string">"59"</span>,
     <span class="key">"eMESTransferCode"</span>: <span class="string">"T20260319001"</span>
   },
   <span class="key">"line"</span>: [
     {
       <span class="key">"moType"</span>: <span class="string">"5101"</span>,
       <span class="key">"moCode"</span>: <span class="string">"20260319001"</span>,
-      <span class="key">"moveOutOpSeq"</span>: <span class="string">"0030"</span>,
-      <span class="key">"moveOutOpId"</span>: <span class="string">"OP030"</span>,
+      <span class="key">"moveOutOpSeq"</span>: <span class="string">"0020"</span>,
+      <span class="key">"moveOutOpId"</span>: <span class="string">"OS-OP"</span>,
       <span class="key">"qty"</span>: <span class="number">100</span>,
       <span class="key">"unit"</span>: <span class="string">"PCS"</span>,
       <span class="key">"batchCode"</span>: <span class="string">"LOT20260319001"</span>,
       <span class="key">"state"</span>: <span class="string">"1"</span>,
       <span class="key">"prodCode"</span>: <span class="string">"FG-A001-001"</span>,
       <span class="key">"prodName"</span>: <span class="string">"成品A"</span>,
+      <span class="key">"outSourceType"</span>: <span class="string">"5902"</span>,
+      <span class="key">"outSourceCode"</span>: <span class="string">"20260319001"</span>,
+      <span class="key">"outSourceSeq"</span>: <span class="string">"001"</span>,
       <span class="key">"moveInCode"</span>: <span class="string">"FG01"</span>,
       <span class="key">"moveInLocation"</span>: <span class="string">"A-01-01"</span>
     }
@@ -787,14 +789,13 @@
 }</pre>
         </div>
 
-        <h3>7.2 stockin.data.create Response 範例</h3>
-
+        <h3>7.2 outsourcing.purchase.stockin.create Response</h3>
         <h4>成功回應</h4>
         <div class="code-block">
 <pre>{
   <span class="key">"code"</span>: <span class="number">200</span>,
-  <span class="key">"msg"</span>: <span class="string">"入庫單建立成功"</span>,
-  <span class="key">"TB001"</span>: <span class="string">"5101"</span>,
+  <span class="key">"msg"</span>: <span class="string">"委外進貨單建立成功"</span>,
+  <span class="key">"TB001"</span>: <span class="string">"5902"</span>,
   <span class="key">"TB002"</span>: <span class="string">"20260319001"</span>
 }</pre>
         </div>
@@ -803,47 +804,31 @@
         <div class="code-block">
 <pre>{
   <span class="key">"code"</span>: <span class="number">500</span>,
-  <span class="key">"msg"</span>: <span class="string">"工單不存在 5101-20260319999"</span>
+  <span class="key">"msg"</span>: <span class="string">"委外工單不存在 5101-20260319999"</span>
 }</pre>
         </div>
 
-        <h3>7.3 stockin.data.process Request 範例 (取消倉管)</h3>
-        <div class="code-block">
-<pre>{
-  <span class="key">"stock_in_no"</span>: <span class="string">"5101-20260319001"</span>
-}</pre>
-        </div>
-
-        <h3>7.4 stockin.data.process Request 範例 (取消委外)</h3>
+        <h3>7.3 outsourcing.process Request (取消)</h3>
         <div class="code-block">
 <pre>{
   <span class="key">"outsource_no"</span>: <span class="string">"5902-20260319001"</span>,
-  <span class="key">"source_type"</span>: <span class="string">"0"</span>   <span class="comment">// 0=出貨還原</span>
+  <span class="key">"source_type"</span>: <span class="string">"0"</span>
 }</pre>
         </div>
 
-        <h3>7.5 stockin.data.process Response 範例</h3>
-
+        <h3>7.4 outsourcing.process Response</h3>
         <h4>成功回應</h4>
         <div class="code-block">
 <pre>{
   <span class="key">"code"</span>: <span class="number">200</span>,
-  <span class="key">"msg"</span>: <span class="string">"入庫單取消成功"</span>
-}</pre>
-        </div>
-
-        <h4>失敗回應</h4>
-        <div class="code-block">
-<pre>{
-  <span class="key">"code"</span>: <span class="number">500</span>,
-  <span class="key">"msg"</span>: <span class="string">"入庫單已過帳，無法取消"</span>
+  <span class="key">"msg"</span>: <span class="string">"委外進貨單取消成功"</span>
 }</pre>
         </div>
 
         <!-- 8. 測試案例 -->
         <h2 id="section8">8. 測試案例</h2>
 
-        <h3>8.1 新增入庫測試案例</h3>
+        <h3>8.1 建立委外進貨單測試案例</h3>
 
         <div class="test-case">
             <div class="test-case-header">
@@ -851,10 +836,10 @@
                 <span class="badge badge-success">正向測試</span>
             </div>
             <table>
-                <tr><th width="20%">測試項目</th><td>新增入庫成功</td></tr>
-                <tr><th>前置條件</th><td>1. 工單 5101-20260319001 存在且狀態為生產中<br>2. 最後站已出站<br>3. 倉庫 FG01 有效</td></tr>
-                <tr><th>測試步驟</th><td>1. MES 執行出站作業<br>2. 觸發 TransOrderDataToJson.doErp()<br>3. 呼叫 stockin.data.create</td></tr>
-                <tr><th>預期結果</th><td>1. code = 200<br>2. 回傳有效的 TB001/TB002<br>3. TL011/TL012 正確回寫</td></tr>
+                <tr><th width="20%">測試項目</th><td>建立委外進貨單成功</td></tr>
+                <tr><th>前置條件</th><td>1. TRANSTYPE = "59"<br>2. 委外工單存在且狀態正常<br>3. 委外站已出站</td></tr>
+                <tr><th>測試步驟</th><td>1. MES 執行委外站出站<br>2. 觸發 outsourcingPurchaseStockinCreate<br>3. 檢查 Response</td></tr>
+                <tr><th>預期結果</th><td>1. code = 200<br>2. TB001/TB002 有值<br>3. TL011/TL012 正確回寫</td></tr>
             </table>
         </div>
 
@@ -864,27 +849,14 @@
                 <span class="badge badge-error">負向測試</span>
             </div>
             <table>
-                <tr><th width="20%">測試項目</th><td>工單不存在</td></tr>
-                <tr><th>前置條件</th><td>工單 5101-99999999 不存在於 ERP</td></tr>
-                <tr><th>測試步驟</th><td>傳入不存在的 moType-moCode</td></tr>
-                <tr><th>預期結果</th><td>1. code ≠ 200<br>2. ISOK = false<br>3. Msg 包含錯誤訊息</td></tr>
+                <tr><th width="20%">測試項目</th><td>委外工單不存在</td></tr>
+                <tr><th>前置條件</th><td>傳入不存在的 moType-moCode</td></tr>
+                <tr><th>測試步驟</th><td>執行出站並呼叫 API</td></tr>
+                <tr><th>預期結果</th><td>1. code 不等於 200<br>2. ISOK = false</td></tr>
             </table>
         </div>
 
-        <div class="test-case">
-            <div class="test-case-header">
-                <span class="test-case-id">TC-C-003</span>
-                <span class="badge badge-warning">邊界測試</span>
-            </div>
-            <table>
-                <tr><th width="20%">測試項目</th><td>委外進貨單 (TRANSTYPE=59)</td></tr>
-                <tr><th>前置條件</th><td>TRANSTYPE = "59"</td></tr>
-                <tr><th>測試步驟</th><td>執行委外站出站作業</td></tr>
-                <tr><th>預期結果</th><td>1. taskName = "outsourcingPurchaseStockinCreate"<br>2. 正確產生委外進貨單</td></tr>
-            </table>
-        </div>
-
-        <h3>8.2 取消入庫測試案例</h3>
+        <h3>8.2 取消委外進貨單測試案例</h3>
 
         <div class="test-case">
             <div class="test-case-header">
@@ -892,10 +864,10 @@
                 <span class="badge badge-success">正向測試</span>
             </div>
             <table>
-                <tr><th width="20%">測試項目</th><td>取消入庫成功</td></tr>
-                <tr><th>前置條件</th><td>1. TL011/TL012 有值<br>2. 入庫單未過帳<br>3. 無後續單據引用</td></tr>
-                <tr><th>測試步驟</th><td>1. MES 執行取消出站<br>2. 觸發 cancelStockIn API</td></tr>
-                <tr><th>預期結果</th><td>1. ISOK = true<br>2. ERP 庫存還原<br>3. 入庫單狀態變為已取消</td></tr>
+                <tr><th width="20%">測試項目</th><td>取消委外進貨單成功</td></tr>
+                <tr><th>前置條件</th><td>1. TL011/TL012 有值<br>2. TRANSORDERTYPE = "59"<br>3. 進貨單未過帳</td></tr>
+                <tr><th>測試步驟</th><td>1. MES 執行取消出站<br>2. 觸發 outsourcingProcess<br>3. 傳入 source_type = "0"</td></tr>
+                <tr><th>預期結果</th><td>1. ISOK = true<br>2. ERP 庫存還原<br>3. 進貨單狀態變為已取消</td></tr>
             </table>
         </div>
 
@@ -908,33 +880,7 @@
                 <tr><th width="20%">測試項目</th><td>TL011/TL012 為空不呼叫 API</td></tr>
                 <tr><th>前置條件</th><td>TL011 或 TL012 為空值</td></tr>
                 <tr><th>測試步驟</th><td>執行取消出站</td></tr>
-                <tr><th>預期結果</th><td>不呼叫 ERP 取消 API（程式 if 條件不成立）</td></tr>
-            </table>
-        </div>
-
-        <div class="test-case">
-            <div class="test-case-header">
-                <span class="test-case-id">TC-P-003</span>
-                <span class="badge badge-warning">邊界測試</span>
-            </div>
-            <table>
-                <tr><th width="20%">測試項目</th><td>取消委外單 (TRANSORDERTYPE=59)</td></tr>
-                <tr><th>前置條件</th><td>TRANSORDERTYPE = "59"</td></tr>
-                <tr><th>測試步驟</th><td>執行取消委外出站</td></tr>
-                <tr><th>預期結果</th><td>1. taskName = "outsourcingProcess"<br>2. source_type = "0"</td></tr>
-            </table>
-        </div>
-
-        <div class="test-case">
-            <div class="test-case-header">
-                <span class="test-case-id">TC-P-004</span>
-                <span class="badge badge-error">異常測試</span>
-            </div>
-            <table>
-                <tr><th width="20%">測試項目</th><td>入庫單已過帳不可取消</td></tr>
-                <tr><th>前置條件</th><td>入庫單已完成過帳</td></tr>
-                <tr><th>測試步驟</th><td>嘗試取消已過帳的入庫單</td></tr>
-                <tr><th>預期結果</th><td>1. ISOK = false<br>2. Msg 包含"已過帳"相關訊息</td></tr>
+                <tr><th>預期結果</th><td>不呼叫 outsourcingProcess API</td></tr>
             </table>
         </div>
 
@@ -947,100 +893,28 @@
             <tr>
                 <td><strong>資料正確性</strong></td>
                 <td>
-                    1. MES 傳送的工單號、品號、數量正確寫入 ERP<br>
-                    2. ERP 產生的 TB001/TB002 正確回寫至 TL011/TL012<br>
+                    1. MES 傳送的委外工單號、品號、數量正確寫入 ERP<br>
+                    2. ERP TB001/TB002 正確回寫至 TL011/TL012<br>
                     3. 庫存數量正確增減
                 </td>
-                <td>
-                    1. 比對 MES TRANSORDER_LINE 與 ERP 入庫單內容<br>
-                    2. 驗證 ERP 庫存交易明細
-                </td>
+                <td>比對 MES TRANSORDER_LINE 與 ERP 進貨單</td>
             </tr>
             <tr>
-                <td><strong>邏輯正確性</strong></td>
+                <td><strong>API 路由正確性</strong></td>
                 <td>
-                    1. TRANSTYPE=59 正確路由至 outsourcingPurchaseStockinCreate<br>
-                    2. TRANSORDERTYPE=59 正確路由至 outsourcingProcess<br>
-                    3. 取消時正確還原庫存
+                    1. TRANSTYPE=59 使用 outsourcingPurchaseStockinCreate<br>
+                    2. TRANSORDERTYPE=59 使用 outsourcingProcess
                 </td>
-                <td>
-                    1. 檢查 LOG 中的 taskName<br>
-                    2. 執行入庫/取消前後庫存比對
-                </td>
-            </tr>
-            <tr>
-                <td><strong>檢核正確性</strong></td>
-                <td>
-                    1. TL011/TL012 為空時不呼叫取消 API<br>
-                    2. TO013≠1 時不送 ERP<br>
-                    3. 錯誤時 ISOK=false
-                </td>
-                <td>
-                    1. 執行所有負面測試案例<br>
-                    2. 驗證 LOG 和回傳值
-                </td>
+                <td>檢查 LOG 中的 taskName</td>
             </tr>
         </table>
 
         <h3>9.2 系統穩定性驗收</h3>
         <table>
-            <tr><th>驗收項目</th><th>驗收條件</th><th>驗收方式</th></tr>
-            <tr>
-                <td><strong>呼叫成功率</strong></td>
-                <td>正常情境下 API 呼叫成功率 ≥ 99%</td>
-                <td>連續執行 100 次正常請求，統計成功次數</td>
-            </tr>
-            <tr>
-                <td><strong>回應時間</strong></td>
-                <td>單筆入庫回應時間 ≤ 5 秒（不含網路延遲）</td>
-                <td>記錄 API 處理時間，計算平均值</td>
-            </tr>
-            <tr>
-                <td><strong>Timeout 處理</strong></td>
-                <td>Timeout 時正確記錄 LOG，不產生髒資料</td>
-                <td>模擬 Timeout 情境，檢查 ERPReturnErrorRec.log</td>
-            </tr>
-        </table>
-
-        <h3>9.3 可追蹤性驗收</h3>
-        <table>
-            <tr><th>驗收項目</th><th>驗收條件</th><th>驗收方式</th></tr>
-            <tr>
-                <td><strong>LOG 記錄</strong></td>
-                <td>
-                    1. 送出單據類型和內容有記錄<br>
-                    2. ERP 回應有記錄<br>
-                    3. 錯誤時記錄 Exception 類型
-                </td>
-                <td>
-                    檢查 logs/ERPReturnErrorRec.log<br>
-                    格式：<code>[ERP_SEND_ERROR] taskName=xxx, errorType=xxx</code>
-                </td>
-            </tr>
-            <tr>
-                <td><strong>單據追蹤</strong></td>
-                <td>
-                    1. 可由 MES 批號(LOTNO)追蹤到 ERP 入庫單號<br>
-                    2. TL011/TL012 正確對應 ERP 單據
-                </td>
-                <td>
-                    查詢 SFT_TRANSORDER_LINE 的 TL011/TL012<br>
-                    對比 ERP 入庫單
-                </td>
-            </tr>
-        </table>
-
-        <h3>9.4 測試覆蓋性驗收</h3>
-        <table>
             <tr><th>驗收項目</th><th>驗收條件</th></tr>
-            <tr><td>正向測試</td><td>✅ 新增入庫成功（一般/委外）</td></tr>
-            <tr><td>正向測試</td><td>✅ 取消入庫成功（一般/委外）</td></tr>
-            <tr><td>負向測試</td><td>✅ 工單不存在</td></tr>
-            <tr><td>負向測試</td><td>✅ TL011/TL012 為空不呼叫取消</td></tr>
-            <tr><td>負向測試</td><td>✅ 入庫單已過帳不可取消</td></tr>
-            <tr><td>邊界測試</td><td>✅ TRANSTYPE/TRANSORDERTYPE = 59</td></tr>
-            <tr><td>異常測試</td><td>✅ ERP Timeout 處理</td></tr>
-            <tr><td>整合測試</td><td>✅ 新增→取消→再新增流程</td></tr>
+            <tr><td>呼叫成功率</td><td>正常情境 大於等於 99%</td></tr>
+            <tr><td>回應時間</td><td>小於等於 5 秒（不含網路）</td></tr>
+            <tr><td>Timeout 處理</td><td>正確記錄 LOG，不產生髒資料</td></tr>
         </table>
 
         <!-- 10. 附錄 -->
@@ -1048,51 +922,42 @@
 
         <h3>10.1 相關程式檔案</h3>
         <table>
-            <tr><th>模組</th><th>檔案</th><th>用途</th></tr>
-            <tr><td>SFT_core</td><td>TransOrderDataToJson.java</td><td>入庫資料組裝與 API 呼叫</td></tr>
-            <tr><td>SFT_core</td><td>GeneralUpdater.java</td><td>取消入庫邏輯</td></tr>
-            <tr><td>SFT_core</td><td>SendFormSbyJson.java</td><td>JSON 組裝</td></tr>
-            <tr><td>SFT_core</td><td>SendFormElementbyJson.java</td><td>欄位映射</td></tr>
-            <tr><td>SFT_ERPIntegrate</td><td>XmlToERP_handler.java</td><td>ESB 呼叫與回應處理</td></tr>
+            <tr><th>模組</th><th>檔案</th><th>行號</th><th>用途</th></tr>
+            <tr><td>SFT_core</td><td>TransOrderDataToJson.java</td><td>648</td><td>TRANSTYPE=59 判斷</td></tr>
+            <tr><td>SFT_core</td><td>GeneralUpdater.java</td><td>1571-1595</td><td>取消委外進貨單邏輯</td></tr>
+            <tr><td>SFT_core</td><td>SendFormSbyJson.java</td><td>30-40</td><td>JSON 組裝</td></tr>
+            <tr><td>SFT_core</td><td>SendFormElementbyJson.java</td><td>180-281</td><td>欄位映射</td></tr>
+            <tr><td>SFT_ERPIntegrate</td><td>XmlToERP_handler.java</td><td>82-87</td><td>ESB 路由</td></tr>
         </table>
 
-        <h3>10.2 相關資料表</h3>
+        <h3>10.2 ESB_PARAMETER 設定</h3>
         <table>
-            <tr><th>系統</th><th>資料表</th><th>用途</th></tr>
-            <tr><td>MES</td><td>SFT_TRANSORDER</td><td>移轉單主檔</td></tr>
-            <tr><td>MES</td><td>SFT_TRANSORDER_LINE</td><td>移轉單明細（TL011/TL012 儲存 ERP 單號）</td></tr>
-            <tr><td>MES</td><td>MODETAIL</td><td>製令明細</td></tr>
-            <tr><td>MES</td><td>ESB_PARAMETER</td><td>ESB 介面設定</td></tr>
-            <tr><td>ERP</td><td>完工入庫單主檔</td><td>入庫單表頭</td></tr>
-            <tr><td>ERP</td><td>完工入庫單明細檔</td><td>入庫單表身</td></tr>
+            <tr><th>EMES_INTERFACE</th><th>ESB_INTERFACE</th><th>CROSS API</th></tr>
+            <tr><td>/outsourcingPurchaseStockinCreate</td><td>{ESB}/outsourcingPurchaseStockinCreate</td><td>outsourcing.purchase.stockin.create</td></tr>
+            <tr><td>/outsourcingProcess</td><td>{ESB}/outsourcingProcess</td><td>outsourcing.process</td></tr>
         </table>
 
-        <h3>10.3 ESB_PARAMETER 設定</h3>
+        <h3>10.3 DSMS API 參考</h3>
         <table>
-            <tr><th>EMES_INTERFACE</th><th>ESB_INTERFACE</th><th>說明</th></tr>
-            <tr><td>/sendTransForm</td><td>{ESB_URL}/sendTransForm</td><td>一般移轉單</td></tr>
-            <tr><td>/outsourcingPurchaseStockinCreate</td><td>{ESB_URL}/outsourcingPurchaseStockinCreate</td><td>委外進貨單</td></tr>
-            <tr><td>/cancelStockIn</td><td>{ESB_URL}/cancelStockIn</td><td>取消倉管</td></tr>
-            <tr><td>/outsourcingProcess</td><td>{ESB_URL}/outsourcingProcess</td><td>取消委外</td></tr>
+            <tr><th>API</th><th>DSMS 連結</th></tr>
+            <tr><td>outsourcing.purchase.stockin.create</td><td>api-2062/vid-4462</td></tr>
+            <tr><td>outsourcing.process</td><td>api-2058/vid-4571</td></tr>
         </table>
 
         <h3>10.4 版本歷程</h3>
         <table>
-            <tr><th>版本</th><th>日期</th><th>修改人</th><th>修改內容</th></tr>
-            <tr><td>v1.0</td><td>2026-03-19</td><td>-</td><td>初版建立，依據實際程式碼撰寫</td></tr>
-        </table>
-
-        <h3>10.5 參考文件</h3>
-        <table>
-            <tr><th>文件名稱</th><th>說明</th></tr>
-            <tr><td>CLAUDE.md</td><td>專案開發日誌，包含相關問題修正記錄</td></tr>
-            <tr><td>0000675600_取消出站ERP未收到outsourcingProcess分析報告.md</td><td>Race Condition 問題分析</td></tr>
+            <tr><th>版本</th><th>日期</th><th>修改內容</th></tr>
+            <tr><td>v1.0</td><td>2026-03-19</td><td>初版建立</td></tr>
+            <tr><td>v1.1</td><td>2026-03-19</td><td>更新為委外進貨單 API 規格，加入 CROSS API 對應</td></tr>
         </table>
 
         <div class="info-box success" style="margin-top: 30px;">
-            <strong>📌 文件結束</strong><br>
-            本規格書依據 eMES 實際程式碼撰寫，欄位映射與邏輯流程皆對應現有實作。<br>
-            如有疑問或需要調整，請聯繫開發團隊。
+            <strong>文件結束</strong><br>
+            本規格書依據 eMES 實際程式碼撰寫，包含：
+            <ul style="margin-top:10px;">
+                <li>outsourcing.purchase.stockin.create (api-2062)</li>
+                <li>outsourcing.process (api-2058)</li>
+            </ul>
         </div>
 
     </div>
