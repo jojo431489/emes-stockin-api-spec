@@ -341,7 +341,7 @@
         <div class="card" id="example">
             <h2>7. JSON 範例</h2>
 
-            <h3>Request</h3>
+            <h3>Request (MES 內部 JSON)</h3>
             <div class="code-block">
 <pre>{
   <span class="key">"companyID"</span>: <span class="string">"COMP01"</span>,
@@ -349,6 +349,28 @@
   <span class="key">"outsource_no"</span>: <span class="string">"5902-20260319001"</span>,
   <span class="key">"source_type"</span>: <span class="string">"0"</span>
 }</pre>
+            </div>
+
+            <h3>ERP XML 格式 (實際傳送)</h3>
+            <div class="code-block">
+<pre><span class="comment">&lt;!-- SendFormS.java:1727-1752 --&gt;</span>
+&lt;parameters&gt;
+  &lt;parameter key="enterprise_no" type="string"&gt;COMP01&lt;/parameter&gt;
+  &lt;parameter key="site_no" type="string"&gt;COMP01&lt;/parameter&gt;
+  &lt;parameter key="source_no" type="string"&gt;5902-20260319001&lt;/parameter&gt;
+  &lt;parameter key="source_type" type="numeric"&gt;0&lt;/parameter&gt;
+  &lt;parameter key="objective_doc_no" type="string"&gt;5902-20260319001&lt;/parameter&gt;
+
+  &lt;parameter key="outsourcing_info_data" type="data"&gt;
+    &lt;data name="outsourcing_info"&gt;
+      &lt;row seq="1"&gt;
+        &lt;field name="source_no" type="string"&gt;&lt;/field&gt;
+        &lt;field name="plot_no" type="string"&gt;&lt;/field&gt;
+        &lt;field name="purchase_seq" type="numeric"&gt;&lt;/field&gt;
+      &lt;/row&gt;
+    &lt;/data&gt;
+  &lt;/parameter&gt;
+&lt;/parameters&gt;</pre>
             </div>
 
             <h3>Response (成功)</h3>

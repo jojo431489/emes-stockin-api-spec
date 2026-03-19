@@ -387,7 +387,7 @@
         <div class="card" id="example">
             <h2>7. JSON 範例</h2>
 
-            <h3>Request</h3>
+            <h3>Request (MES JSON)</h3>
             <div class="code-block">
 <pre>{
   <span class="key">"companyID"</span>: <span class="string">"COMP01"</span>,
@@ -405,6 +405,7 @@
     <span class="key">"moveInName"</span>: <span class="string">"成品倉"</span>,
     <span class="key">"factoryCode"</span>: <span class="string">"P001"</span>,
     <span class="key">"remark"</span>: <span class="string">"正常完工入庫"</span>,
+    <span class="key">"create"</span>: <span class="string">"EMP001"</span>,       <span class="comment">// → ERP: operator_no</span>
     <span class="key">"eMESTransferType"</span>: <span class="string">"51"</span>,
     <span class="key">"eMESTransferCode"</span>: <span class="string">"T20260319001"</span>
   },
@@ -420,7 +421,9 @@
     <span class="key">"prodCode"</span>: <span class="string">"FG-A001-001"</span>,
     <span class="key">"prodName"</span>: <span class="string">"成品A"</span>,
     <span class="key">"moveInCode"</span>: <span class="string">"FG01"</span>,
-    <span class="key">"moveInLocation"</span>: <span class="string">"A-01-01"</span>
+    <span class="key">"moveInLocation"</span>: <span class="string">"A-01-01"</span>,
+    <span class="key">"hasQty"</span>: <span class="string">"1"</span>,           <span class="comment">// → ERP: stock_in_status</span>
+    <span class="key">"remark"</span>: <span class="string">""</span>
   }]
 }</pre>
             </div>
