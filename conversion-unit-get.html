@@ -63,6 +63,24 @@
         </div>
 
         <div class="section">
+            <h2>請求參數</h2>
+            <table>
+                <thead><tr><th>欄位</th><th>類型</th><th>必填</th><th>說明</th></tr></thead>
+                <tbody>
+                    <tr><td><code class="code-inline">data_time</code></td><td>String</td><td>必填</td><td>資料異動起始日期（格式：yyyy-MM-dd）</td></tr>
+                </tbody>
+            </table>
+            <div class="note">
+                <div class="note-title">data_time 參數邏輯</div>
+                <div class="note-content">
+                    • <strong>首次執行</strong>：使用當日日期<br>
+                    • <strong>後續執行</strong>：使用 EAI_PARAMETER 表的 LAST_SUCCESS_TIME<br>
+                    • <strong>立即匯入</strong>：使用前端指定日期
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
             <h2>回應欄位</h2>
             <table>
                 <thead><tr><th>ERP 欄位</th><th>MES 欄位</th><th>類型</th><th>說明</th></tr></thead>
@@ -91,6 +109,35 @@
     }
   ]
 }</pre>
+        </div>
+
+        <div class="section">
+            <h2>處理邏輯</h2>
+            <div class="note">
+                <div class="note-title">複合主鍵設計</div>
+                <div class="note-content">
+                    使用 <code class="code-inline">ITEM_NO</code>（品號）+
+                    <code class="code-inline">CONVERSION_UNIT</code>（換算單位）作為複合主鍵。<br><br>
+                    同一品號可設定多個換算單位，例如：<br>
+                    • ITEM-001 + BOX（箱）<br>
+                    • ITEM-001 + CTN（紙箱）<br>
+                    • ITEM-001 + PAL（棧板）
+                </div>
+            </div>
+            <div class="note">
+                <div class="note-title">分母防呆處理</div>
+                <div class="note-content">
+                    換算率分母（DENOMINATOR）不可為 0，程式會自動設為 1：<br>
+                    <code class="code-inline">IF denominator = 0 THEN denominator = 1</code>
+                </div>
+            </div>
+            <div class="note">
+                <div class="note-title">EAI_PARAMETER 記錄</div>
+                <div class="note-content">
+                    首次同步成功後，系統會在 EAI_PARAMETER 表建立記錄，<br>
+                    後續執行時自動使用 LAST_SUCCESS_TIME 作為 data_time 參數。
+                </div>
+            </div>
         </div>
 
         <div class="section">
@@ -137,6 +184,17 @@ WHERE ITEM_NO = N'{item_no}' AND CONVERSION_UNIT = N'{conversion_unit}'
     TRAN_STATUS = :tran_status,
     UPDATE_TIME = N'{當前時間}'
 WHERE ITEM_NO = :ITEM_NO AND CONVERSION_UNIT = :CONVERSION_UNIT</pre>
+
+            <div class="note">
+                <div class="note-title">欄位預設值</div>
+                <div class="note-content">
+                    若 ERP 未回傳以下欄位，自動帶入預設值：<br>
+                    • CONVERSION_RATE_MOLECULAR = 1<br>
+                    • CONVERSION_RATE_DENOMINATOR = 1（不可為 0）<br>
+                    • REMARK = '' (空字串)<br>
+                    • TRAN_STATUS = '' (空字串)
+                </div>
+            </div>
         </div>
     </div>
 
