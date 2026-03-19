@@ -394,6 +394,45 @@
             </div>
         </div>
 
+        <!-- 不良品入庫 Category -->
+        <div class="category">
+            <div class="category-header">
+                <div class="category-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
+                    ⚠️
+                </div>
+                <div class="category-title">
+                    <h2>不良品入庫</h2>
+                    <p>Scrap Stock-In - 0189144</p>
+                </div>
+            </div>
+            <div class="api-grid">
+                <a href="wo-scrap-data-create.html" class="api-card">
+                    <div class="api-card-header">
+                        <h3>不良品入庫建立</h3>
+                        <span class="method method-post">POST</span>
+                    </div>
+                    <div class="code">wo.scrap.data.create</div>
+                    <p>出站時若有不良品，建立報廢入庫單</p>
+                    <div class="tags">
+                        <span class="tag">TRANSORDERTYPE=58</span>
+                        <span class="tag">api-2191</span>
+                    </div>
+                </a>
+                <a href="wo-scrap-data-process.html" class="api-card">
+                    <div class="api-card-header">
+                        <h3>不良品入庫取消</h3>
+                        <span class="method method-delete">CANCEL</span>
+                    </div>
+                    <div class="code">wo.scrap.data.process</div>
+                    <p>取消出站時，還原不良品入庫單</p>
+                    <div class="tags">
+                        <span class="tag">TRANSORDERTYPE=58</span>
+                        <span class="tag">api-2192</span>
+                    </div>
+                </a>
+            </div>
+        </div>
+
         <!-- 報工單 Category -->
         <div class="category">
             <div class="category-header">
@@ -462,7 +501,7 @@
         <!-- Stats -->
         <div class="stats">
             <div class="stat-item">
-                <div class="number">9</div>
+                <div class="number">11</div>
                 <div class="label">已完成 API</div>
             </div>
             <div class="stat-item">
@@ -477,7 +516,7 @@
 
         <!-- Footer -->
         <div class="footer">
-            <p>eMES API 規格書 v1.2 | 更新日期: 2026-03-19</p>
+            <p>eMES API 規格書 v1.3 | 更新日期: 2026-03-19</p>
             <p style="margin-top:5px;">傳輸格式: JSON (Content-Type: application/json)</p>
         </div>
     </div>
