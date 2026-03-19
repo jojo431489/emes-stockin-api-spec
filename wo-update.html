@@ -482,6 +482,88 @@
             </div>
         </div>
 
+        <!-- 資料庫更新 SQL -->
+        <div class="card" id="sql">
+            <h2>8. 資料庫更新 SQL</h2>
+
+            <h3>8.1 UPDATE MODETAIL（更新製令主檔）</h3>
+            <div class="code-block">
+<pre><span class="key">UPDATE</span> MODETAIL <span class="key">SET</span>
+    PLANPROCESSST = :PLANPROCESSST,      <span class="comment">-- 預計開工日</span>
+    DUEDATETIME = :DUEDATETIME,          <span class="comment">-- 預計完工日</span>
+    DOID = :DOID,                        <span class="comment">-- 訂單單號</span>
+    SEQUENCE = :SEQUENCE,                <span class="comment">-- 訂單項次</span>
+    FACTORYID = :FACTORYID,              <span class="comment">-- 廠別代號</span>
+    WAREHOUSEID = :WAREHOUSEID,          <span class="comment">-- 庫別代號</span>
+    DESCRIPTION = :DESCRIPTION,          <span class="comment">-- 備註</span>
+    MO032 = :MO032,                      <span class="comment">-- 優先級</span>
+    LASTMAINTAINUSER = :userid,
+    LASTMAINTAINDATETIME = N'{當前時間}',
+    FLAG = (<span class="key">SELECT MAX</span>(FLAG)+1 <span class="key">FROM</span> MODETAIL <span class="key">WHERE</span> CMOID = :CMOID)
+<span class="key">WHERE</span> CMOID = :CMOID</pre>
+            </div>
+
+            <h3>8.2 數量增加時（UPDATE LOT）</h3>
+            <div class="code-block">
+<pre><span class="comment">-- 增加數量 = newQTY - (MOQTY - MODIQTY)</span>
+<span class="key">UPDATE</span> LOT <span class="key">SET</span>
+    LOTSIZE = LOTSIZE + {增加量}
+<span class="key">WHERE</span> MOID = :CMOID
+
+<span class="comment">-- 同時更新 MODETAIL 預計發放量</span>
+<span class="key">UPDATE</span> MODETAIL <span class="key">SET</span>
+    PLANRELEASEQTY = PLANRELEASEQTY + {增加量},
+    QTY = :newQTY
+<span class="key">WHERE</span> CMOID = :CMOID</pre>
+            </div>
+
+            <h3>8.3 數量扣除時（UPDATE/DELETE LOT）</h3>
+            <div class="code-block">
+<pre><span class="comment">-- 扣除數量 = MOQTY - newQTY - MODIQTY</span>
+<span class="comment">-- 先檢查可變更額度</span>
+最大可變更量 = MOQTY - MOREQTY - BATQTY
+
+<span class="key">IF</span> LOTQTY - 扣除數量 > 0 <span class="key">THEN</span>
+    <span class="comment">-- 扣除後還有餘量</span>
+    <span class="key">UPDATE</span> LOT <span class="key">SET</span>
+        LOTSIZE = LOTSIZE - {扣除量}
+    <span class="key">WHERE</span> MOID = :CMOID
+<span class="key">ELSE</span>
+    <span class="comment">-- 扣除後數量為零或負數，刪除批次</span>
+    <span class="key">DELETE FROM</span> LOT <span class="key">WHERE</span> MOID = :CMOID
+<span class="key">END IF</span>
+
+<span class="comment">-- 同時更新 MODETAIL 預計發放量</span>
+<span class="key">UPDATE</span> MODETAIL <span class="key">SET</span>
+    PLANRELEASEQTY = PLANRELEASEQTY - {扣除量},
+    QTY = :newQTY
+<span class="key">WHERE</span> CMOID = :CMOID</pre>
+            </div>
+
+            <h3>8.4 重算製程</h3>
+            <div class="code-block">
+<pre><span class="comment">-- 更新完成後重算所有製程</span>
+SFT_OP_REALRUN.sqlUpdate_RecalculateAll("updateMODETAIL")</pre>
+            </div>
+
+            <div class="info-box warning">
+                <strong>數量檢核相關資料表</strong>
+                <ul style="margin-top:10px; margin-left:20px;">
+                    <li><strong>MODETAIL.PLANRELEASEQTY</strong>：預計發放量 (MOQTY)</li>
+                    <li><strong>MODETAIL.RELEASEDQTY</strong>：已發放量 (MOREQTY)</li>
+                    <li><strong>LOT.LOTSIZE</strong>：待發放量 (LOTQTY)</li>
+                    <li><strong>SFT_MO_MODI</strong>：補發放量 (MODIQTY)</li>
+                    <li><strong>SFT_BATCH_REC</strong>：拆批量 (BATQTY)</li>
+                </ul>
+            </div>
+
+            <div class="info-box info">
+                <strong>程式位置</strong><br>
+                數量檢核：<code>RegularESB.java:1234-1319</code><br>
+                LOT 更新：<code>RegularESB.java:1243-1472</code>
+            </div>
+        </div>
+
     </div>
 </body>
 </html>

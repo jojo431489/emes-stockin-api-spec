@@ -410,6 +410,101 @@
             </table>
         </div>
 
+        <!-- 資料庫更新 SQL -->
+        <div class="card" id="sql">
+            <h2>9. 資料庫更新 SQL</h2>
+
+            <h3>9.1 檢查製令是否存在</h3>
+            <div class="code-block">
+<pre><span class="comment">-- 新增前檢查，若存在則拋出 JS_0126_00061</span>
+<span class="key">SELECT COUNT</span>(1) <span class="key">FROM</span> MODETAIL <span class="key">WHERE</span> CMOID = N'{wo_no}'</pre>
+            </div>
+
+            <h3>9.2 INSERT MODETAIL（新增製令主檔）</h3>
+            <div class="code-block">
+<pre><span class="key">INSERT INTO</span> MODETAIL (
+    CMOID, MO004, MO005, ITEMID, MO021, MO022, UNIT,
+    PLANPROCESSST, DUEDATETIME, QTY, STATUS, DOID,
+    SEQUENCE, FACTORYID, WAREHOUSEID, DESCRIPTION,
+    MO008, MO012, MO016, MO032, PLANRELEASEQTY,
+    FLAG, LASTMAINTAINUSER, LASTMAINTAINDATETIME
+) <span class="key">VALUES</span> (
+    :CMOID,              <span class="comment">-- 製令編號 (單別-單號)</span>
+    :MO004,              <span class="comment">-- 製令單別</span>
+    :MO005,              <span class="comment">-- 製令單號</span>
+    :ITEMID,             <span class="comment">-- 品號</span>
+    :MO021,              <span class="comment">-- 品名</span>
+    :MO022,              <span class="comment">-- 規格</span>
+    :UNIT,               <span class="comment">-- 單位</span>
+    :PLANPROCESSST,      <span class="comment">-- 預計開工日</span>
+    :DUEDATETIME,        <span class="comment">-- 預計完工日</span>
+    :QTY,                <span class="comment">-- 預計產量</span>
+    <span class="number">1</span>,                   <span class="comment">-- STATUS = 1 (未生產)</span>
+    :DOID,               <span class="comment">-- 訂單單號</span>
+    :SEQUENCE,           <span class="comment">-- 訂單項次</span>
+    :FACTORYID,          <span class="comment">-- 廠別代號</span>
+    :WAREHOUSEID,        <span class="comment">-- 庫別代號</span>
+    :DESCRIPTION,        <span class="comment">-- 備註</span>
+    <span class="number">1</span>,                   <span class="comment">-- MO008 = 1</span>
+    :MO012,              <span class="comment">-- 開單日期</span>
+    <span class="number">0</span>,                   <span class="comment">-- MO016 = 0</span>
+    :MO032,              <span class="comment">-- 優先級 (1=急料)</span>
+    :QTY,                <span class="comment">-- 預計發放量 = 預計產量</span>
+    <span class="number">1</span>,                   <span class="comment">-- FLAG 版本號</span>
+    :userid,
+    N'{當前時間}'
+)</pre>
+            </div>
+
+            <h3>9.3 INSERT LOT（新增批次記錄）</h3>
+            <div class="code-block">
+<pre><span class="key">INSERT INTO</span> LOT (
+    ID, TYPE, MOID, ITEMID, LOTSIZE, STATUS, UNIT,
+    QTYPER, LOCATION, ERP_OPSEQ, ERP_OPID, ERP_WSID,
+    LOT004, PKQTY, PKQTYPER, LOT007, LOT011,
+    LASTMAINTAINUSER, LASTMAINTAINDATETIME
+) <span class="key">VALUES</span> (
+    :CMOID,              <span class="comment">-- 批次編號 = 製令編號</span>
+    <span class="number">1</span>,                   <span class="comment">-- TYPE = 1 (計劃批)</span>
+    :CMOID,              <span class="comment">-- MOID = 製令編號</span>
+    :ITEMID,             <span class="comment">-- 品號</span>
+    :QTY,                <span class="comment">-- LOTSIZE = 預計產量</span>
+    <span class="number">0</span>,                   <span class="comment">-- STATUS = 0 (待發放)</span>
+    :UNIT,               <span class="comment">-- 單位</span>
+    <span class="number">1</span>,                   <span class="comment">-- QTYPER = 1</span>
+    <span class="string">'release'</span>,           <span class="comment">-- LOCATION = 'release'</span>
+    <span class="string">''</span>, <span class="string">''</span>, <span class="string">''</span>,          <span class="comment">-- ERP 製程欄位 (空)</span>
+    <span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>,             <span class="comment">-- LOT004, PKQTY, PKQTYPER</span>
+    <span class="string">'0'</span>, <span class="string">'N'</span>,            <span class="comment">-- LOT007, LOT011</span>
+    :userid,
+    N'{當前時間}'
+)</pre>
+            </div>
+
+            <h3>9.4 初始化製程（SFT_OP_REALRUN）</h3>
+            <div class="code-block">
+<pre><span class="comment">-- 檢查品號是否有標準途程</span>
+<span class="key">SELECT COUNT</span>(1)
+<span class="key">FROM</span> MODETAIL
+<span class="key">JOIN</span> ITEM <span class="key">ON</span> MODETAIL.ITEMID = ITEM.ID
+<span class="key">JOIN</span> SFT_BOMMF <span class="key">ON</span> RTRIM(MF001) = ITEM.STDROUTEITEMID
+                <span class="key">AND</span> RTRIM(MF002) = ITEM.STDROUTEID
+<span class="key">WHERE</span> CMOID = N'{wo_no}'
+
+<span class="comment">-- 若有途程，呼叫初始化方法</span>
+dataMantain.initOpRealRun_SftBommf(companyID, CMOID)
+dataMantain.initProcessTime(companyID, CMOID)
+
+<span class="comment">-- 最後重算製程</span>
+SFT_OP_REALRUN.sqlUpdate_RecalculateAll("insertMODETAIL")</pre>
+            </div>
+
+            <div class="info-box info">
+                <strong>程式位置</strong><br>
+                SQL 執行：<code>ESBapi.java:1007-1046</code>
+            </div>
+        </div>
+
     </div>
 </body>
 </html>

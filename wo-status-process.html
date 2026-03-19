@@ -429,6 +429,103 @@
             </div>
         </div>
 
+        <!-- 資料庫更新 SQL -->
+        <div class="card" id="sql">
+            <h2>8. 資料庫更新 SQL</h2>
+
+            <h3>8.1 status=1 刪除工單</h3>
+            <div class="code-block">
+<pre><span class="comment">-- 檢查是否已發放（已發放則不可刪除）</span>
+<span class="key">SELECT COUNT</span>(*) <span class="key">FROM</span> SFT_WS_RUN <span class="key">WITH</span> (NOLOCK)
+<span class="key">WHERE</span> ID = N'{wo_no}'
+  <span class="key">AND</span> EXECUTETYPE = <span class="string">'release'</span>
+  <span class="key">AND</span> PLUSINDEX = <span class="string">'0'</span>
+<span class="comment">-- 若 COUNT > 0，拋出 JS_0126_00062</span>
+
+<span class="comment">-- 檢查是否有拆批記錄</span>
+<span class="key">SELECT COUNT</span>(*) <span class="key">FROM</span> SFT_BATCH_REC <span class="key">WHERE</span> BR001 = N'{wo_no}'
+<span class="comment">-- 若 COUNT > 0，拋出 remind_004</span>
+
+<span class="comment">-- 刪除相關資料（依序執行）</span>
+<span class="key">DELETE FROM</span> SFT_OP_REALRUN <span class="key">WHERE</span> ID = :CMOID
+<span class="key">DELETE FROM</span> LOT <span class="key">WHERE</span> MOID = :CMOID
+<span class="key">DELETE FROM</span> MODETAIL <span class="key">WHERE</span> CMOID = :CMOID
+<span class="key">DELETE FROM</span> SFT_SPEC_MODIREC <span class="key">WHERE</span> MD001 = :CMOID
+<span class="key">DELETE FROM</span> SFT_BATCH_REC <span class="key">WHERE</span> BR002 = :CMOID
+<span class="key">DELETE FROM</span> EQUIPMENT_RUN <span class="key">WHERE</span> LOTID = :CMOID
+<span class="key">DELETE FROM</span> SFT_WS_RUN <span class="key">WHERE</span> ID = :CMOID
+<span class="key">DELETE FROM</span> SFT_SPLITOUT_REC <span class="key">WHERE</span> SSR001 = :CMOID
+<span class="key">DELETE FROM</span> SFT_ASSEMBLY_REC <span class="key">WHERE</span> SAR001 = :CMOID
+<span class="key">DELETE FROM</span> SFT_HOLD_REC <span class="key">WHERE</span> HR001 = :CMOID
+<span class="key">DELETE FROM</span> SFT_MO_MODI <span class="key">WHERE</span> MODI002 = :CMOID</pre>
+            </div>
+
+            <h3>8.2 status=2 結案</h3>
+            <div class="code-block">
+<pre><span class="comment">-- 檢查製令是否暫停中</span>
+jsonQueryFactory.sqlQuery_checkMoidIsHold(dataObject)
+<span class="comment">-- 若暫停中，拋出 JS_0115_00014</span>
+
+<span class="comment">-- 檢查是否有未完工製程</span>
+jsonQueryFactory.checkHaveUndoneOp(dataObject)
+<span class="comment">-- 若有未完工製程，拋出 JS_0115_00017</span>
+
+<span class="comment">-- 執行結案流程（由 JsonQueryFactory 處理）</span>
+<span class="comment">-- 更新 MODETAIL.STATUS = 99</span>
+<span class="key">UPDATE</span> MODETAIL <span class="key">SET</span>
+    STATUS = <span class="number">99</span>,
+    LASTMAINTAINUSER = :userid,
+    LASTMAINTAINDATETIME = N'{當前時間}'
+<span class="key">WHERE</span> CMOID = :CMOID</pre>
+            </div>
+
+            <h3>8.3 status=3 取消結案</h3>
+            <div class="code-block">
+<pre><span class="comment">-- 檢查製令是否已結案</span>
+<span class="key">SELECT COUNT</span>(*) <span class="key">FROM</span> MODETAIL <span class="key">WITH</span> (NOLOCK)
+<span class="key">WHERE</span> CMOID = N'{wo_no}'
+  <span class="key">AND</span> STATUS <span class="key">NOT IN</span> (<span class="string">'99'</span>, <span class="string">'100'</span>)
+<span class="comment">-- 若 COUNT > 0，表示未結案，拋出 JS_0126_00059</span>
+
+<span class="comment">-- 還原結案狀態（由結案流程反向執行）</span>
+<span class="comment">-- 根據 SFT_WS_RUN 進站記錄判斷還原狀態</span>
+<span class="key">UPDATE</span> MODETAIL <span class="key">SET</span>
+    STATUS = <span class="key">CASE</span>
+        <span class="key">WHEN</span> (<span class="key">SELECT COUNT</span>(1) <span class="key">FROM</span> SFT_WS_RUN <span class="key">WITH</span> (NOLOCK)
+              <span class="key">WHERE</span> ID = N'{wo_no}' <span class="key">AND</span> EXECUTETYPE = <span class="string">'checkIn'</span>) > 0
+        <span class="key">THEN</span> <span class="number">2</span>  <span class="comment">-- 有進站記錄 → 生產中</span>
+        <span class="key">ELSE</span> <span class="number">1</span>  <span class="comment">-- 無進站記錄 → 未生產</span>
+    <span class="key">END</span>,
+    LASTMAINTAINUSER = :userid,
+    LASTMAINTAINDATETIME = N'{當前時間}'
+<span class="key">WHERE</span> CMOID = :CMOID</pre>
+            </div>
+
+            <div class="info-box danger">
+                <strong>刪除關聯資料表說明</strong>
+                <table style="margin-top:10px;">
+                    <tr><th>資料表</th><th>說明</th></tr>
+                    <tr><td>SFT_OP_REALRUN</td><td>製程實績記錄</td></tr>
+                    <tr><td>LOT</td><td>批次記錄</td></tr>
+                    <tr><td>MODETAIL</td><td>製令主檔</td></tr>
+                    <tr><td>SFT_SPEC_MODIREC</td><td>特殊修改記錄</td></tr>
+                    <tr><td>SFT_BATCH_REC</td><td>拆批記錄</td></tr>
+                    <tr><td>EQUIPMENT_RUN</td><td>機台運行記錄</td></tr>
+                    <tr><td>SFT_WS_RUN</td><td>工作站運行記錄</td></tr>
+                    <tr><td>SFT_SPLITOUT_REC</td><td>分出記錄</td></tr>
+                    <tr><td>SFT_ASSEMBLY_REC</td><td>組裝記錄</td></tr>
+                    <tr><td>SFT_HOLD_REC</td><td>暫停記錄</td></tr>
+                    <tr><td>SFT_MO_MODI</td><td>補發放數量記錄</td></tr>
+                </table>
+            </div>
+
+            <div class="info-box info">
+                <strong>程式位置</strong><br>
+                API 入口：<code>ESBapi.java:1400-1493</code><br>
+                狀態檢核：<code>WoStatusProcess.java:66-108</code>
+            </div>
+        </div>
+
     </div>
 </body>
 </html>
