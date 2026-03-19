@@ -481,27 +481,204 @@
 )</pre>
             </div>
 
-            <h3>9.4 初始化製程（SFT_OP_REALRUN）</h3>
+            <h3>9.4 初始化製程 SFT_OP_REALRUN（從 SFT_BOMMF 讀取）</h3>
             <div class="code-block">
 <pre><span class="comment">-- 檢查品號是否有標準途程</span>
-<span class="key">SELECT COUNT</span>(1)
-<span class="key">FROM</span> MODETAIL
-<span class="key">JOIN</span> ITEM <span class="key">ON</span> MODETAIL.ITEMID = ITEM.ID
-<span class="key">JOIN</span> SFT_BOMMF <span class="key">ON</span> RTRIM(MF001) = ITEM.STDROUTEITEMID
-                <span class="key">AND</span> RTRIM(MF002) = ITEM.STDROUTEID
-<span class="key">WHERE</span> CMOID = N'{wo_no}'
+<span class="key">SELECT</span> ME007 <span class="key">FROM</span> SFT_BOMME, MODETAIL, ITEM
+<span class="key">WHERE</span> ITEM.ID = MODETAIL.ITEMID
+  <span class="key">AND</span> CMOID = N'{wo_no}'
+  <span class="key">AND</span> RTRIM(ME001) = ITEM.STDROUTEITEMID
+  <span class="key">AND</span> RTRIM(ME002) = ITEM.STDROUTEID
 
-<span class="comment">-- 若有途程，呼叫初始化方法</span>
-dataMantain.initOpRealRun_SftBommf(companyID, CMOID)
+<span class="comment">-- 若有途程，先刪除再新增</span>
+<span class="key">DELETE</span> SFT_OP_REALRUN <span class="key">WHERE</span> ID = N'{wo_no}'
+
+<span class="comment">-- 從 SFT_BOMMF 複製製程資料</span>
+<span class="key">INSERT INTO</span> SFT_OP_REALRUN (
+    ID, SEQUENCE, OPID, OPDESCRIPTION,
+    ARRIVEQTY, OUTQTY, REWORKQTY, DEFECTQTY,
+    ERP_OPSEQ, PERLOTWORKTIME, STANDARDEQWORKTIME, STANDARDMANWORKTIME,
+    ERP_OPID, ERP_WSID, ERP_FIXEDLEADTIME, ERP_TRANSQTY, ...
+)
+<span class="key">SELECT</span>
+    CMOID,                          <span class="comment">-- ID = 製令編號</span>
+    0,                              <span class="comment">-- SEQUENCE = 0</span>
+    RTRIM(MF004)+'---'+RTRIM(MF006), <span class="comment">-- OPID = 製程+工作站</span>
+    MF008,                          <span class="comment">-- OPDESCRIPTION = 製程說明</span>
+    0, 0, 0, 0,                     <span class="comment">-- 數量欄位初始化為 0</span>
+    RTRIM(MF003),                   <span class="comment">-- ERP_OPSEQ = 製程序</span>
+    MF019,                          <span class="comment">-- PERLOTWORKTIME = 每批工時</span>
+    ...
+<span class="key">FROM</span> SFT_BOMMF, MODETAIL, ITEM
+<span class="key">WHERE</span> ITEM.ID = MODETAIL.ITEMID
+  <span class="key">AND</span> CMOID = N'{wo_no}'
+  <span class="key">AND</span> RTRIM(MF001) = ITEM.STDROUTEITEMID
+  <span class="key">AND</span> RTRIM(MF002) = ITEM.STDROUTEID</pre>
+            </div>
+
+            <h3>9.5 初始化前後道關聯 SFT_OP_BACK_RUN（若有網狀途程）</h3>
+            <div class="code-block">
+<pre><span class="comment">-- 若 ME007='Y'（有網狀途程），建立前後道關聯</span>
+<span class="key">DELETE</span> SFT_OP_BACK_RUN <span class="key">WHERE</span> SOB001 = N'{wo_no}'
+
+<span class="key">INSERT INTO</span> SFT_OP_BACK_RUN (
+    SOB001, SOB002, SOB003, SOB004, SOB005, SOB007, SOB008
+)
+<span class="key">SELECT</span>
+    N'{wo_no}',     <span class="comment">-- SOB001 = 製令編號</span>
+    MFL003,         <span class="comment">-- SOB002 = 製程序</span>
+    MFL004,         <span class="comment">-- SOB003 = 製程代號</span>
+    MFL005,         <span class="comment">-- SOB004 = 前道製程序</span>
+    MFL006,         <span class="comment">-- SOB005 = 前道製程代號</span>
+    MFL008,         <span class="comment">-- SOB007 = 工作站代號</span>
+    MFL009          <span class="comment">-- SOB008 = 前道工作站代號</span>
+<span class="key">FROM</span> SFT_BOMMF_LINE
+<span class="key">JOIN</span> SFT_BOMME <span class="key">ON</span> ME001 = MFL001 <span class="key">AND</span> ME002 = MFL002
+<span class="key">WHERE</span> MFL001 = :MF001 <span class="key">AND</span> MFL002 = :MF002 <span class="key">AND</span> MES004 = 'Y'
+
+<span class="comment">-- 更新 SFT_OP_REALRUN 的前道製程欄位</span>
+<span class="key">UPDATE</span> SFT_OP_REALRUN <span class="key">SET</span>
+    OR002 = <span class="key">CASE</span> ... <span class="key">END</span>,  <span class="comment">-- 前道製程序</span>
+    OR003 = <span class="key">CASE</span> ... <span class="key">END</span>,  <span class="comment">-- 前道製程代號</span>
+    OR004 = <span class="key">CASE</span> ... <span class="key">END</span>   <span class="comment">-- 前道工作站代號</span>
+<span class="key">WHERE</span> ID = N'{wo_no}' <span class="key">AND</span> SEQUENCE = 0</pre>
+            </div>
+
+            <h3>9.6 更新製令途程標記</h3>
+            <div class="code-block">
+<pre><span class="comment">-- 標記製令是否有網狀途程</span>
+<span class="key">UPDATE</span> MODETAIL <span class="key">SET</span>
+    MO040 = <span class="key">CASE</span> <span class="key">WHEN</span> ME007 = <span class="string">'Y'</span> <span class="key">THEN</span> <span class="string">'Y'</span> <span class="key">ELSE</span> <span class="string">'N'</span> <span class="key">END</span>,
+    STDROUTEITEMID = :STDROUTEITEMID,  <span class="comment">-- 若有標準途程則更新</span>
+    STDROUTEID = :STDROUTEID
+<span class="key">WHERE</span> CMOID = N'{wo_no}'</pre>
+            </div>
+
+            <h3>9.7 計算製程時間</h3>
+            <div class="code-block">
+<pre><span class="comment">-- 若製令有預計發放時間，推算各製程預計開工/完工日</span>
 dataMantain.initProcessTime(companyID, CMOID)
 
-<span class="comment">-- 最後重算製程</span>
+<span class="comment">-- 最後重算所有製程</span>
 SFT_OP_REALRUN.sqlUpdate_RecalculateAll("insertMODETAIL")</pre>
+            </div>
+
+            <div class="info-box warning">
+                <strong>新增工單影響的資料表清單</strong>
+                <table style="margin-top:10px;">
+                    <tr><th>資料表</th><th>操作</th><th>說明</th></tr>
+                    <tr><td>MODETAIL</td><td>INSERT</td><td>製令主檔</td></tr>
+                    <tr><td>LOT</td><td>INSERT</td><td>批次記錄</td></tr>
+                    <tr><td>SFT_OP_REALRUN</td><td>DELETE + INSERT</td><td>製程實績（從 SFT_BOMMF 複製）</td></tr>
+                    <tr><td>SFT_OP_BACK_RUN</td><td>DELETE + INSERT</td><td>前後道製程關聯（網狀途程）</td></tr>
+                </table>
             </div>
 
             <div class="info-box info">
                 <strong>程式位置</strong><br>
-                SQL 執行：<code>ESBapi.java:1007-1046</code>
+                SQL 執行：<code>ESBapi.java:1007-1046</code><br>
+                製程初始化：<code>dataMantain.initOpRealRun_SftBommf()</code><br>
+                前後道關聯：<code>UpdateData.InsertOpBackRun()</code>
+            </div>
+
+            <h3>9.8 更新 material_requisition（工單用料維護單身）</h3>
+            <div class="info-box purple">
+                <strong>相關聯的 API：upMaterial</strong><br>
+                ERP 開立工單後，可能會同時呼叫 <code>upMaterial</code> API 來同步工單用料資料至 <code>material_requisition</code> 表。
+            </div>
+            <div class="code-block">
+<pre><span class="comment">-- API Endpoint: POST /ESB/API/upMaterial</span>
+<span class="comment">-- 1. 先寫入 order_material 表（原始用料訂單資料）</span>
+<span class="key">SELECT COUNT</span>(1) <span class="key">FROM</span> order_material
+<span class="key">WHERE</span> material_requisition = N'{material_requisition}'
+  <span class="key">AND</span> material_number = N'{material_number}'
+  <span class="key">AND</span> serial_number = N'{serial_number}'
+<span class="comment">-- count > 0 → UPDATE, count = 0 → INSERT</span>
+
+<span class="comment">-- INSERT order_material</span>
+<span class="key">INSERT INTO</span> order_material (
+    material_requisition, material_number, serial_number,
+    material_id, material_quantity, craftsmanship,
+    batch_number, category, order_number, type,
+    batch_description, om01, om02, om03, om04
+) <span class="key">VALUES</span> (
+    :material_requisition, :material_number, :serial_number,
+    :material_id, :material_quantity, :craftsmanship,
+    :batch_number, :category, :order_number, :type,
+    :batch_description, N'{當前時間}', :om02, :om03, :om04
+)
+
+<span class="comment">-- 2. 合併相同 品號+工藝+工作站+物料批號+工單編號 的資料後，寫入 material_requisition</span>
+<span class="key">SELECT COUNT</span>(1) <span class="key">FROM</span> material_requisition
+<span class="key">WHERE</span> modetail_cmoid = N'{工單編號}'
+  <span class="key">AND</span> material_id = N'{物料編號}'
+  <span class="key">AND</span> opid = N'{製程代號}'
+  <span class="key">AND</span> erp_wsid = N'{工作站代號}'
+  <span class="key">AND</span> material_batch = N'{物料批號}'
+  <span class="key">AND</span> (remark <span class="key">IS NULL OR</span> remark = '')
+<span class="comment">-- count > 0 → UPDATE（累加領料量）, count = 0 → INSERT</span>
+
+<span class="comment">-- INSERT material_requisition（新增用料記錄）</span>
+<span class="key">INSERT INTO</span> material_requisition (
+    serial, modetail_cmoid, material_id,
+    opid, erp_wsid, material_batch,
+    withdrawn_quantity, mr01
+) <span class="key">VALUES</span> (
+    :serial,              <span class="comment">-- 流水號 (MAX(serial) + 1)</span>
+    :modetail_cmoid,      <span class="comment">-- 工單編號 (category-order_number)</span>
+    :material_id,         <span class="comment">-- 物料編號</span>
+    :opid,                <span class="comment">-- 製程代號</span>
+    :erp_wsid,            <span class="comment">-- 工作站代號</span>
+    :material_batch,      <span class="comment">-- 物料批號</span>
+    :withdrawn_quantity,  <span class="comment">-- 實際領料量</span>
+    N'{當前時間}'          <span class="comment">-- mr01</span>
+)
+
+<span class="comment">-- UPDATE material_requisition（累加領料量）</span>
+<span class="key">UPDATE</span> material_requisition <span class="key">SET</span>
+    withdrawn_quantity = withdrawn_quantity + :新增領料量
+<span class="key">WHERE</span> modetail_cmoid = N'{工單編號}'
+  <span class="key">AND</span> material_id = N'{物料編號}'
+  <span class="key">AND</span> opid = N'{製程代號}'
+  <span class="key">AND</span> erp_wsid = N'{工作站代號}'
+  <span class="key">AND</span> material_batch = N'{物料批號}'
+  <span class="key">AND</span> (remark <span class="key">IS NULL OR</span> remark = '')</pre>
+            </div>
+
+            <h4>material_requisition 表結構</h4>
+            <table>
+                <tr><th>欄位</th><th>類型</th><th>說明</th></tr>
+                <tr><td>serial</td><td>INT</td><td>流水號</td></tr>
+                <tr><td>modetail_cmoid</td><td>NVARCHAR(40)</td><td>工單編號</td></tr>
+                <tr><td>material_id</td><td>NVARCHAR(40)</td><td>物料編號</td></tr>
+                <tr><td>opid</td><td>NVARCHAR(20)</td><td>製程代號</td></tr>
+                <tr><td>erp_wsid</td><td>NVARCHAR(20)</td><td>工作站代號</td></tr>
+                <tr><td>material_batch</td><td>NVARCHAR(40)</td><td>物料批號</td></tr>
+                <tr><td>demand_quantity</td><td>FLOAT</td><td>需求數量</td></tr>
+                <tr><td>withdrawn_quantity</td><td>FLOAT</td><td>實際領料量</td></tr>
+                <tr><td>remark</td><td>NVARCHAR(500)</td><td>備註</td></tr>
+                <tr><td>mr01</td><td>DATETIME</td><td>建立時間</td></tr>
+            </table>
+
+            <div class="info-box warning">
+                <strong>新增工單影響的資料表清單（完整）</strong>
+                <table style="margin-top:10px;">
+                    <tr><th>資料表</th><th>操作</th><th>說明</th><th>API</th></tr>
+                    <tr><td>MODETAIL</td><td>INSERT</td><td>製令主檔</td><td>wo.create</td></tr>
+                    <tr><td>LOT</td><td>INSERT</td><td>批次記錄</td><td>wo.create</td></tr>
+                    <tr><td>SFT_OP_REALRUN</td><td>DELETE + INSERT</td><td>製程實績（從 SFT_BOMMF 複製）</td><td>wo.create</td></tr>
+                    <tr><td>SFT_OP_BACK_RUN</td><td>DELETE + INSERT</td><td>前後道製程關聯（網狀途程）</td><td>wo.create</td></tr>
+                    <tr><td>order_material</td><td>INSERT/UPDATE</td><td>用料訂單資料</td><td>upMaterial</td></tr>
+                    <tr><td>material_requisition</td><td>INSERT/UPDATE</td><td>工單用料維護單身</td><td>upMaterial</td></tr>
+                </table>
+            </div>
+
+            <div class="info-box info">
+                <strong>程式位置</strong><br>
+                wo.create SQL 執行：<code>ESBapi.java:1007-1046</code><br>
+                製程初始化：<code>dataMantain.initOpRealRun_SftBommf()</code><br>
+                前後道關聯：<code>UpdateData.InsertOpBackRun()</code><br>
+                用料資料同步：<code>ESBapi.java:1252-1394 (upMaterial)</code>
             </div>
         </div>
 
