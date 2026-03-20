@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>item.get - ข้อมูลพื้นฐานรหัสสินค้า | eMES API</title>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #1e40af;
+            --success-color: #16a34a;
+            --error-color: #dc2626;
+            --warning-color: #d97706;
+            --bg-color: #f8fafc;
+            --border-color: #e2e8f0;
+            --text-color: #1e293b;
+            --text-muted: #64748b;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', 'Tahoma', sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+        }
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .navbar a { color: white; text-decoration: none; }
+        .navbar .brand { font-size: 1.2em; font-weight: 600; }
+        .navbar .back { opacity: 0.9; }
+        .navbar .back:hover { opacity: 1; }
+        .lang-switcher {
+            display: flex;
+            gap: 10px;
+        }
+        .lang-switcher a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.85em;
+        }
+        .lang-switcher a:hover {
+            color: white;
+            background: rgba(255,255,255,0.1);
+        }
+        .lang-switcher a.active {
+            color: white;
+            background: rgba(255,255,255,0.2);
+        }
+        .header { background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); color: white; padding: 40px 20px; }
+        .header-content { max-width: 1200px; margin: 0 auto; }
+        .back-link { color: rgba(255,255,255,0.8); text-decoration: none; display: inline-flex; align-items: center; gap: 5px; margin-bottom: 20px; font-size: 0.9em; }
+        .back-link:hover { color: white; }
+        .api-title { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
+        .api-title h1 { font-size: 2em; margin: 0; }
+        .method-badge { background: rgba(255,255,255,0.2); padding: 5px 15px; border-radius: 20px; font-size: 0.9em; font-weight: 600; }
+        .api-code { font-family: 'Consolas', monospace; background: rgba(0,0,0,0.2); padding: 10px 20px; border-radius: 8px; margin-top: 15px; font-size: 1.1em; display: inline-block; }
+        .api-desc { margin-top: 15px; opacity: 0.9; max-width: 800px; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+        .section { background: white; border-radius: 12px; padding: 30px; margin-bottom: 30px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .section h2 { font-size: 1.4em; color: var(--text-color); margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid var(--bg-color); }
+        .section h3 { font-size: 1.1em; color: var(--text-color); margin: 25px 0 15px 0; }
+        .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+        .info-item { background: var(--bg-color); padding: 15px; border-radius: 8px; }
+        .info-item .label { font-size: 0.85em; color: var(--text-muted); margin-bottom: 5px; }
+        .info-item .value { font-weight: 600; color: var(--text-color); }
+        table { width: 100%; border-collapse: collapse; font-size: 0.95em; }
+        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid var(--border-color); }
+        th { background: var(--bg-color); font-weight: 600; }
+        tr:hover { background: #f1f5f9; }
+        .tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.8em; font-weight: 500; }
+        .tag-required { background: #fee2e2; color: #dc2626; }
+        pre { background: #1e293b; color: #e2e8f0; padding: 20px; border-radius: 8px; overflow-x: auto; font-family: 'Consolas', monospace; font-size: 0.9em; line-height: 1.5; }
+        .code-inline { background: #f1f5f9; padding: 2px 6px; border-radius: 4px; font-family: 'Consolas', monospace; font-size: 0.9em; color: var(--primary-color); }
+        .note { background: #dbeafe; border-left: 4px solid #3b82f6; padding: 15px 20px; border-radius: 0 8px 8px 0; margin: 20px 0; }
+        .note-title { font-weight: 600; color: #1e40af; margin-bottom: 5px; }
+        .note-content { color: #1e3a8a; font-size: 0.95em; }
+        .footer { text-align: center; padding: 40px 20px; color: var(--text-muted); font-size: 0.9em; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="index.html" class="back">← กลับไปรายการ API</a>
+        <div class="lang-switcher">
+            <a href="../item-get.html">繁體中文</a>
+            <a href="../en/item-get.html">English</a>
+            <a href="../vi/item-get.html">Tiếng Việt</a>
+            <a href="item-get.html" class="active">ภาษาไทย</a>
+        </div>
+        <span class="brand">เอกสารข้อกำหนด eMES API</span>
+    </nav>
+
+    <div class="container">
+        <div class="section">
+            <h2>ข้อมูลพื้นฐาน</h2>
+            <div class="info-grid">
+                <div class="info-item"><div class="label">ชื่อ API</div><div class="value">item.get</div></div>
+                <div class="info-item"><div class="label">ชื่อเมธอด</div><div class="value">upItemCROSS</div></div>
+                <div class="info-item"><div class="label">ตารางเป้าหมาย</div><div class="value">ITEM / material_catalog</div></div>
+                <div class="info-item"><div class="label">โหนด JSON</div><div class="value">item_data</div></div>
+                <div class="info-item"><div class="label">Primary Key</div><div class="value">ID (item_no)</div></div>
+                <div class="info-item"><div class="label">ตำแหน่งโปรแกรม</div><div class="value">RegularESB.java:2344</div></div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>พารามิเตอร์คำขอ</h2>
+            <table>
+                <thead><tr><th>ฟิลด์</th><th>ประเภท</th><th>จำเป็น</th><th>คำอธิบาย</th></tr></thead>
+                <tbody>
+                    <tr><td><code class="code-inline">enterprise_no</code></td><td>String</td><td><span class="tag tag-required">จำเป็น</span></td><td>รหัสบริษัท</td></tr>
+                    <tr><td><code class="code-inline">site_no</code></td><td>String</td><td><span class="tag tag-required">จำเป็น</span></td><td>รหัสสาขา</td></tr>
+                    <tr><td><code class="code-inline">data_time</code></td><td>Date</td><td><span class="tag tag-required">จำเป็น</span></td><td>เวลาเริ่มต้นซิงค์ (yyyy-MM-dd HH:mm:ss)</td></tr>
+                    <tr><td><code class="code-inline">page_size</code></td><td>Numeric</td><td><span class="tag tag-required">จำเป็น</span></td><td>จำนวนต่อหน้า ค่าเริ่มต้น 500</td></tr>
+                    <tr><td><code class="code-inline">key_condition</code></td><td>String</td><td>ตัวเลือก</td><td>คีย์การแบ่งหน้าต่อเนื่อง</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2>ฟิลด์การตอบกลับ</h2>
+            <table>
+                <thead><tr><th>ฟิลด์ ERP</th><th>ฟิลด์ MES</th><th>คำอธิบาย</th></tr></thead>
+                <tbody>
+                    <tr><td><code class="code-inline">item_no</code></td><td>ID</td><td>รหัสสินค้า</td></tr>
+                    <tr><td><code class="code-inline">item_name</code></td><td>NAME</td><td>ชื่อสินค้า</td></tr>
+                    <tr><td><code class="code-inline">item_spec</code></td><td>DESCRIPTION</td><td>ข้อมูลจำเพาะ</td></tr>
+                    <tr><td><code class="code-inline">unit_no</code></td><td>UNIT</td><td>หน่วยพื้นฐาน</td></tr>
+                    <tr><td><code class="code-inline">second_unit_no</code></td><td>CONVERTUNIT</td><td>หน่วยแปลง</td></tr>
+                    <tr><td><code class="code-inline">process_item</code></td><td>STDROUTEITEMID</td><td>รหัสสินค้าเส้นทางมาตรฐาน</td></tr>
+                    <tr><td><code class="code-inline">process_code</code></td><td>STDROUTEID</td><td>รหัสเส้นทางมาตรฐาน</td></tr>
+                    <tr><td><code class="code-inline">item_sort</code></td><td>-</td><td>A=สินค้าประกอบ(→ITEM), M=วัสดุ(→material_catalog)</td></tr>
+                    <tr><td><code class="code-inline">tran_status</code></td><td>TRAN_STATUS</td><td>D=ปิดใช้งาน, AU=เปิดใช้งาน</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2>ตัวอย่างการตอบกลับ</h2>
+            <pre>{
+  "item_data": [
+    {
+      "item_no": "ITEM-001",
+      "item_name": "รายการทดสอบ",
+      "item_spec": "คำอธิบายข้อมูลจำเพาะ",
+      "unit_no": "PCS",
+      "second_unit_no": "BOX",
+      "process_item": "ITEM-001",
+      "process_code": "RT001",
+      "item_sort": "A",
+      "modify_no": "USER001",
+      "tran_status": "AU"
+    }
+  ]
+}</pre>
+        </div>
+
+        <div class="section">
+            <h2>ตรรกะการประมวลผล</h2>
+            <div class="note">
+                <div class="note-title">ตรรกะการแยกข้อมูล</div>
+                <div class="note-content">
+                    <ul style="margin-left: 20px; margin-top: 10px;">
+                        <li><code class="code-inline">item_sort = "A"</code> → เขียนลงตาราง <strong>ITEM</strong> (สินค้าประกอบ/สินค้าสำเร็จรูป)</li>
+                        <li><code class="code-inline">item_sort = "M"</code> → เขียนลงตาราง <strong>material_catalog</strong> (วัสดุ/วัตถุดิบ)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>SQL อัปเดตฐานข้อมูล</h2>
+            <h3>ตรวจสอบเพิ่มหรือแก้ไข</h3>
+            <pre>SELECT COUNT(1) FROM ITEM WHERE ID = N'{item_no}'
+-- count > 0 → UPDATE, count = 0 → INSERT</pre>
+
+            <h3>INSERT (เพิ่มรหัสสินค้า)</h3>
+            <pre>INSERT INTO ITEM (
+    ID, NAME, DESCRIPTION, UNIT, RELEASEUNIT,
+    STDROUTEITEMID, STDROUTEID, ITEM001, ITEM002,
+    ITEM004, ITEM005, CONVERTUNIT,
+    LASTMAINTAINUSER, LASTMAINTAINDATETIME, FLAG
+) VALUES (
+    :ID, :NAME, :DESCRIPTION, :UNIT, :UNIT,
+    :STDROUTEITEMID, :STDROUTEID, :ITEM001, :ITEM002,
+    :ITEM004, :ITEM005, :CONVERTUNIT,
+    :userid, N'{เวลาปัจจุบัน}', 0
+)</pre>
+
+            <h3>UPDATE (แก้ไขรหัสสินค้า)</h3>
+            <pre>UPDATE ITEM SET
+    NAME = :NAME,
+    DESCRIPTION = :DESCRIPTION,
+    UNIT = :UNIT,
+    RELEASEUNIT = :UNIT,
+    STDROUTEITEMID = CASE WHEN STDROUTEITEMID IS NULL OR STDROUTEITEMID = ''
+                     THEN :STDROUTEITEMID ELSE STDROUTEITEMID END,
+    STDROUTEID = CASE WHEN STDROUTEID IS NULL OR STDROUTEID = ''
+                 THEN :STDROUTEID ELSE STDROUTEID END,
+    ITEM001 = :ITEM001,
+    ITEM002 = :ITEM002,
+    ITEM004 = :ITEM004,
+    ITEM005 = :ITEM005,
+    CONVERTUNIT = :CONVERTUNIT,
+    LASTMAINTAINUSER = :userid,
+    LASTMAINTAINDATETIME = N'{เวลาปัจจุบัน}',
+    FLAG = (SELECT MAX(FLAG)+1 FROM ITEM WHERE ID = :ID)
+WHERE ID = :ID</pre>
+
+            <div class="note">
+                <div class="note-title">ค่าเริ่มต้นของฟิลด์</div>
+                <div class="note-content">
+                    เมื่อเพิ่มใหม่ หากฟิลด์ว่างเปล่า จะใช้ค่าเริ่มต้นดังนี้:<br>
+                    • ITEM001 = '' (สตริงว่าง)<br>
+                    • ITEM002 = 'N'<br>
+                    • ITEM004 = 1 (ตัวเศษอัตราแปลง)<br>
+                    • ITEM005 = 1 (ตัวส่วนอัตราแปลง)
+                </div>
+            </div>
+
+            <h3 style="margin-top: 30px; padding-top: 20px; border-top: 1px dashed #e2e8f0;">ตาราง material_catalog (item_sort = "M")</h3>
+
+            <h3>ตรวจสอบเพิ่มหรือแก้ไข</h3>
+            <pre>SELECT COUNT(1) FROM material_catalog WITH (NOLOCK)
+WHERE material_id = N'{item_no}'
+-- count > 0 → UPDATE, count = 0 → INSERT</pre>
+
+            <h3>INSERT (เพิ่มวัสดุ)</h3>
+            <pre>INSERT INTO material_catalog (
+    material_id, material_name, norm, unit_no,
+    oper_date, oper_id, ENABLED, MODI_DATE
+) VALUES (
+    :ID,                    -- รหัสสินค้า (item_no)
+    :NAME,                  -- ชื่อสินค้า (item_name)
+    :DESCRIPTION,           -- ข้อมูลจำเพาะ (item_spec)
+    :UNIT,                  -- หน่วย (unit_no)
+    N'{เวลาปัจจุบัน}',
+    :userid,
+    :ENABLED,               -- Y/N (tran_status: AU→Y, D→N)
+    N'{เวลาปัจจุบัน}'
+)</pre>
+
+            <h3>UPDATE (แก้ไขวัสดุ)</h3>
+            <pre>UPDATE material_catalog SET
+    material_name = :NAME,
+    norm = :DESCRIPTION,
+    unit_no = :UNIT,
+    ENABLED = :ENABLED,
+    MODI_DATE = N'{เวลาปัจจุบัน}'
+WHERE material_id = :ID</pre>
+
+            <div class="note">
+                <div class="note-title">การแมปฟิลด์ material_catalog</div>
+                <div class="note-content">
+                    <table style="margin-top: 10px;">
+                        <tr><td><code class="code-inline">material_id</code></td><td>← item_no</td><td>รหัสสินค้า (Primary Key)</td></tr>
+                        <tr><td><code class="code-inline">material_name</code></td><td>← item_name</td><td>ชื่อสินค้า</td></tr>
+                        <tr><td><code class="code-inline">norm</code></td><td>← item_spec</td><td>ข้อมูลจำเพาะ</td></tr>
+                        <tr><td><code class="code-inline">unit_no</code></td><td>← unit_no</td><td>หน่วย</td></tr>
+                        <tr><td><code class="code-inline">ENABLED</code></td><td>← tran_status</td><td>สถานะเปิดใช้งาน (AU→Y, D→N)</td></tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>เอกสารข้อกำหนด eMES API | การซิงค์ข้อมูลพื้นฐาน | วันที่อัปเดต: 2026-03-19</p>
+    </div>
+</body>
+</html>

@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>item.get - Du lieu co ban ma hang | eMES API</title>
+    <style>
+        :root { --primary-color: #2563eb; --success-color: #16a34a; --bg-color: #f8fafc; --border-color: #e2e8f0; --text-color: #1e293b; --text-muted: #64748b; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif; line-height: 1.6; color: var(--text-color); background: var(--bg-color); }
+        .header { background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); color: white; padding: 40px 20px; }
+        .header-content { max-width: 1200px; margin: 0 auto; }
+        .back-link { color: rgba(255,255,255,0.8); text-decoration: none; display: inline-flex; align-items: center; gap: 5px; margin-bottom: 20px; font-size: 0.9em; }
+        .back-link:hover { color: white; }
+        .api-title { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
+        .api-title h1 { font-size: 2em; margin: 0; }
+        .method-badge { background: rgba(255,255,255,0.2); padding: 5px 15px; border-radius: 20px; font-size: 0.9em; font-weight: 600; }
+        .api-code { font-family: 'Consolas', monospace; background: rgba(0,0,0,0.2); padding: 10px 20px; border-radius: 8px; margin-top: 15px; font-size: 1.1em; display: inline-block; }
+        .api-desc { margin-top: 15px; opacity: 0.9; max-width: 800px; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+        .section { background: white; border-radius: 12px; padding: 30px; margin-bottom: 30px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .section h2 { font-size: 1.4em; color: var(--text-color); margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid var(--bg-color); }
+        .section h3 { font-size: 1.1em; color: var(--text-color); margin: 25px 0 15px 0; }
+        .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+        .info-item { background: var(--bg-color); padding: 15px; border-radius: 8px; }
+        .info-item .label { font-size: 0.85em; color: var(--text-muted); margin-bottom: 5px; }
+        .info-item .value { font-weight: 600; color: var(--text-color); }
+        table { width: 100%; border-collapse: collapse; font-size: 0.95em; }
+        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid var(--border-color); }
+        th { background: var(--bg-color); font-weight: 600; }
+        tr:hover { background: #f1f5f9; }
+        .tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.8em; font-weight: 500; }
+        .tag-required { background: #fee2e2; color: #dc2626; }
+        pre { background: #1e293b; color: #e2e8f0; padding: 20px; border-radius: 8px; overflow-x: auto; font-family: 'Consolas', monospace; font-size: 0.9em; line-height: 1.5; }
+        .code-inline { background: #f1f5f9; padding: 2px 6px; border-radius: 4px; font-family: 'Consolas', monospace; font-size: 0.9em; color: var(--primary-color); }
+        .note { background: #dbeafe; border-left: 4px solid #3b82f6; padding: 15px 20px; border-radius: 0 8px 8px 0; margin: 20px 0; }
+        .note-title { font-weight: 600; color: #1e40af; margin-bottom: 5px; }
+        .note-content { color: #1e3a8a; font-size: 0.95em; }
+        .footer { text-align: center; padding: 40px 20px; color: var(--text-muted); font-size: 0.9em; }
+        .lang-switcher {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 10px;
+            z-index: 1000;
+        }
+        .lang-switcher a {
+            display: block;
+            padding: 5px 15px;
+            color: var(--text-color);
+            text-decoration: none;
+            border-radius: 4px;
+        }
+        .lang-switcher a:hover { background: var(--bg-color); }
+        .lang-switcher a.active { background: var(--primary-color); color: white; }
+    </style>
+</head>
+<body>
+    <div class="lang-switcher">
+        <a href="../item-get.html">繁體中文</a>
+        <a href="../en/item-get.html">English</a>
+        <a href="item-get.html" class="active">Tiếng Việt</a>
+        <a href="../th/item-get.html">ภาษาไทย</a>
+    </div>
+
+    <div class="header">
+        <div class="header-content">
+            <a href="index.html" class="back-link">← Quay lai danh sach API</a>
+            <div class="api-title">
+                <h1>Du lieu co ban ma hang</h1>
+                <span class="method-badge">GET</span>
+                <span class="method-badge">ERP → MES</span>
+            </div>
+            <div class="api-code">item.get</div>
+            <p class="api-desc">Dong bo du lieu co ban ma hang (san pham/vat lieu) tu ERP sang MES. Dua vao truong item_sort de xac dinh ghi vao bang ITEM (san pham to hop) hoac bang material_catalog (vat lieu).</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="section">
+            <h2>Thong tin co ban</h2>
+            <div class="info-grid">
+                <div class="info-item"><div class="label">Ten API</div><div class="value">item.get</div></div>
+                <div class="info-item"><div class="label">Ten phuong thuc</div><div class="value">upItemCROSS</div></div>
+                <div class="info-item"><div class="label">Bang du lieu dich</div><div class="value">ITEM / material_catalog</div></div>
+                <div class="info-item"><div class="label">Node JSON</div><div class="value">item_data</div></div>
+                <div class="info-item"><div class="label">Khoa chinh</div><div class="value">ID (item_no)</div></div>
+                <div class="info-item"><div class="label">Vi tri chuong trinh</div><div class="value">RegularESB.java:2344</div></div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Tham so yeu cau</h2>
+            <table>
+                <thead><tr><th>Truong</th><th>Kieu</th><th>Bat buoc</th><th>Mo ta</th></tr></thead>
+                <tbody>
+                    <tr><td><code class="code-inline">enterprise_no</code></td><td>String</td><td><span class="tag tag-required">Bat buoc</span></td><td>Ma cong ty</td></tr>
+                    <tr><td><code class="code-inline">site_no</code></td><td>String</td><td><span class="tag tag-required">Bat buoc</span></td><td>Ma chi nhanh</td></tr>
+                    <tr><td><code class="code-inline">data_time</code></td><td>Date</td><td><span class="tag tag-required">Bat buoc</span></td><td>Thoi gian bat dau dong bo (yyyy-MM-dd HH:mm:ss)</td></tr>
+                    <tr><td><code class="code-inline">page_size</code></td><td>Numeric</td><td><span class="tag tag-required">Bat buoc</span></td><td>So ban ghi moi trang, mac dinh 500</td></tr>
+                    <tr><td><code class="code-inline">key_condition</code></td><td>String</td><td>Khong bat buoc</td><td>Khoa tiep tuc phan trang</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2>Truong phan hoi</h2>
+            <table>
+                <thead><tr><th>Truong ERP</th><th>Truong MES</th><th>Mo ta</th></tr></thead>
+                <tbody>
+                    <tr><td><code class="code-inline">item_no</code></td><td>ID</td><td>Ma hang</td></tr>
+                    <tr><td><code class="code-inline">item_name</code></td><td>NAME</td><td>Ten hang</td></tr>
+                    <tr><td><code class="code-inline">item_spec</code></td><td>DESCRIPTION</td><td>Quy cach</td></tr>
+                    <tr><td><code class="code-inline">unit_no</code></td><td>UNIT</td><td>Don vi co ban</td></tr>
+                    <tr><td><code class="code-inline">second_unit_no</code></td><td>CONVERTUNIT</td><td>Don vi quy doi</td></tr>
+                    <tr><td><code class="code-inline">process_item</code></td><td>STDROUTEITEMID</td><td>Ma hang quy trinh chuan</td></tr>
+                    <tr><td><code class="code-inline">process_code</code></td><td>STDROUTEID</td><td>Ma quy trinh chuan</td></tr>
+                    <tr><td><code class="code-inline">item_sort</code></td><td>-</td><td>A=San pham to hop(→ITEM), M=Vat lieu(→material_catalog)</td></tr>
+                    <tr><td><code class="code-inline">tran_status</code></td><td>TRAN_STATUS</td><td>D=Ngung su dung, AU=Dang su dung</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2>Vi du phan hoi</h2>
+            <pre>{
+  "item_data": [
+    {
+      "item_no": "ITEM-001",
+      "item_name": "San pham thu nghiem",
+      "item_spec": "Mo ta quy cach",
+      "unit_no": "PCS",
+      "second_unit_no": "BOX",
+      "process_item": "ITEM-001",
+      "process_code": "RT001",
+      "item_sort": "A",
+      "modify_no": "USER001",
+      "tran_status": "AU"
+    }
+  ]
+}</pre>
+        </div>
+
+        <div class="section">
+            <h2>Logic xu ly</h2>
+            <div class="note">
+                <div class="note-title">Logic phan luong du lieu</div>
+                <div class="note-content">
+                    <ul style="margin-left: 20px; margin-top: 10px;">
+                        <li><code class="code-inline">item_sort = "A"</code> → Ghi vao bang <strong>ITEM</strong> (san pham to hop/thanh pham)</li>
+                        <li><code class="code-inline">item_sort = "M"</code> → Ghi vao bang <strong>material_catalog</strong> (vat lieu/nguyen lieu)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>SQL cap nhat co so du lieu</h2>
+            <h3>Xac dinh them moi hoac cap nhat</h3>
+            <pre>SELECT COUNT(1) FROM ITEM WHERE ID = N'{item_no}'
+-- count > 0 → UPDATE, count = 0 → INSERT</pre>
+
+            <h3>INSERT (Them moi ma hang)</h3>
+            <pre>INSERT INTO ITEM (
+    ID, NAME, DESCRIPTION, UNIT, RELEASEUNIT,
+    STDROUTEITEMID, STDROUTEID, ITEM001, ITEM002,
+    ITEM004, ITEM005, CONVERTUNIT,
+    LASTMAINTAINUSER, LASTMAINTAINDATETIME, FLAG
+) VALUES (
+    :ID, :NAME, :DESCRIPTION, :UNIT, :UNIT,
+    :STDROUTEITEMID, :STDROUTEID, :ITEM001, :ITEM002,
+    :ITEM004, :ITEM005, :CONVERTUNIT,
+    :userid, N'{thoi gian hien tai}', 0
+)</pre>
+
+            <h3>UPDATE (Cap nhat ma hang)</h3>
+            <pre>UPDATE ITEM SET
+    NAME = :NAME,
+    DESCRIPTION = :DESCRIPTION,
+    UNIT = :UNIT,
+    RELEASEUNIT = :UNIT,
+    STDROUTEITEMID = CASE WHEN STDROUTEITEMID IS NULL OR STDROUTEITEMID = ''
+                     THEN :STDROUTEITEMID ELSE STDROUTEITEMID END,
+    STDROUTEID = CASE WHEN STDROUTEID IS NULL OR STDROUTEID = ''
+                 THEN :STDROUTEID ELSE STDROUTEID END,
+    ITEM001 = :ITEM001,
+    ITEM002 = :ITEM002,
+    ITEM004 = :ITEM004,
+    ITEM005 = :ITEM005,
+    CONVERTUNIT = :CONVERTUNIT,
+    LASTMAINTAINUSER = :userid,
+    LASTMAINTAINDATETIME = N'{thoi gian hien tai}',
+    FLAG = (SELECT MAX(FLAG)+1 FROM ITEM WHERE ID = :ID)
+WHERE ID = :ID</pre>
+
+            <div class="note">
+                <div class="note-title">Gia tri mac dinh cua truong</div>
+                <div class="note-content">
+                    Khi them moi, neu truong trong, tu dong dien gia tri mac dinh sau:<br>
+                    • ITEM001 = '' (chuoi rong)<br>
+                    • ITEM002 = 'N'<br>
+                    • ITEM004 = 1 (tu so ty le quy doi)<br>
+                    • ITEM005 = 1 (mau so ty le quy doi)
+                </div>
+            </div>
+
+            <h3 style="margin-top: 30px; padding-top: 20px; border-top: 1px dashed #e2e8f0;">Bang material_catalog (item_sort = "M")</h3>
+
+            <h3>Xac dinh them moi hoac cap nhat</h3>
+            <pre>SELECT COUNT(1) FROM material_catalog WITH (NOLOCK)
+WHERE material_id = N'{item_no}'
+-- count > 0 → UPDATE, count = 0 → INSERT</pre>
+
+            <h3>INSERT (Them moi vat lieu)</h3>
+            <pre>INSERT INTO material_catalog (
+    material_id, material_name, norm, unit_no,
+    oper_date, oper_id, ENABLED, MODI_DATE
+) VALUES (
+    :ID,                    -- Ma hang (item_no)
+    :NAME,                  -- Ten hang (item_name)
+    :DESCRIPTION,           -- Quy cach (item_spec)
+    :UNIT,                  -- Don vi (unit_no)
+    N'{thoi gian hien tai}',
+    :userid,
+    :ENABLED,               -- Y/N (tran_status: AU→Y, D→N)
+    N'{thoi gian hien tai}'
+)</pre>
+
+            <h3>UPDATE (Cap nhat vat lieu)</h3>
+            <pre>UPDATE material_catalog SET
+    material_name = :NAME,
+    norm = :DESCRIPTION,
+    unit_no = :UNIT,
+    ENABLED = :ENABLED,
+    MODI_DATE = N'{thoi gian hien tai}'
+WHERE material_id = :ID</pre>
+
+            <div class="note">
+                <div class="note-title">Anh xa truong material_catalog</div>
+                <div class="note-content">
+                    <table style="margin-top: 10px;">
+                        <tr><td><code class="code-inline">material_id</code></td><td>← item_no</td><td>Ma hang (khoa chinh)</td></tr>
+                        <tr><td><code class="code-inline">material_name</code></td><td>← item_name</td><td>Ten hang</td></tr>
+                        <tr><td><code class="code-inline">norm</code></td><td>← item_spec</td><td>Quy cach</td></tr>
+                        <tr><td><code class="code-inline">unit_no</code></td><td>← unit_no</td><td>Don vi</td></tr>
+                        <tr><td><code class="code-inline">ENABLED</code></td><td>← tran_status</td><td>Trang thai kich hoat (AU→Y, D→N)</td></tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>eMES API | Dong bo du lieu co ban | Ngay cap nhat: 2026-03-19</p>
+    </div>
+</body>
+</html>

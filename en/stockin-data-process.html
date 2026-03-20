@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>stockin.data.process - eMES API</title>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #1e40af;
+            --success-color: #16a34a;
+            --error-color: #dc2626;
+            --warning-color: #d97706;
+            --bg-color: #f8fafc;
+            --border-color: #e2e8f0;
+            --text-color: #1e293b;
+            --text-muted: #64748b;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+        }
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .navbar a { color: white; text-decoration: none; }
+        .navbar .brand { font-size: 1.2em; font-weight: 600; }
+        .navbar .back { opacity: 0.9; }
+        .navbar .back:hover { opacity: 1; }
+        .container { max-width: 1100px; margin: 0 auto; padding: 30px; }
+        .api-header {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .api-header h1 { color: var(--error-color); font-size: 1.8em; margin-bottom: 10px; }
+        .api-code {
+            font-family: 'Consolas', monospace;
+            background: var(--bg-color);
+            padding: 8px 15px;
+            border-radius: 6px;
+            display: inline-block;
+            color: var(--error-color);
+            font-size: 1.1em;
+        }
+        .badges { margin-top: 15px; display: flex; gap: 10px; flex-wrap: wrap; }
+        .badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+        .badge-delete { background: #fee2e2; color: #dc2626; }
+        .badge-json { background: #dbeafe; color: #2563eb; }
+        .badge-sync { background: #fef3c7; color: #d97706; }
+        h2 {
+            color: var(--secondary-color);
+            font-size: 1.4em;
+            margin: 30px 0 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--border-color);
+        }
+        h3 { color: var(--text-color); font-size: 1.1em; margin: 20px 0 10px; }
+        h4 { color: var(--text-muted); font-size: 1em; margin: 15px 0 10px; }
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; font-size: 0.9em; }
+        th, td { border: 1px solid var(--border-color); padding: 10px 12px; text-align: left; }
+        th { background: var(--error-color); color: white; font-weight: 600; }
+        tr:nth-child(even) { background: var(--bg-color); }
+        tr:hover { background: #fee2e2; }
+        .required { background: var(--error-color); color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.75em; }
+        .optional { background: var(--text-muted); color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.75em; }
+        .code-block {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Consolas', monospace;
+            font-size: 0.85em;
+            line-height: 1.5;
+            margin: 15px 0;
+        }
+        .code-block .key { color: #7dd3fc; }
+        .code-block .string { color: #86efac; }
+        .code-block .number { color: #fbbf24; }
+        .code-block .comment { color: #64748b; font-style: italic; }
+        .info-box {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        .info-box.info { background: #dbeafe; border-left: 4px solid var(--primary-color); }
+        .info-box.warning { background: #fef3c7; border-left: 4px solid var(--warning-color); }
+        .info-box.danger { background: #fee2e2; border-left: 4px solid var(--error-color); }
+        .info-box.success { background: #dcfce7; border-left: 4px solid var(--success-color); }
+        .flow-diagram { text-align: center; margin: 20px 0; padding: 20px; background: white; border-radius: 10px; }
+        .toc {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .toc ul { list-style: none; display: flex; flex-wrap: wrap; gap: 15px; }
+        .toc a { color: var(--primary-color); text-decoration: none; }
+        .toc a:hover { text-decoration: underline; }
+        .lang-switcher {
+            display: flex;
+            gap: 10px;
+        }
+
+        .lang-switcher a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.85em;
+        }
+
+        .lang-switcher a:hover {
+            color: white;
+            background: rgba(255,255,255,0.1);
+        }
+
+        .lang-switcher a.active {
+            color: white;
+            background: rgba(255,255,255,0.2);
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="index.html" class="back">← Back to API List</a>
+        <div class="lang-switcher">
+            <a href="../stockin-data-process.html">繁體中文</a>
+            <a href="stockin-data-process.html" class="active">English</a>
+            <a href="../vi/stockin-data-process.html">Tiếng Việt</a>
+            <a href="../th/stockin-data-process.html">ภาษาไทย</a>
+        </div>
+        <span class="brand">eMES API Specification</span>
+    </nav>
+
+    <div class="container">
+        <!-- API Header -->
+        <div class="api-header">
+            <h1>Work Order Stock-In Reversal (Cancel)</h1>
+            <div class="api-code">stockin.data.process</div>
+            <div class="badges">
+                <span class="badge badge-delete">CANCEL</span>
+                <span class="badge badge-json">JSON</span>
+                <span class="badge badge-sync">Sync</span>
+            </div>
+        </div>
+
+        <!-- TOC -->
+        <div class="toc">
+            <ul>
+                <li><a href="#basic">Basic Info</a></li>
+                <li><a href="#flow">Business Flow</a></li>
+                <li><a href="#request">Request</a></li>
+                <li><a href="#response">Response</a></li>
+                <li><a href="#rules">Validation Rules</a></li>
+                <li><a href="#errors">Error Codes</a></li>
+                <li><a href="#example">JSON Examples</a></li>
+                <li><a href="#race">Race Condition</a></li>
+            </ul>
+        </div>
+
+        <!-- Basic Info -->
+        <div class="card" id="basic">
+            <h2>1. Basic Information</h2>
+            <table>
+                <tr><th width="25%">Item</th><th>Description</th></tr>
+                <tr><td>API Chinese Name</td><td>Work Order Stock-In Reversal (Cancel Stock-In)</td></tr>
+                <tr><td>API English Name</td><td>Work Order Stock-In Data Process (Cancel)</td></tr>
+                <tr><td>CROSS API Code</td><td><code>stockin.data.process</code></td></tr>
+                <tr><td>ESB Service</td><td><code>/cancelStockIn</code> (General) or <code>/outsourcingProcess</code> (TRANSORDERTYPE=59)</td></tr>
+                <tr><td>Call Direction</td><td>MES → ERP</td></tr>
+                <tr><td>Trigger Timing</td><td>1. When MES executes cancel check-out<br>2. When quality issue requires rework</td></tr>
+                <tr><td>Trigger Condition</td><td>TL011/TL012 is not empty</td></tr>
+                <tr><td>Main Business Scenario</td><td>Cancel completed stock-in operation, ERP needs to restore inventory and void original stock-in document</td></tr>
+                <tr><td>Request Format</td><td><strong>JSON</strong> (Content-Type: application/json)</td></tr>
+                <tr><td>Sync/Async</td><td>Synchronous call</td></tr>
+                <tr><td>Transaction Control</td><td>Required</td></tr>
+                <tr><td>Notes</td><td>Must check if TL011/TL012 has value before cancel, only call ERP if has value</td></tr>
+            </table>
+
+            <h3>Cancel Type Determination</h3>
+            <table>
+                <tr><th>TRANSORDERTYPE</th><th>ESB Service</th><th>Description</th></tr>
+                <tr><td>59</td><td>outsourcingProcess</td><td>Cancel outsourcing purchase receipt</td></tr>
+                <tr><td>Other</td><td>cancelStockIn</td><td>Cancel general stock-in</td></tr>
+            </table>
+
+            <h3>source_type Parameter (Outsourcing Only)</h3>
+            <table>
+                <tr><th>source_type</th><th>Description</th><th>Usage Scenario</th></tr>
+                <tr><td>0</td><td>Shipment reversal</td><td>Cancel check-out (outsourcing shipment)</td></tr>
+                <tr><td>1</td><td>Receipt reversal</td><td>Cancel check-in (outsourcing receipt)</td></tr>
+                <tr><td>2</td><td>Return reversal</td><td>Cancel return</td></tr>
+            </table>
+        </div>
+
+        <!-- Business Flow -->
+        <div class="card" id="flow">
+            <h2>2. Business Flow</h2>
+            <div class="flow-diagram">
+                <svg width="850" height="250" viewBox="0 0 850 250" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <marker id="arrow" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#dc2626"/>
+                        </marker>
+                    </defs>
+                    <!-- Steps -->
+                    <rect x="20" y="60" width="110" height="55" rx="8" fill="#dc2626"/>
+                    <text x="75" y="92" text-anchor="middle" fill="white" font-size="11">Cancel Check-out</text>
+
+                    <rect x="155" y="60" width="130" height="55" rx="8" fill="#f97316"/>
+                    <text x="220" y="82" text-anchor="middle" fill="white" font-size="10">Check TL011/TL012</text>
+                    <text x="220" y="100" text-anchor="middle" fill="white" font-size="9">Has value?</text>
+
+                    <rect x="310" y="60" width="130" height="55" rx="8" fill="#8b5cf6"/>
+                    <text x="375" y="82" text-anchor="middle" fill="white" font-size="10">Determine</text>
+                    <text x="375" y="100" text-anchor="middle" fill="white" font-size="9">TRANSORDERTYPE</text>
+
+                    <rect x="465" y="40" width="130" height="40" rx="6" fill="#dc2626"/>
+                    <text x="530" y="65" text-anchor="middle" fill="white" font-size="10">= 59: outsourcingProcess</text>
+
+                    <rect x="465" y="95" width="130" height="40" rx="6" fill="#3b82f6"/>
+                    <text x="530" y="120" text-anchor="middle" fill="white" font-size="10">Other: cancelStockIn</text>
+
+                    <rect x="620" y="60" width="100" height="55" rx="8" fill="#10b981"/>
+                    <text x="670" y="82" text-anchor="middle" fill="white" font-size="10">Call ERP</text>
+                    <text x="670" y="100" text-anchor="middle" fill="white" font-size="9">Restore inventory</text>
+
+                    <rect x="745" y="60" width="80" height="55" rx="8" fill="#059669"/>
+                    <text x="785" y="92" text-anchor="middle" fill="white" font-size="10">Complete</text>
+
+                    <!-- Arrows -->
+                    <line x1="130" y1="87" x2="150" y2="87" stroke="#dc2626" stroke-width="2" marker-end="url(#arrow)"/>
+                    <line x1="285" y1="87" x2="305" y2="87" stroke="#dc2626" stroke-width="2" marker-end="url(#arrow)"/>
+                    <line x1="440" y1="75" x2="460" y2="60" stroke="#dc2626" stroke-width="2" marker-end="url(#arrow)"/>
+                    <line x1="440" y1="100" x2="460" y2="115" stroke="#3b82f6" stroke-width="2" marker-end="url(#arrow)"/>
+                    <line x1="595" y1="60" x2="615" y2="75" stroke="#dc2626" stroke-width="2" marker-end="url(#arrow)"/>
+                    <line x1="595" y1="115" x2="615" y2="100" stroke="#3b82f6" stroke-width="2" marker-end="url(#arrow)"/>
+                    <line x1="720" y1="87" x2="740" y2="87" stroke="#10b981" stroke-width="2" marker-end="url(#arrow)"/>
+
+                    <!-- Skip path -->
+                    <rect x="155" y="165" width="130" height="40" rx="6" fill="#64748b"/>
+                    <text x="220" y="190" text-anchor="middle" fill="white" font-size="10">TL011/TL012 is empty</text>
+                    <line x1="220" y1="115" x2="220" y2="160" stroke="#64748b" stroke-width="2" stroke-dasharray="5,5" marker-end="url(#arrow)"/>
+                    <text x="280" y="145" font-size="9" fill="#64748b">Skip ERP call</text>
+
+                    <!-- Labels -->
+                    <text x="425" y="230" text-anchor="middle" font-size="11" fill="#64748b">Code Location: GeneralUpdater.java:1571-1605</text>
+                </svg>
+            </div>
+
+            <div class="info-box info">
+                <strong>Code Reference</strong>
+                <ul style="margin-top:10px; margin-left:20px;">
+                    <li>Cancel logic: <code>GeneralUpdater.java:1571-1605</code></li>
+                    <li>TL011/TL012 check: <code>GeneralUpdater.java:1571</code></li>
+                    <li>TRANSORDERTYPE determination: <code>GeneralUpdater.java:1577</code></li>
+                </ul>
+            </div>
+
+            <div class="info-box warning">
+                <strong>Related API</strong><br>
+                Cancel stock-in and create stock-in (stockin.data.create) are paired.<br>
+                Cancel requires TB001/TB002 returned by ERP after successful creation (stored in TL011/TL012).
+            </div>
+        </div>
+
+        <!-- Request Spec -->
+        <div class="card" id="request">
+            <h2>3. Request Specification</h2>
+
+            <div class="info-box success">
+                <strong>Format: JSON</strong><br>
+                <code>Content-Type: application/json</code>
+            </div>
+
+            <h3>3.1 Cancel General Stock-In (cancelStockIn)</h3>
+            <table>
+                <tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th><th>MES Source</th></tr>
+                <tr><td>companyID</td><td>string</td><td><span class="required">Y</span></td><td>Company code</td><td>COMPANYID</td></tr>
+                <tr><td>userId</td><td>string</td><td><span class="required">Y</span></td><td>Operator</td><td>Current user</td></tr>
+                <tr><td>stock_in_no</td><td>string</td><td><span class="required">Y</span></td><td>Stock-in number (type-number)</td><td>TL011 + "-" + TL012</td></tr>
+            </table>
+
+            <h3>3.2 Cancel Outsourcing Stock-In (outsourcingProcess)</h3>
+            <table>
+                <tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th><th>MES Source</th></tr>
+                <tr><td>companyID</td><td>string</td><td><span class="required">Y</span></td><td>Company code</td><td>COMPANYID</td></tr>
+                <tr><td>userId</td><td>string</td><td><span class="required">Y</span></td><td>Operator</td><td>Current user</td></tr>
+                <tr><td>outsource_no</td><td>string</td><td><span class="required">Y</span></td><td>Outsourcing number (type-number)</td><td>TL011 + "-" + TL012</td></tr>
+                <tr><td>source_type</td><td>string</td><td><span class="required">Y</span></td><td>Reversal type (0/1/2)</td><td>"0" (shipment reversal)</td></tr>
+            </table>
+
+            <h3>Field Source Description</h3>
+            <div class="info-box info">
+                <code>stock_in_no / outsource_no</code> = <code>SFT_TRANSORDER_LINE.TL011</code> + "-" + <code>SFT_TRANSORDER_LINE.TL012</code><br><br>
+                TL011/TL012 is written after <code>stockin.data.create</code> succeeds, from ERP returned TB001/TB002.
+            </div>
+        </div>
+
+        <!-- Response -->
+        <div class="card" id="response">
+            <h2>4. Response Specification</h2>
+            <table>
+                <tr><th>Field</th><th>Type</th><th>Description</th></tr>
+                <tr><td>code</td><td>int</td><td>200=Success, other=Failure</td></tr>
+                <tr><td>msg</td><td>string</td><td>Processing result message</td></tr>
+            </table>
+
+            <h3>Success Behavior</h3>
+            <ul style="margin-left: 20px; margin-top: 10px;">
+                <li>ERP stock-in voided/reversed</li>
+                <li>Inventory quantity restored (deduct finished goods inventory)</li>
+                <li>MES check-out record cancelled</li>
+            </ul>
+        </div>
+
+        <!-- Validation Rules -->
+        <div class="card" id="rules">
+            <h2>5. Validation Rules</h2>
+            <table>
+                <tr><th>#</th><th>Validation Item</th><th>Rule</th><th>Code Location</th></tr>
+                <tr><td>1</td><td>TL011 not empty</td><td>Must have ERP document type</td><td>GeneralUpdater.java:1571</td></tr>
+                <tr><td>2</td><td>TL012 not empty</td><td>Must have ERP document number</td><td>GeneralUpdater.java:1571</td></tr>
+                <tr><td>3</td><td>ERP connection</td><td>SFTConfig.isHasERP() = true</td><td>GeneralUpdater.java:1575</td></tr>
+                <tr><td>4</td><td>TRANSORDERTYPE check</td><td>59=outsourcingProcess, other=cancelStockIn</td><td>GeneralUpdater.java:1582</td></tr>
+                <tr><td>5</td><td>Original document exists</td><td>Document must exist in ERP</td><td>ERP side validation</td></tr>
+                <tr><td>6</td><td>Document status allows cancel</td><td>Only unposted can be reversed</td><td>ERP side validation</td></tr>
+            </table>
+
+            <div class="info-box danger">
+                <strong>Important: ERP will not be called if TL011/TL012 is empty</strong><br>
+                In the program logic, only when both <code>TL011</code> and <code>TL012</code> are not empty, the cancel API will be called.<br>
+                If empty, the cancel check-out action only executes on MES side, ERP is not affected.
+            </div>
+        </div>
+
+        <!-- Error Codes -->
+        <div class="card" id="errors">
+            <h2>6. Error Codes</h2>
+            <table>
+                <tr><th>Code</th><th>Message</th><th>Description</th></tr>
+                <tr><td>E101</td><td>Stock-in document not found</td><td>stock_in_no corresponding document does not exist</td></tr>
+                <tr><td>E102</td><td>Stock-in document already posted</td><td>Stock-in has been posted, cannot reverse</td></tr>
+                <tr><td>E103</td><td>Stock-in document has references</td><td>Has subsequent sales or transfer orders</td></tr>
+                <tr><td>E104</td><td>Insufficient inventory</td><td>Inventory will be negative after cancel</td></tr>
+                <tr><td>E999</td><td>System error</td><td>Timeout, connection exception</td></tr>
+            </table>
+        </div>
+
+        <!-- JSON Examples -->
+        <div class="card" id="example">
+            <h2>7. JSON Examples</h2>
+
+            <h3>Request - Cancel General Stock-In</h3>
+            <div class="code-block">
+<pre>{
+  <span class="key">"companyID"</span>: <span class="string">"COMP01"</span>,
+  <span class="key">"userId"</span>: <span class="string">"EMP001"</span>,
+  <span class="key">"stock_in_no"</span>: <span class="string">"5101-20260319001"</span>
+}</pre>
+            </div>
+
+            <h3>Request - Cancel Outsourcing Stock-In</h3>
+            <div class="code-block">
+<pre>{
+  <span class="key">"companyID"</span>: <span class="string">"COMP01"</span>,
+  <span class="key">"userId"</span>: <span class="string">"EMP001"</span>,
+  <span class="key">"outsource_no"</span>: <span class="string">"5902-20260319001"</span>,
+  <span class="key">"source_type"</span>: <span class="string">"0"</span>   <span class="comment">// 0=Shipment reversal</span>
+}</pre>
+            </div>
+
+            <h3>Response (Success)</h3>
+            <div class="code-block">
+<pre>{
+  <span class="key">"code"</span>: <span class="number">200</span>,
+  <span class="key">"msg"</span>: <span class="string">"Stock-in cancelled successfully"</span>
+}</pre>
+            </div>
+
+            <h3>Response (Failure)</h3>
+            <div class="code-block">
+<pre>{
+  <span class="key">"code"</span>: <span class="number">500</span>,
+  <span class="key">"msg"</span>: <span class="string">"Stock-in has been posted, cannot cancel"</span>
+}</pre>
+            </div>
+        </div>
+
+        <!-- Race Condition -->
+        <div class="card" id="race">
+            <h2>8. Race Condition Risk Description</h2>
+
+            <div class="info-box danger">
+                <strong>Known Issue: TL011/TL012 is empty when cancelling check-out</strong><br><br>
+                When user cancels check-out before ERP returns, TL011/TL012 has not been written back yet, cancel API will not be called.<br>
+                This causes MES and ERP data inconsistency.
+            </div>
+
+            <h3>Timeline Example</h3>
+            <div class="flow-diagram">
+                <svg width="750" height="200" viewBox="0 0 750 200" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Timeline -->
+                    <line x1="50" y1="100" x2="700" y2="100" stroke="#e2e8f0" stroke-width="3"/>
+
+                    <!-- Events -->
+                    <circle cx="100" cy="100" r="8" fill="#3b82f6"/>
+                    <text x="100" y="70" text-anchor="middle" font-size="11" fill="#1e293b">T1</text>
+                    <text x="100" y="130" text-anchor="middle" font-size="10" fill="#64748b">MES Check-out</text>
+                    <text x="100" y="145" text-anchor="middle" font-size="9" fill="#64748b">Send to ERP</text>
+
+                    <circle cx="300" cy="100" r="8" fill="#dc2626"/>
+                    <text x="300" y="70" text-anchor="middle" font-size="11" fill="#1e293b">T2</text>
+                    <text x="300" y="130" text-anchor="middle" font-size="10" fill="#dc2626" font-weight="bold">Cancel Check-out</text>
+                    <text x="300" y="145" text-anchor="middle" font-size="9" fill="#dc2626">TL011/TL012 is empty!</text>
+
+                    <circle cx="500" cy="100" r="8" fill="#10b981"/>
+                    <text x="500" y="70" text-anchor="middle" font-size="11" fill="#1e293b">T3</text>
+                    <text x="500" y="130" text-anchor="middle" font-size="10" fill="#64748b">ERP Returns</text>
+                    <text x="500" y="145" text-anchor="middle" font-size="9" fill="#64748b">TB001/TB002</text>
+
+                    <!-- Result -->
+                    <rect x="550" y="140" width="150" height="40" rx="5" fill="#fee2e2" stroke="#dc2626"/>
+                    <text x="625" y="165" text-anchor="middle" font-size="10" fill="#dc2626">ERP document not cancelled</text>
+                </svg>
+            </div>
+
+            <h3>Root Cause</h3>
+            <div class="code-block">
+<pre><span class="comment">// GeneralUpdater.java:1571</span>
+<span class="key">if</span>(!SftTransorderLine.getTl011().equals("") && !SftTransorderLine.getTl012().equals("")){
+    <span class="comment">// Only call cancel API when TL011/TL012 is not empty</span>
+    <span class="comment">// If cancel before ERP returns, this if is false, skip ERP call</span>
+}</pre>
+            </div>
+
+            <h3>Recommended Solutions</h3>
+            <table>
+                <tr><th>Solution</th><th>Description</th><th>Impact</th></tr>
+                <tr><td><strong>Immediate</strong></td><td>Manually void the stock-in in ERP</td><td>Requires manual intervention</td></tr>
+                <tr><td>Wait mechanism</td><td>Wait for ERP return before allowing cancel</td><td>Requires code modification</td></tr>
+                <tr><td>Lock mechanism</td><td>Disable cancel during check-out processing</td><td>Requires code modification</td></tr>
+                <tr><td>Periodic comparison</td><td>Scheduled job to compare MES and ERP document status</td><td>Requires new feature</td></tr>
+            </table>
+
+            <div class="info-box info">
+                <strong>Reference Case</strong><br>
+                See CLAUDE.md record on 2026-03-12 "0000675600 Cancel Check-out outsourcingProcess Not Called Analysis"
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>

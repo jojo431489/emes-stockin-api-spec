@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>wo.work.report.data.process - Cancel Production Report | eMES API Specification</title>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #1e40af;
+            --success-color: #16a34a;
+            --error-color: #dc2626;
+            --warning-color: #d97706;
+            --bg-color: #f8fafc;
+            --border-color: #e2e8f0;
+            --text-color: #1e293b;
+            --text-muted: #64748b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background: var(--bg-color);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+            color: white;
+            padding: 40px 20px;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .back-link {
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 20px;
+            font-size: 0.9em;
+        }
+
+        .back-link:hover {
+            color: white;
+        }
+
+        .api-title {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .api-title h1 {
+            font-size: 2em;
+            margin: 0;
+        }
+
+        .method-badge {
+            background: rgba(255,255,255,0.2);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 600;
+        }
+
+        .api-code {
+            font-family: 'Consolas', monospace;
+            background: rgba(0,0,0,0.2);
+            padding: 10px 20px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 1.1em;
+            display: inline-block;
+        }
+
+        .api-desc {
+            margin-top: 15px;
+            opacity: 0.9;
+            max-width: 800px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .section {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .section h2 {
+            font-size: 1.4em;
+            color: var(--text-color);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--bg-color);
+        }
+
+        .section h3 {
+            font-size: 1.1em;
+            color: var(--text-color);
+            margin: 25px 0 15px 0;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .info-item {
+            background: var(--bg-color);
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .info-item .label {
+            font-size: 0.85em;
+            color: var(--text-muted);
+            margin-bottom: 5px;
+        }
+
+        .info-item .value {
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95em;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background: var(--bg-color);
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        tr:hover {
+            background: #f1f5f9;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            font-weight: 500;
+        }
+
+        .tag-required {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .tag-optional {
+            background: #e0e7ff;
+            color: #4f46e5;
+        }
+
+        pre {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Consolas', monospace;
+            font-size: 0.9em;
+            line-height: 1.5;
+        }
+
+        .code-inline {
+            background: #f1f5f9;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Consolas', monospace;
+            font-size: 0.9em;
+            color: var(--primary-color);
+        }
+
+        .flow-diagram {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            overflow-x: auto;
+        }
+
+        .note {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 15px 20px;
+            border-radius: 0 8px 8px 0;
+            margin: 20px 0;
+        }
+
+        .note-title {
+            font-weight: 600;
+            color: #92400e;
+            margin-bottom: 5px;
+        }
+
+        .note-content {
+            color: #78350f;
+            font-size: 0.95em;
+        }
+
+        .warning-box {
+            background: #fee2e2;
+            border-left: 4px solid #dc2626;
+            padding: 15px 20px;
+            border-radius: 0 8px 8px 0;
+            margin: 20px 0;
+        }
+
+        .warning-title {
+            font-weight: 600;
+            color: #991b1b;
+            margin-bottom: 5px;
+        }
+
+        .warning-content {
+            color: #7f1d1d;
+            font-size: 0.95em;
+        }
+
+        .success-box {
+            background: #dcfce7;
+            border-left: 4px solid #16a34a;
+            padding: 15px 20px;
+            border-radius: 0 8px 8px 0;
+            margin: 20px 0;
+        }
+
+        .error-box {
+            background: #fee2e2;
+            border-left: 4px solid #dc2626;
+            padding: 15px 20px;
+            border-radius: 0 8px 8px 0;
+            margin: 20px 0;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .two-column {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .footer {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-muted);
+            font-size: 0.9em;
+        }
+
+        .lang-switcher {
+            float: right;
+            display: flex;
+            gap: 10px;
+        }
+
+        .lang-switcher a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.85em;
+        }
+
+        .lang-switcher a:hover {
+            color: white;
+            background: rgba(255,255,255,0.1);
+        }
+
+        .lang-switcher a.active {
+            color: white;
+            background: rgba(255,255,255,0.2);
+        }
+
+        .scenario-card {
+            background: var(--bg-color);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+
+        .scenario-card h4 {
+            color: var(--text-color);
+            margin-bottom: 10px;
+        }
+
+        .scenario-card p {
+            color: var(--text-muted);
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <div class="lang-switcher">
+                <a href="../wo-work-report-data-process.html">繁體中文</a>
+                <a href="wo-work-report-data-process.html" class="active">English</a>
+                <a href="../vi/wo-work-report-data-process.html">Tiếng Việt</a>
+                <a href="../th/wo-work-report-data-process.html">ภาษาไทย</a>
+            </div>
+            <a href="index.html" class="back-link">← Back to API List</a>
+            <div class="api-title">
+                <h1>Cancel Production Report (Report Reversal)</h1>
+                <span class="method-badge">CANCEL</span>
+                <span class="method-badge">MES → ERP</span>
+            </div>
+            <div class="api-code">wo.work.report.data.process</div>
+            <p class="api-desc">
+                When MES cancels check-out, call this API to notify ERP to cancel the corresponding production report,
+                restoring reported data. ERP will void or reverse the report record upon receipt.
+            </p>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Basic Info -->
+        <div class="section">
+            <h2>Basic Information</h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="label">API Name</div>
+                    <div class="value">wo.work.report.data.process</div>
+                </div>
+                <div class="info-item">
+                    <div class="label">Internal Task Name</div>
+                    <div class="value">cancelProductionForm</div>
+                </div>
+                <div class="info-item">
+                    <div class="label">Format</div>
+                    <div class="value">JSON (Content-Type: application/json)</div>
+                </div>
+                <div class="info-item">
+                    <div class="label">Case Number</div>
+                    <div class="value">0190760</div>
+                </div>
+                <div class="info-item">
+                    <div class="label">API Number</div>
+                    <div class="value">api-2196</div>
+                </div>
+                <div class="info-item">
+                    <div class="label">Data Direction</div>
+                    <div class="value">MES → ERP</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Trigger Timing -->
+        <div class="section">
+            <h2>Trigger Timing</h2>
+            <div class="flow-diagram">
+                <svg viewBox="0 0 900 200" style="max-width: 900px; width: 100%;">
+                    <!-- Step 1: Cancel Check-out -->
+                    <rect x="20" y="60" width="150" height="80" rx="8" fill="#fee2e2" stroke="#dc2626" stroke-width="2"/>
+                    <text x="95" y="90" text-anchor="middle" font-size="14" font-weight="600" fill="#991b1b">Cancel Check-out</text>
+                    <text x="95" y="110" text-anchor="middle" font-size="11" fill="#dc2626">CancelCheckOut</text>
+                    <text x="95" y="125" text-anchor="middle" font-size="10" fill="#dc2626">User Action</text>
+
+                    <!-- Arrow 1 -->
+                    <path d="M170 100 L210 100" stroke="#64748b" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+                    <!-- Step 2: Query Report Number -->
+                    <rect x="220" y="60" width="150" height="80" rx="8" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+                    <text x="295" y="90" text-anchor="middle" font-size="14" font-weight="600" fill="#1e40af">Query Report No</text>
+                    <text x="295" y="110" text-anchor="middle" font-size="10" fill="#3b82f6">PRODUCTION_REPORTID</text>
+                    <text x="295" y="125" text-anchor="middle" font-size="10" fill="#3b82f6">SFT_OP_REALRUN</text>
+
+                    <!-- Arrow 2 -->
+                    <path d="M370 100 L410 100" stroke="#64748b" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+                    <!-- Step 3: Check if Has Number -->
+                    <polygon points="495,60 570,100 495,140 420,100" fill="#fef3c7" stroke="#f59e0b" stroke-width="2"/>
+                    <text x="495" y="95" text-anchor="middle" font-size="12" font-weight="600" fill="#92400e">Report No</text>
+                    <text x="495" y="110" text-anchor="middle" font-size="11" fill="#d97706">Exists?</text>
+
+                    <!-- Arrow 3 (Has Number) -->
+                    <path d="M570 100 L610 100" stroke="#64748b" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <text x="590" y="90" font-size="10" fill="#16a34a">Yes</text>
+
+                    <!-- Step 4: Send to ERP Cancel -->
+                    <rect x="620" y="60" width="150" height="80" rx="8" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+                    <text x="695" y="90" text-anchor="middle" font-size="14" font-weight="600" fill="#166534">Send ERP Cancel</text>
+                    <text x="695" y="110" text-anchor="middle" font-size="10" fill="#22c55e">cancelProductionForm</text>
+                    <text x="695" y="125" text-anchor="middle" font-size="10" fill="#22c55e">wo.work.report.data.process</text>
+
+                    <!-- No Number Path -->
+                    <path d="M495 140 L495 170 L695 170 L695 150" stroke="#64748b" stroke-width="2" stroke-dasharray="5,5"/>
+                    <text x="590" y="165" font-size="10" fill="#dc2626">No → Skip</text>
+
+                    <!-- Arrow 4 -->
+                    <path d="M770 100 L810 100" stroke="#64748b" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+                    <!-- Complete -->
+                    <circle cx="840" cy="100" r="30" fill="#dc2626"/>
+                    <text x="840" y="105" text-anchor="middle" font-size="20" fill="white">✓</text>
+
+                    <defs>
+                        <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#64748b"/>
+                        </marker>
+                    </defs>
+                </svg>
+            </div>
+
+            <div class="warning-box">
+                <div class="warning-title">Important Notice</div>
+                <div class="warning-content">
+                    Cancel production report only calls ERP when <code class="code-inline">PRODUCTION_REPORTID</code> has a value.
+                    If ERP has not yet returned the report number during check-out (TIMEOUT or failure), cancel will not be able to notify ERP to reverse.
+                </div>
+            </div>
+
+            <h3>Trigger Scenarios</h3>
+            <div class="scenario-card">
+                <h4>Scenario 1: Normal Cancel Check-out</h4>
+                <p>User clicks "Cancel Check-out" in MES, system queries report number then calls ERP to cancel that report.</p>
+            </div>
+            <div class="scenario-card">
+                <h4>Scenario 2: Batch Cancel Check-out</h4>
+                <p>Batch cancel multiple check-out records, system calls ERP to cancel corresponding reports one by one.</p>
+            </div>
+            <div class="scenario-card">
+                <h4>Scenario 3: Rework Cancel</h4>
+                <p>Cancel check-out at rework station also triggers production report cancel flow.</p>
+            </div>
+        </div>
+
+        <!-- Request Parameters -->
+        <div class="section">
+            <h2>Request Parameters</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Field</th>
+                        <th>ERP Field Name</th>
+                        <th>Type</th>
+                        <th>Required</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Company Code</td>
+                        <td><code class="code-inline">enterprise_no</code></td>
+                        <td>String</td>
+                        <td><span class="tag tag-required">Required</span></td>
+                        <td>Enterprise code</td>
+                    </tr>
+                    <tr>
+                        <td>Site Code</td>
+                        <td><code class="code-inline">site_no</code></td>
+                        <td>String</td>
+                        <td><span class="tag tag-required">Required</span></td>
+                        <td>Factory/site code</td>
+                    </tr>
+                    <tr>
+                        <td>Report Number</td>
+                        <td><code class="code-inline">report_no</code></td>
+                        <td>String</td>
+                        <td><span class="tag tag-required">Required</span></td>
+                        <td>Report number to cancel (type-number)</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="note">
+                <div class="note-title">Report Number Format</div>
+                <div class="note-content">
+                    Report number format is <code class="code-inline">PDTYPE-PDNO</code>, e.g.: <code class="code-inline">10-20260319001</code>.
+                    This value comes from <code class="code-inline">SFT_OP_REALRUN.PRODUCTION_REPORTID</code> or <code class="code-inline">SFT_WS_RUN.WR024</code>.
+                </div>
+            </div>
+        </div>
+
+        <!-- Request Example -->
+        <div class="section">
+            <h2>Request Example</h2>
+
+            <h3>JSON Format</h3>
+            <pre>{
+  "enterprise_no": "COMP01",
+  "site_no": "SITE01",
+  "report_no": "10-20260319001"
+}</pre>
+
+            <h3>ERP XML Format (WFERP)</h3>
+            <pre>&lt;parameters&gt;
+  &lt;parameter key="enterprise_no" type="string"&gt;COMP01&lt;/parameter&gt;
+  &lt;parameter key="site_no" type="string"&gt;SITE01&lt;/parameter&gt;
+  &lt;parameter key="report_no" type="string"&gt;10-20260319001&lt;/parameter&gt;
+&lt;/parameters&gt;</pre>
+        </div>
+
+        <!-- Response Format -->
+        <div class="section">
+            <h2>Response Format</h2>
+
+            <div class="two-column">
+                <div>
+                    <h3>Success Response (code=200)</h3>
+                    <div class="success-box">
+                        <pre style="background: transparent; padding: 0; margin: 0;">{
+  "code": 200,
+  "msg": "Production report cancelled successfully",
+  "ERPMessage": {
+    "description": "Process successful",
+    "report_no": "10-20260319001"
+  }
+}</pre>
+                    </div>
+                </div>
+                <div>
+                    <h3>Failure Response (code=500)</h3>
+                    <div class="error-box">
+                        <pre style="background: transparent; padding: 0; margin: 0;">{
+  "code": 500,
+  "msg": "Production report cancel failed",
+  "ERPMessage": {
+    "description": "Report already confirmed, cannot cancel"
+  }
+}</pre>
+                    </div>
+                </div>
+            </div>
+
+            <h3>Response Field Description</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Field</th>
+                        <th>Type</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code class="code-inline">code</code></td>
+                        <td>Integer</td>
+                        <td>200=Success, 500=Failure</td>
+                    </tr>
+                    <tr>
+                        <td><code class="code-inline">msg</code></td>
+                        <td>String</td>
+                        <td>Processing message</td>
+                    </tr>
+                    <tr>
+                        <td><code class="code-inline">ERPMessage.description</code></td>
+                        <td>String</td>
+                        <td>Detailed message from ERP</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- MES Clear Logic -->
+        <div class="section">
+            <h2>MES Clear Logic</h2>
+            <p>After successful production report cancellation, MES will clear report number from related records:</p>
+
+            <h3>Clear SQL Logic</h3>
+            <pre>-- Clear SFT_OP_REALRUN report number
+UPDATE SFT_OP_REALRUN
+SET PRODUCTION_REPORTID = '',
+    PRODUCTION_REPORTSN = ''
+WHERE ID = :KEYID
+  AND ERP_OPSEQ = :ERP_OPSEQ
+  AND SEQUENCE = :SEQUENCE
+
+-- Clear SFT_WS_RUN report number
+UPDATE SFT_WS_RUN
+SET WR024 = '',
+    WR025 = ''
+WHERE (corresponding check-in/out record conditions)
+
+-- Delete report header/detail (depends on system settings)
+DELETE FROM SFT_SFCTE WHERE TE001 = :PDTYPE AND TE002 = :PDNO
+DELETE FROM SFT_SFCTD WHERE TD001 = :PDTYPE AND TD002 = :PDNO</pre>
+        </div>
+
+        <!-- Difference from Other Cancel APIs -->
+        <div class="section">
+            <h2>Difference from Other Cancel APIs</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>API Name</th>
+                        <th>Task Name</th>
+                        <th>Applicable Scenario</th>
+                        <th>Document Type Cancelled</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code class="code-inline">wo.work.report.data.process</code></td>
+                        <td>cancelProductionForm</td>
+                        <td>General production report cancel</td>
+                        <td>Production Report</td>
+                    </tr>
+                    <tr>
+                        <td><code class="code-inline">outsourcing.process</code></td>
+                        <td>outsourcingProcess</td>
+                        <td>Outsourcing stock-in cancel (TRANSORDERTYPE=59)</td>
+                        <td>Outsourcing Receipt</td>
+                    </tr>
+                    <tr>
+                        <td><code class="code-inline">stockin.data.process</code></td>
+                        <td>cancelStockIn</td>
+                        <td>Stock-in cancel</td>
+                        <td>Stock-In Document</td>
+                    </tr>
+                    <tr>
+                        <td><code class="code-inline">wo.scrap.data.process</code></td>
+                        <td>woScrapDataProcess</td>
+                        <td>Scrap stock-in cancel (TRANSORDERTYPE=58)</td>
+                        <td>Scrap Document</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="note">
+                <div class="note-title">Decision Logic</div>
+                <div class="note-content">
+                    When cancelling check-out, system determines which cancel API to call based on <code class="code-inline">SFT_TRANSORDER_LINE.TRANSORDERTYPE</code>:
+                    <br><br>
+                    - TRANSORDERTYPE = 59 → outsourcingProcess (Outsourcing)<br>
+                    - TRANSORDERTYPE = 58 → woScrapDataProcess (Scrap)<br>
+                    - Other → cancelStockIn or cancelProductionForm
+                </div>
+            </div>
+        </div>
+
+        <!-- Related Tables -->
+        <div class="section">
+            <h2>Related Database Tables</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Table</th>
+                        <th>Description</th>
+                        <th>Affected Fields</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code class="code-inline">SFT_OP_REALRUN</code></td>
+                        <td>Process execution records</td>
+                        <td>PRODUCTION_REPORTID, PRODUCTION_REPORTSN (cleared)</td>
+                    </tr>
+                    <tr>
+                        <td><code class="code-inline">SFT_WS_RUN</code></td>
+                        <td>Workstation execution records</td>
+                        <td>WR024, WR025 (cleared)</td>
+                    </tr>
+                    <tr>
+                        <td><code class="code-inline">SFT_SFCTD</code></td>
+                        <td>Report header</td>
+                        <td>Entire record deleted or marked cancelled</td>
+                    </tr>
+                    <tr>
+                        <td><code class="code-inline">SFT_SFCTE</code></td>
+                        <td>Report detail</td>
+                        <td>Entire record deleted or marked cancelled</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Code Location -->
+        <div class="section">
+            <h2>Code Location</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Function</th>
+                        <th>File Path</th>
+                        <th>Line Number</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Cancel check-out entry</td>
+                        <td>SFT_core/src/com/dci/sft/update/GeneralUpdater.java</td>
+                        <td>1571-1605</td>
+                    </tr>
+                    <tr>
+                        <td>Cancel API call</td>
+                        <td>SFT_ERPIntegrate/src/com/dci/sft/erp/XmlToERP_handler.java</td>
+                        <td>159-237</td>
+                    </tr>
+                    <tr>
+                        <td>Clear report number</td>
+                        <td>SFT_core/src/com/dci/sft/jsonMappingHibernate/TransOrderDataToJson.java</td>
+                        <td>1530-1580</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Error Handling -->
+        <div class="section">
+            <h2>Error Handling</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Error Scenario</th>
+                        <th>ERP Response</th>
+                        <th>MES Handling</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Report already confirmed</td>
+                        <td>code=500, Report confirmed</td>
+                        <td>Display error message, requires manual handling</td>
+                    </tr>
+                    <tr>
+                        <td>Report does not exist</td>
+                        <td>code=500, Report not found</td>
+                        <td>Clear MES report number, continue cancel flow</td>
+                    </tr>
+                    <tr>
+                        <td>Connection timeout</td>
+                        <td>SocketTimeoutException</td>
+                        <td>Log error, requires manual supplementary cancel</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>LOG Record</h3>
+            <pre>// Log file: logs/ERPReturnErrorRec.log
+
+[ERP_SEND_ERROR] taskName=cancelProductionForm, errorType=SocketTimeoutException, errorMsg=Read timed out
+[ERP_SEND_ERROR] Content sent={"report_no":"10-20260319001"}</pre>
+        </div>
+
+        <!-- Race Condition Risk -->
+        <div class="section">
+            <h2>Race Condition Risk</h2>
+            <div class="warning-box">
+                <div class="warning-title">Important Notice</div>
+                <div class="warning-content">
+                    Like the create production report API, cancel production report also has Race Condition risk:
+                    <br><br>
+                    <strong>Scenario:</strong> Cancel immediately after check-out, but ERP has not yet returned report number<br>
+                    <strong>Result:</strong> <code class="code-inline">PRODUCTION_REPORTID</code> is empty, cannot call ERP cancel<br>
+                    <strong>Consequence:</strong> MES has cancelled check-out, but ERP production report still exists
+                    <br><br>
+                    <strong>Recommended Solutions:</strong>
+                    <ol style="margin-top: 10px; padding-left: 20px;">
+                        <li>Wait for ERP return success before allowing cancel after check-out</li>
+                        <li>Periodically compare MES and ERP production report status</li>
+                        <li>Provide manual supplementary cancel function</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>eMES API Specification | Case: 0190760 | Updated: 2026-03-19</p>
+    </div>
+</body>
+</html>

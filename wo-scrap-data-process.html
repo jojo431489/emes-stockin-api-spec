@@ -278,6 +278,30 @@
             font-size: 0.9em;
         }
 
+        .lang-switcher {
+            float: right;
+            display: flex;
+            gap: 10px;
+        }
+
+        .lang-switcher a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.85em;
+        }
+
+        .lang-switcher a:hover {
+            color: white;
+            background: rgba(255,255,255,0.1);
+        }
+
+        .lang-switcher a.active {
+            color: white;
+            background: rgba(255,255,255,0.2);
+        }
+
         .decision-table {
             margin-top: 20px;
         }
@@ -291,6 +315,12 @@
 <body>
     <div class="header">
         <div class="header-content">
+            <div class="lang-switcher">
+                <a href="wo-scrap-data-process.html" class="active">繁體中文</a>
+                <a href="en/wo-scrap-data-process.html">English</a>
+                <a href="vi/wo-scrap-data-process.html">Tiếng Việt</a>
+                <a href="th/wo-scrap-data-process.html">ภาษาไทย</a>
+            </div>
             <a href="index.html" class="back-link">← 返回 API 列表</a>
             <div class="api-title">
                 <h1>不良品入庫取消</h1>

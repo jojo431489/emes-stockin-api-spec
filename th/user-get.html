@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>user.get - ข้อมูลพื้นฐานผู้ใช้งาน | eMES API</title>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #1e40af;
+            --success-color: #16a34a;
+            --error-color: #dc2626;
+            --warning-color: #d97706;
+            --bg-color: #f8fafc;
+            --border-color: #e2e8f0;
+            --text-color: #1e293b;
+            --text-muted: #64748b;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', 'Tahoma', sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+        }
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .navbar a { color: white; text-decoration: none; }
+        .navbar .brand { font-size: 1.2em; font-weight: 600; }
+        .navbar .back { opacity: 0.9; }
+        .navbar .back:hover { opacity: 1; }
+        .lang-switcher {
+            display: flex;
+            gap: 10px;
+        }
+        .lang-switcher a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.85em;
+        }
+        .lang-switcher a:hover {
+            color: white;
+            background: rgba(255,255,255,0.1);
+        }
+        .lang-switcher a.active {
+            color: white;
+            background: rgba(255,255,255,0.2);
+        }
+        .header { background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); color: white; padding: 40px 20px; }
+        .header-content { max-width: 1200px; margin: 0 auto; }
+        .back-link { color: rgba(255,255,255,0.8); text-decoration: none; display: inline-flex; align-items: center; gap: 5px; margin-bottom: 20px; font-size: 0.9em; }
+        .api-title { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
+        .api-title h1 { font-size: 2em; margin: 0; }
+        .method-badge { background: rgba(255,255,255,0.2); padding: 5px 15px; border-radius: 20px; font-size: 0.9em; font-weight: 600; }
+        .api-code { font-family: 'Consolas', monospace; background: rgba(0,0,0,0.2); padding: 10px 20px; border-radius: 8px; margin-top: 15px; font-size: 1.1em; display: inline-block; }
+        .api-desc { margin-top: 15px; opacity: 0.9; max-width: 800px; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+        .section { background: white; border-radius: 12px; padding: 30px; margin-bottom: 30px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .section h2 { font-size: 1.4em; color: var(--text-color); margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid var(--bg-color); }
+        .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+        .info-item { background: var(--bg-color); padding: 15px; border-radius: 8px; }
+        .info-item .label { font-size: 0.85em; color: var(--text-muted); margin-bottom: 5px; }
+        .info-item .value { font-weight: 600; color: var(--text-color); }
+        table { width: 100%; border-collapse: collapse; font-size: 0.95em; }
+        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid var(--border-color); }
+        th { background: var(--bg-color); font-weight: 600; }
+        tr:hover { background: #f1f5f9; }
+        pre { background: #1e293b; color: #e2e8f0; padding: 20px; border-radius: 8px; overflow-x: auto; font-family: 'Consolas', monospace; font-size: 0.9em; }
+        .code-inline { background: #f1f5f9; padding: 2px 6px; border-radius: 4px; font-family: 'Consolas', monospace; font-size: 0.9em; color: var(--primary-color); }
+        .footer { text-align: center; padding: 40px 20px; color: var(--text-muted); font-size: 0.9em; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="index.html" class="back">← กลับไปรายการ API</a>
+        <div class="lang-switcher">
+            <a href="../user-get.html">繁體中文</a>
+            <a href="../en/user-get.html">English</a>
+            <a href="../vi/user-get.html">Tiếng Việt</a>
+            <a href="user-get.html" class="active">ภาษาไทย</a>
+        </div>
+        <span class="brand">เอกสารข้อกำหนด eMES API</span>
+    </nav>
+
+    <div class="container">
+        <div class="section">
+            <h2>ข้อมูลพื้นฐาน</h2>
+            <div class="info-grid">
+                <div class="info-item"><div class="label">ชื่อ API</div><div class="value">user.get</div></div>
+                <div class="info-item"><div class="label">ชื่อเมธอด</div><div class="value">upUserCustomerCROSS</div></div>
+                <div class="info-item"><div class="label">ตารางเป้าหมาย</div><div class="value">ERP_CMSMV</div></div>
+                <div class="info-item"><div class="label">โหนด JSON</div><div class="value">user_data</div></div>
+                <div class="info-item"><div class="label">Primary Key</div><div class="value">MV001 (employee_no)</div></div>
+                <div class="info-item"><div class="label">ตำแหน่งโปรแกรม</div><div class="value">RegularESB.java:3444</div></div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>ฟิลด์การตอบกลับ</h2>
+            <table>
+                <thead><tr><th>ฟิลด์ ERP</th><th>ฟิลด์ MES</th><th>คำอธิบาย</th></tr></thead>
+                <tbody>
+                    <tr><td><code class="code-inline">employee_no</code></td><td>MV001</td><td>รหัสพนักงาน (Primary Key)</td></tr>
+                    <tr><td><code class="code-inline">employee_name</code></td><td>MV002</td><td>ชื่อพนักงาน</td></tr>
+                    <tr><td><code class="code-inline">department_no</code></td><td>MV004</td><td>รหัสแผนก</td></tr>
+                    <tr><td><code class="code-inline">email</code></td><td>MV020</td><td>อีเมล</td></tr>
+                    <tr><td><code class="code-inline">resignation_date</code></td><td>MV022</td><td>วันที่ลาออก</td></tr>
+                    <tr><td><code class="code-inline">tran_status</code></td><td>TRAN_STATUS</td><td>สถานะธุรกรรม</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2>ตัวอย่างการตอบกลับ</h2>
+            <pre>{
+  "user_data": [
+    {
+      "employee_no": "EMP001",
+      "employee_name": "สมชาย",
+      "department_no": "DEPT01",
+      "email": "emp001@company.com",
+      "resignation_date": "",
+      "tran_status": "AU"
+    }
+  ]
+}</pre>
+        </div>
+
+        <div class="section">
+            <h2>SQL อัปเดตฐานข้อมูล</h2>
+            <h3 style="font-size: 1.1em; margin: 20px 0 10px;">ตรวจสอบเพิ่มหรือแก้ไข</h3>
+            <pre>SELECT COUNT(1) FROM ERP_CMSMV WHERE MV001 = N'{employee_no}'
+-- count > 0 → UPDATE, count = 0 → INSERT</pre>
+
+            <h3 style="font-size: 1.1em; margin: 20px 0 10px;">INSERT (เพิ่มพนักงาน)</h3>
+            <pre>INSERT INTO ERP_CMSMV (MV001, MV002, MV004, MV020, MV022)
+VALUES (
+    :userId,
+    :userName,
+    '',             -- ค่าเริ่มต้นแผนกว่าง
+    '',             -- ค่าเริ่มต้นอีเมลว่าง
+    ''              -- ค่าเริ่มต้นวันที่ลาออกว่าง
+)</pre>
+
+            <h3 style="font-size: 1.1em; margin: 20px 0 10px;">UPDATE (แก้ไขพนักงาน)</h3>
+            <pre>UPDATE ERP_CMSMV SET
+    MV002 = :userName
+WHERE MV001 = :userId</pre>
+
+            <h3 style="font-size: 1.1em; margin: 20px 0 10px;">SFT_PRINCIPAL (การเชื่อมโยงบัญชีระบบ)</h3>
+            <pre>-- เพิ่มบัญชีระบบ
+INSERT INTO {EMESSYS}..SFT_PRINCIPAL (
+    AUTH_ID, AUTH_NAME, AUTH_PASSWORD, USEDSTATE,
+    AUTH_DESCRIPTION, Creator, CreateDate, PHONE, MAIL, WECHAT
+) VALUES (
+    :userId, :userName, :encryptPassWord, :status,
+    :description, 'ESB', GETDATE(), :phone, :mail, :weChat
+)
+
+-- แก้ไขบัญชีระบบ
+UPDATE {EMESSYS}..SFT_PRINCIPAL SET
+    AUTH_NAME = :userName,
+    AUTH_PASSWORD = :encryptPassWord,
+    USEDSTATE = :status,
+    AUTH_DESCRIPTION = :description,
+    PHONE = :phone,
+    MAIL = :mail,
+    WECHAT = :weChat
+WHERE AUTH_ID = :userId</pre>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>เอกสารข้อกำหนด eMES API | การซิงค์ข้อมูลพื้นฐาน | วันที่อัปเดต: 2026-03-19</p>
+    </div>
+</body>
+</html>

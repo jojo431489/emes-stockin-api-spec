@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>machine.get - Equipment Master Data | eMES API Specification</title>
+    <style>
+        :root { --primary-color: #2563eb; --bg-color: #f8fafc; --border-color: #e2e8f0; --text-color: #1e293b; --text-muted: #64748b; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif; line-height: 1.6; color: var(--text-color); background: var(--bg-color); }
+        .header { background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); color: white; padding: 40px 20px; }
+        .header-content { max-width: 1200px; margin: 0 auto; }
+        .back-link { color: rgba(255,255,255,0.8); text-decoration: none; display: inline-flex; align-items: center; gap: 5px; margin-bottom: 20px; font-size: 0.9em; }
+        .api-title { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
+        .api-title h1 { font-size: 2em; margin: 0; }
+        .method-badge { background: rgba(255,255,255,0.2); padding: 5px 15px; border-radius: 20px; font-size: 0.9em; font-weight: 600; }
+        .api-code { font-family: 'Consolas', monospace; background: rgba(0,0,0,0.2); padding: 10px 20px; border-radius: 8px; margin-top: 15px; font-size: 1.1em; display: inline-block; }
+        .api-desc { margin-top: 15px; opacity: 0.9; max-width: 800px; }
+        .lang-switcher { display: flex; gap: 10px; margin-top: 15px; }
+        .lang-switcher a { color: rgba(255,255,255,0.7); padding: 5px 10px; border-radius: 4px; font-size: 0.85em; text-decoration: none; }
+        .lang-switcher a:hover { color: white; background: rgba(255,255,255,0.1); }
+        .lang-switcher a.active { color: white; background: rgba(255,255,255,0.2); }
+        .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+        .section { background: white; border-radius: 12px; padding: 30px; margin-bottom: 30px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .section h2 { font-size: 1.4em; color: var(--text-color); margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid var(--bg-color); }
+        .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+        .info-item { background: var(--bg-color); padding: 15px; border-radius: 8px; }
+        .info-item .label { font-size: 0.85em; color: var(--text-muted); margin-bottom: 5px; }
+        .info-item .value { font-weight: 600; color: var(--text-color); }
+        table { width: 100%; border-collapse: collapse; font-size: 0.95em; }
+        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid var(--border-color); }
+        th { background: var(--bg-color); font-weight: 600; }
+        tr:hover { background: #f1f5f9; }
+        pre { background: #1e293b; color: #e2e8f0; padding: 20px; border-radius: 8px; overflow-x: auto; font-family: 'Consolas', monospace; font-size: 0.9em; }
+        .code-inline { background: #f1f5f9; padding: 2px 6px; border-radius: 4px; font-family: 'Consolas', monospace; font-size: 0.9em; color: var(--primary-color); }
+        .footer { text-align: center; padding: 40px 20px; color: var(--text-muted); font-size: 0.9em; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <a href="index.html" class="back-link">← Back to API List</a>
+            <div class="api-title">
+                <h1>Equipment Master Data</h1>
+                <span class="method-badge">GET</span>
+                <span class="method-badge">ERP → MES</span>
+            </div>
+            <div class="api-code">machine.get</div>
+            <p class="api-desc">Synchronizes equipment/machine master data from ERP to MES EQUIPMENT table.</p>
+            <div class="lang-switcher">
+                <a href="../machine-get.html">繁體中文</a>
+                <a href="machine-get.html" class="active">English</a>
+                <a href="../vi/machine-get.html">Tiếng Việt</a>
+                <a href="../th/machine-get.html">ภาษาไทย</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="section">
+            <h2>Basic Information</h2>
+            <div class="info-grid">
+                <div class="info-item"><div class="label">API Name</div><div class="value">machine.get</div></div>
+                <div class="info-item"><div class="label">Method Name</div><div class="value">upEquitpmentCROSS</div></div>
+                <div class="info-item"><div class="label">Target Table</div><div class="value">EQUIPMENT</div></div>
+                <div class="info-item"><div class="label">JSON Node</div><div class="value">machine_data</div></div>
+                <div class="info-item"><div class="label">Primary Key</div><div class="value">ID + LOCATION</div></div>
+                <div class="info-item"><div class="label">Code Location</div><div class="value">RegularESB.java:2132</div></div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Response Fields</h2>
+            <table>
+                <thead><tr><th>ERP Field</th><th>MES Field</th><th>Description</th></tr></thead>
+                <tbody>
+                    <tr><td><code class="code-inline">machine_no</code></td><td>ID</td><td>Equipment number</td></tr>
+                    <tr><td><code class="code-inline">machine_name</code></td><td>NAME</td><td>Equipment name</td></tr>
+                    <tr><td><code class="code-inline">remark</code></td><td>DESCRIPTION</td><td>Remark</td></tr>
+                    <tr><td><code class="code-inline">supplier_no</code></td><td>LOCATION</td><td>Location/Workstation</td></tr>
+                    <tr><td><code class="code-inline">machine_capacity</code></td><td>CAPACITY</td><td>Equipment capacity</td></tr>
+                    <tr><td><code class="code-inline">tran_status</code></td><td>TRAN_STATUS</td><td>Transaction status</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2>Response Example</h2>
+            <pre>{
+  "machine_data": [
+    {
+      "machine_no": "EQ001",
+      "machine_name": "CNC Machine",
+      "remark": "3-axis machining center",
+      "supplier_no": "WS001",
+      "machine_capacity": "100",
+      "tran_status": "AU"
+    }
+  ]
+}</pre>
+        </div>
+
+        <div class="section">
+            <h2>Database Update SQL</h2>
+            <h3 style="font-size: 1.1em; margin: 20px 0 10px;">Check Insert or Update</h3>
+            <pre>SELECT COUNT(1) FROM EQUIPMENT WHERE ID = N'{machine_no}'
+-- count > 0 → UPDATE, count = 0 → INSERT</pre>
+
+            <h3 style="font-size: 1.1em; margin: 20px 0 10px;">INSERT (Add Equipment)</h3>
+            <pre>INSERT INTO EQUIPMENT (
+    ID, LOCATION, NAME, DESCRIPTION, CALENDARID, EQ001,
+    EQ003, EQ006, EQ007, EQ008, EQ010, EQ011, EQ012,
+    ENDEFFECTDATETIME, LASTMAINTAINUSER, LASTMAINTAINDATETIME
+) VALUES (
+    :EQID,
+    :WSID,              -- Workstation location
+    :Eqname,
+    :description,
+    '24Hour',           -- Default calendar
+    '0',                -- Equipment status
+    :EQ003,             -- Daily capacity
+    :EQ006,             -- Inspection checklist
+    :EQ007,             -- Scheduled work hours
+    :EQ008,             -- Available work hours
+    :EQ010,             -- Include in inventory count
+    :EQ011,             -- Include in work hour calculation
+    :EQ012,             -- Expiration date (empty=active)
+    '2049-12-31 00:00:00.000',
+    :userid,
+    '{current_time}'
+)</pre>
+
+            <h3 style="font-size: 1.1em; margin: 20px 0 10px;">UPDATE (Modify Equipment)</h3>
+            <pre>UPDATE EQUIPMENT SET
+    NAME = :Eqname,
+    DESCRIPTION = :description,
+    EQ003 = :EQ003,
+    EQ006 = :EQ006,
+    EQ007 = :EQ007,
+    EQ008 = :EQ008,
+    EQ010 = :EQ010,
+    EQ011 = :EQ011,
+    EQ012 = :EQ012,
+    ENDEFFECTDATETIME = '2049-12-31 00:00:00.000',
+    LASTMAINTAINUSER = :userid,
+    LASTMAINTAINDATETIME = '{current_time}'
+WHERE ID = :EQID AND LOCATION = :WSID</pre>
+        </div>
+
+        <div class="section">
+            <h2>MES Default Values</h2>
+            <table>
+                <thead><tr><th>Field</th><th>Default Value</th><th>Description</th></tr></thead>
+                <tbody>
+                    <tr><td>CALENDARID</td><td>"24Hour"</td><td>Calendar</td></tr>
+                    <tr><td>EQ010</td><td>"N"</td><td>Not included in inventory count</td></tr>
+                    <tr><td>EQ011</td><td>"N"</td><td>Not included in work hour calculation</td></tr>
+                    <tr><td>LASTMAINTAINUSER</td><td>"EAI"</td><td>Last maintained by</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>eMES API Specification | Master Data Sync | Updated: 2026-03-19</p>
+    </div>
+</body>
+</html>

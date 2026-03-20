@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>wo.scrap.data.process - Huy nhap kho phe pham | eMES API</title>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #1e40af;
+            --success-color: #16a34a;
+            --error-color: #dc2626;
+            --warning-color: #d97706;
+            --bg-color: #f8fafc;
+            --border-color: #e2e8f0;
+            --text-color: #1e293b;
+            --text-muted: #64748b;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif; line-height: 1.6; color: var(--text-color); background: var(--bg-color); }
+        .header { background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%); color: white; padding: 40px 20px; }
+        .header-content { max-width: 1200px; margin: 0 auto; }
+        .back-link { color: rgba(255,255,255,0.8); text-decoration: none; display: inline-flex; align-items: center; gap: 5px; margin-bottom: 20px; font-size: 0.9em; }
+        .back-link:hover { color: white; }
+        .api-title { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
+        .api-title h1 { font-size: 2em; margin: 0; }
+        .method-badge { background: rgba(255,255,255,0.2); padding: 5px 15px; border-radius: 20px; font-size: 0.9em; font-weight: 600; }
+        .api-code { font-family: 'Consolas', monospace; background: rgba(0,0,0,0.2); padding: 10px 20px; border-radius: 8px; margin-top: 15px; font-size: 1.1em; display: inline-block; }
+        .api-desc { margin-top: 15px; opacity: 0.9; max-width: 800px; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+        .section { background: white; border-radius: 12px; padding: 30px; margin-bottom: 30px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .section h2 { font-size: 1.4em; color: var(--text-color); margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid var(--bg-color); }
+        .section h3 { font-size: 1.1em; color: var(--text-color); margin: 25px 0 15px 0; }
+        .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+        .info-item { background: var(--bg-color); padding: 15px; border-radius: 8px; }
+        .info-item .label { font-size: 0.85em; color: var(--text-muted); margin-bottom: 5px; }
+        .info-item .value { font-weight: 600; color: var(--text-color); }
+        table { width: 100%; border-collapse: collapse; font-size: 0.95em; }
+        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid var(--border-color); }
+        th { background: var(--bg-color); font-weight: 600; color: var(--text-color); }
+        tr:hover { background: #f1f5f9; }
+        .tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.8em; font-weight: 500; }
+        .tag-required { background: #fee2e2; color: #dc2626; }
+        pre { background: #1e293b; color: #e2e8f0; padding: 20px; border-radius: 8px; overflow-x: auto; font-family: 'Consolas', monospace; font-size: 0.9em; line-height: 1.5; }
+        .code-inline { background: #f1f5f9; padding: 2px 6px; border-radius: 4px; font-family: 'Consolas', monospace; font-size: 0.9em; color: var(--primary-color); }
+        .flow-diagram { background: white; padding: 20px; border-radius: 8px; text-align: center; overflow-x: auto; }
+        .note { background: #fef3c7; border-left: 4px solid #f59e0b; padding: 15px 20px; border-radius: 0 8px 8px 0; margin: 20px 0; }
+        .note-title { font-weight: 600; color: #92400e; margin-bottom: 5px; }
+        .note-content { color: #78350f; font-size: 0.95em; }
+        .warning-box { background: #fee2e2; border-left: 4px solid #dc2626; padding: 15px 20px; border-radius: 0 8px 8px 0; margin: 20px 0; }
+        .warning-title { font-weight: 600; color: #991b1b; margin-bottom: 5px; }
+        .warning-content { color: #7f1d1d; font-size: 0.95em; }
+        .success-box { background: #dcfce7; border-left: 4px solid #16a34a; padding: 15px 20px; border-radius: 0 8px 8px 0; margin: 20px 0; }
+        .error-box { background: #fee2e2; border-left: 4px solid #dc2626; padding: 15px 20px; border-radius: 0 8px 8px 0; margin: 20px 0; }
+        .two-column { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+        @media (max-width: 768px) { .two-column { grid-template-columns: 1fr; } }
+        .footer { text-align: center; padding: 40px 20px; color: var(--text-muted); font-size: 0.9em; }
+        .lang-switcher {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 10px;
+            z-index: 1000;
+        }
+        .lang-switcher a {
+            display: block;
+            padding: 5px 15px;
+            color: var(--text-color);
+            text-decoration: none;
+            border-radius: 4px;
+        }
+        .lang-switcher a:hover { background: var(--bg-color); }
+        .lang-switcher a.active { background: var(--primary-color); color: white; }
+        .decision-table { margin-top: 20px; }
+        .decision-table td:first-child { font-weight: 600; width: 150px; }
+    </style>
+</head>
+<body>
+    <div class="lang-switcher">
+        <a href="../wo-scrap-data-process.html">繁體中文</a>
+        <a href="../en/wo-scrap-data-process.html">English</a>
+        <a href="wo-scrap-data-process.html" class="active">Tiếng Việt</a>
+        <a href="../th/wo-scrap-data-process.html">ภาษาไทย</a>
+    </div>
+
+    <div class="header">
+        <div class="header-content">
+            <a href="index.html" class="back-link">← Quay lai danh sach API</a>
+            <div class="api-title">
+                <h1>Huy nhap kho phe pham</h1>
+                <span class="method-badge">CANCEL</span>
+                <span class="method-badge">MES → ERP</span>
+            </div>
+            <div class="api-code">wo.scrap.data.process</div>
+            <p class="api-desc">
+                Khi MES huy xuat tram, neu phieu chuyen kho la loai nhap kho phe pham (TRANSORDERTYPE=58),
+                goi API nay de thong bao ERP huy phieu nhap kho phe pham tuong ung.
+            </p>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Thong tin co ban -->
+        <div class="section">
+            <h2>Thong tin co ban</h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="label">Ten API</div>
+                    <div class="value">wo.scrap.data.process</div>
+                </div>
+                <div class="info-item">
+                    <div class="label">Ten tac vu noi bo</div>
+                    <div class="value">woScrapDataProcess</div>
+                </div>
+                <div class="info-item">
+                    <div class="label">Dinh dang truyen</div>
+                    <div class="value">JSON (Content-Type: application/json)</div>
+                </div>
+                <div class="info-item">
+                    <div class="label">So an</div>
+                    <div class="value">0189144</div>
+                </div>
+                <div class="info-item">
+                    <div class="label">Ma API</div>
+                    <div class="value">api-2192</div>
+                </div>
+                <div class="info-item">
+                    <div class="label">TRANSORDERTYPE</div>
+                    <div class="value">58 (Nhap kho phe pham)</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Thoi diem kich hoat -->
+        <div class="section">
+            <h2>Thoi diem kich hoat</h2>
+            <div class="flow-diagram">
+                <svg viewBox="0 0 950 220" style="max-width: 950px; width: 100%;">
+                    <!-- Buoc 1: Huy xuat tram -->
+                    <rect x="20" y="70" width="140" height="80" rx="8" fill="#fee2e2" stroke="#dc2626" stroke-width="2"/>
+                    <text x="90" y="100" text-anchor="middle" font-size="14" font-weight="600" fill="#991b1b">Huy xuat tram</text>
+                    <text x="90" y="120" text-anchor="middle" font-size="11" fill="#dc2626">CancelCheckOut</text>
+                    <text x="90" y="135" text-anchor="middle" font-size="10" fill="#dc2626">Thao tac nguoi dung</text>
+
+                    <!-- Mui ten 1 -->
+                    <path d="M160 110 L195 110" stroke="#64748b" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+                    <!-- Buoc 2: Truy van TRANSORDERTYPE -->
+                    <rect x="205" y="70" width="150" height="80" rx="8" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+                    <text x="280" y="100" text-anchor="middle" font-size="12" font-weight="600" fill="#1e40af">Truy van loai phieu</text>
+                    <text x="280" y="118" text-anchor="middle" font-size="10" fill="#3b82f6">TRANSORDERTYPE</text>
+                    <text x="280" y="133" text-anchor="middle" font-size="10" fill="#3b82f6">SFT_TRANSORDER_LINE</text>
+
+                    <!-- Mui ten 2 -->
+                    <path d="M355 110 L395 110" stroke="#64748b" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+                    <!-- Buoc 3: Phan loai -->
+                    <polygon points="480,70 555,110 480,150 405,110" fill="#fef3c7" stroke="#f59e0b" stroke-width="2"/>
+                    <text x="480" y="105" text-anchor="middle" font-size="11" font-weight="600" fill="#92400e">TYPE</text>
+                    <text x="480" y="120" text-anchor="middle" font-size="11" fill="#d97706">= 58?</text>
+
+                    <!-- Duong di khi dung -->
+                    <path d="M555 110 L600 110" stroke="#64748b" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <text x="577" y="100" font-size="10" fill="#16a34a">Co</text>
+
+                    <!-- Buoc 4: Goi woScrapDataProcess -->
+                    <rect x="610" y="70" width="160" height="80" rx="8" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+                    <text x="690" y="95" text-anchor="middle" font-size="12" font-weight="600" fill="#166534">woScrapDataProcess</text>
+                    <text x="690" y="115" text-anchor="middle" font-size="10" fill="#22c55e">Huy nhap kho phe pham</text>
+                    <text x="690" y="130" text-anchor="middle" font-size="10" fill="#22c55e">doc_no = TL011-TL012</text>
+
+                    <!-- Mui ten 5 -->
+                    <path d="M770 110 L810 110" stroke="#64748b" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+                    <!-- Hoan thanh -->
+                    <circle cx="840" cy="110" r="30" fill="#dc2626"/>
+                    <text x="840" y="115" text-anchor="middle" font-size="20" fill="white">✓</text>
+
+                    <!-- Nhanh khong - 59 -->
+                    <path d="M480 150 L480 180 L320 180" stroke="#64748b" stroke-width="2" stroke-dasharray="5,5"/>
+                    <text x="400" y="175" font-size="10" fill="#3b82f6">=59 → outsourcingProcess</text>
+
+                    <!-- Nhanh khong - khac -->
+                    <path d="M480 150 L480 200 L320 200" stroke="#64748b" stroke-width="2" stroke-dasharray="5,5"/>
+                    <text x="400" y="195" font-size="10" fill="#64748b">Khac → cancelStockIn</text>
+
+                    <defs>
+                        <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#64748b"/>
+                        </marker>
+                    </defs>
+                </svg>
+            </div>
+
+            <h3>Logic phan loai API huy</h3>
+            <p>Khi huy xuat tram, he thong phan loai API huy can goi dua tren <code class="code-inline">SFT_TRANSORDER_LINE.TRANSORDERTYPE</code>:</p>
+
+            <table class="decision-table">
+                <thead>
+                    <tr>
+                        <th>TRANSORDERTYPE</th>
+                        <th>Loai chung tu</th>
+                        <th>API goi</th>
+                        <th>Ten tac vu</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="background: #fef3c7;">
+                        <td><code class="code-inline">58</code></td>
+                        <td>Nhap kho phe pham</td>
+                        <td><code class="code-inline">wo.scrap.data.process</code></td>
+                        <td>woScrapDataProcess</td>
+                    </tr>
+                    <tr>
+                        <td><code class="code-inline">59</code></td>
+                        <td>Nhap kho gia cong ngoai</td>
+                        <td><code class="code-inline">outsourcing.process</code></td>
+                        <td>outsourcingProcess</td>
+                    </tr>
+                    <tr>
+                        <td>Khac</td>
+                        <td>Nhap kho chung</td>
+                        <td><code class="code-inline">stockin.data.process</code></td>
+                        <td>cancelStockIn</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="note">
+                <div class="note-title">Vi tri ma nguon</div>
+                <div class="note-content">
+                    Logic phan loai nam tai phuong thuc <code class="code-inline">GeneralUpdater.excuteDeleteErpTransOrders()</code>,
+                    dong 1577-1592.
+                </div>
+            </div>
+        </div>
+
+        <!-- Tham so yeu cau -->
+        <div class="section">
+            <h2>Tham so yeu cau</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Truong</th>
+                        <th>Ten truong ERP</th>
+                        <th>Kieu</th>
+                        <th>Bat buoc</th>
+                        <th>Mo ta</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Ma cong ty</td>
+                        <td><code class="code-inline">enterprise_no</code></td>
+                        <td>String</td>
+                        <td><span class="tag tag-required">Bat buoc</span></td>
+                        <td>Ma doanh nghiep</td>
+                    </tr>
+                    <tr>
+                        <td>Ma nha may</td>
+                        <td><code class="code-inline">site_no</code></td>
+                        <td>String</td>
+                        <td><span class="tag tag-required">Bat buoc</span></td>
+                        <td>Ma nha may</td>
+                    </tr>
+                    <tr>
+                        <td>So phieu nhap kho phe pham</td>
+                        <td><code class="code-inline">doc_no</code></td>
+                        <td>String</td>
+                        <td><span class="tag tag-required">Bat buoc</span></td>
+                        <td>So phieu nhap kho can huy (dinh dang: TL011-TL012)</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="note">
+                <div class="note-title">Dinh dang so phieu nhap kho</div>
+                <div class="note-content">
+                    Dinh dang so phieu nhap kho la <code class="code-inline">TL011-TL012</code>, vi du: <code class="code-inline">58-20260319001</code>.
+                    Gia tri nay duoc lay tu doc_no ma ERP tra ve khi tao phieu nhap kho phe pham, luu trong <code class="code-inline">SFT_TRANSORDER_LINE</code>.
+                </div>
+            </div>
+        </div>
+
+        <!-- Vi du yeu cau -->
+        <div class="section">
+            <h2>Vi du yeu cau</h2>
+
+            <h3>Dinh dang JSON</h3>
+            <pre>{
+  "enterprise_no": "COMP01",
+  "site_no": "SITE01",
+  "doc_no": "58-20260319001"
+}</pre>
+
+            <h3>Dinh dang XML ERP (WFERP)</h3>
+            <pre>&lt;parameters&gt;
+  &lt;parameter key="enterprise_no" type="string"&gt;COMP01&lt;/parameter&gt;
+  &lt;parameter key="site_no" type="string"&gt;SITE01&lt;/parameter&gt;
+  &lt;parameter key="doc_no" type="string"&gt;58-20260319001&lt;/parameter&gt;
+&lt;/parameters&gt;</pre>
+        </div>
+
+        <!-- Dinh dang phan hoi -->
+        <div class="section">
+            <h2>Dinh dang phan hoi</h2>
+
+            <div class="two-column">
+                <div>
+                    <h3>Phan hoi thanh cong (code=200)</h3>
+                    <div class="success-box">
+                        <pre style="background: transparent; padding: 0; margin: 0;">{
+  "code": 200,
+  "msg": "Huy phieu nhap kho phe pham thanh cong",
+  "ERPMessage": {
+    "description": "Xu ly thanh cong",
+    "doc_no": "58-20260319001"
+  }
+}</pre>
+                    </div>
+                </div>
+                <div>
+                    <h3>Phan hoi that bai (code=500)</h3>
+                    <div class="error-box">
+                        <pre style="background: transparent; padding: 0; margin: 0;">{
+  "code": 500,
+  "msg": "Huy phieu nhap kho phe pham that bai",
+  "ERPMessage": {
+    "description": "Phieu nhap kho da xac nhan, khong the huy"
+  }
+}</pre>
+                    </div>
+                </div>
+            </div>
+
+            <h3>Mo ta truong phan hoi</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Truong</th>
+                        <th>Kieu</th>
+                        <th>Mo ta</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code class="code-inline">code</code></td>
+                        <td>Integer</td>
+                        <td>200=Thanh cong, 500=That bai</td>
+                    </tr>
+                    <tr>
+                        <td><code class="code-inline">msg</code></td>
+                        <td>String</td>
+                        <td>Thong bao xu ly</td>
+                    </tr>
+                    <tr>
+                        <td><code class="code-inline">ERPMessage.description</code></td>
+                        <td>String</td>
+                        <td>Thong bao chi tiet tu ERP</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Logic xoa MES -->
+        <div class="section">
+            <h2>Logic xoa MES</h2>
+            <p>Sau khi huy nhap kho phe pham thanh cong, MES se xoa cac ban ghi phieu chuyen kho lien quan:</p>
+
+            <h3>SQL xoa</h3>
+            <pre>-- Xoa so phieu ERP trong SFT_TRANSORDER_LINE
+UPDATE SFT_TRANSORDER_LINE
+SET TL011 = '',
+    TL012 = ''
+WHERE TRANSORDERTYPE = '58'
+  AND TL011 = :TL011
+  AND TL012 = :TL012
+
+-- Hoac xoa toan bo ban ghi phieu chuyen kho (tuy cau hinh he thong)
+DELETE FROM SFT_TRANSORDER_LINE
+WHERE TRANSORDERTYPE = '58'
+  AND TRANSNO = :TRANSNO</pre>
+        </div>
+
+        <!-- Rui ro Race Condition -->
+        <div class="section">
+            <h2>Rui ro Race Condition</h2>
+            <div class="warning-box">
+                <div class="warning-title">Luu y quan trong</div>
+                <div class="warning-content">
+                    Tuong tu cac API huy khac, huy nhap kho phe pham cung co rui ro Race Condition:
+                    <br><br>
+                    <strong>Tinh huong:</strong> Huy ngay sau khi xuat tram, nhung ERP chua tra ve so phieu nhap kho phe pham<br>
+                    <strong>Ket qua:</strong> <code class="code-inline">TL011/TL012</code> trong, khong the goi ERP huy<br>
+                    <strong>Hau qua:</strong> MES da huy xuat tram, nhung phieu nhap kho phe pham ERP van ton tai
+                </div>
+            </div>
+
+            <h3>Logic phan loai</h3>
+            <pre>// GeneralUpdater.java:1571-1575
+if(!SftTransorderLine.getTl011().equals("") && !SftTransorderLine.getTl012().equals("")){
+    // TL011/TL012 co gia tri, moi goi ERP huy
+    String stock_in_no = SftTransorderLine.getTl011() + "-" + SftTransorderLine.getTl012();
+    // Phan loai API can goi dua tren TRANSORDERTYPE
+    ...
+} else {
+    // TL011/TL012 trong, bo qua goi ERP
+}</pre>
+
+            <div class="note">
+                <div class="note-title">De xuat xu ly</div>
+                <div class="note-content">
+                    <ol style="padding-left: 20px; margin-top: 5px;">
+                        <li>Cho ERP tra ve thanh cong truoc khi cho phep huy sau xuat tram</li>
+                        <li>Them co che khoa de ngan chan thao tac dong thoi</li>
+                        <li>Dinh ky doi chieu trang thai phieu nhap kho phe pham giua MES va ERP</li>
+                        <li>Cung cap chuc nang huy bo sung thu cong</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bang du lieu lien quan -->
+        <div class="section">
+            <h2>Bang du lieu lien quan</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Bang du lieu</th>
+                        <th>Mo ta</th>
+                        <th>Truong bi anh huong</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code class="code-inline">SFT_TRANSORDER_LINE</code></td>
+                        <td>Chi tiet phieu chuyen kho</td>
+                        <td>TL011, TL012 (xoa hoac xoa toan bo ban ghi)</td>
+                    </tr>
+                    <tr>
+                        <td><code class="code-inline">SftTransorder</code></td>
+                        <td>Tieu de phieu chuyen kho</td>
+                        <td>TO007, TO008 (co the can xoa)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Vi tri ma nguon -->
+        <div class="section">
+            <h2>Vi tri ma nguon</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Chuc nang</th>
+                        <th>Duong dan tap tin</th>
+                        <th>Dong</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Diem vao huy xuat tram</td>
+                        <td>SFT_core/src/com/dci/sft/update/GeneralUpdater.java</td>
+                        <td>1550-1612</td>
+                    </tr>
+                    <tr>
+                        <td>Phan loai TRANSORDERTYPE</td>
+                        <td>SFT_core/src/com/dci/sft/update/GeneralUpdater.java</td>
+                        <td>1577-1592</td>
+                    </tr>
+                    <tr>
+                        <td>Dinh tuyen API</td>
+                        <td>SFT_ERPIntegrate/src/com/dci/sft/erp/XmlToERP_handler.java</td>
+                        <td>96-98</td>
+                    </tr>
+                    <tr>
+                        <td>To hop tham so XML</td>
+                        <td>SFT_ERPIntegrate/src/com/dci/sft/erp/webservice/SendFormS.java</td>
+                        <td>1811-1815</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Xu ly loi -->
+        <div class="section">
+            <h2>Xu ly loi</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tinh huong loi</th>
+                        <th>Phan hoi ERP</th>
+                        <th>Cach xu ly MES</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Phieu nhap kho da xac nhan</td>
+                        <td>code=500, Phieu nhap kho da xac nhan</td>
+                        <td>Hien thi thong bao loi, can xu ly thu cong</td>
+                    </tr>
+                    <tr>
+                        <td>Phieu nhap kho khong ton tai</td>
+                        <td>code=500, Phieu nhap kho khong ton tai</td>
+                        <td>Xoa ban ghi MES, tiep tuc quy trinh huy</td>
+                    </tr>
+                    <tr>
+                        <td>Het thoi gian ket noi</td>
+                        <td>SocketTimeoutException</td>
+                        <td>Ghi LOG, can huy bo sung thu cong</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Ban ghi LOG</h3>
+            <pre>// Tap tin nhat ky: logs/ERPReturnErrorRec.log
+
+[ERP_SEND_ERROR] taskName=woScrapDataProcess, errorType=SocketTimeoutException, errorMsg=Read timed out
+[ERP_SEND_ERROR] Noi dung gui={"doc_no":"58-20260319001"}</pre>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>Tai lieu API eMES | So an: 0189144 | Ngay cap nhat: 2026-03-19</p>
+    </div>
+</body>
+</html>

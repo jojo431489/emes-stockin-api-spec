@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>product.process.get - Du lieu quy trinh san pham | eMES API</title>
+    <style>
+        :root { --primary-color: #2563eb; --bg-color: #f8fafc; --border-color: #e2e8f0; --text-color: #1e293b; --text-muted: #64748b; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif; line-height: 1.6; color: var(--text-color); background: var(--bg-color); }
+        .header { background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); color: white; padding: 40px 20px; }
+        .header-content { max-width: 1200px; margin: 0 auto; }
+        .back-link { color: rgba(255,255,255,0.8); text-decoration: none; display: inline-flex; align-items: center; gap: 5px; margin-bottom: 20px; font-size: 0.9em; }
+        .api-title { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
+        .api-title h1 { font-size: 2em; margin: 0; }
+        .method-badge { background: rgba(255,255,255,0.2); padding: 5px 15px; border-radius: 20px; font-size: 0.9em; font-weight: 600; }
+        .api-code { font-family: 'Consolas', monospace; background: rgba(0,0,0,0.2); padding: 10px 20px; border-radius: 8px; margin-top: 15px; font-size: 1.1em; display: inline-block; }
+        .api-desc { margin-top: 15px; opacity: 0.9; max-width: 800px; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+        .section { background: white; border-radius: 12px; padding: 30px; margin-bottom: 30px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .section h2 { font-size: 1.4em; color: var(--text-color); margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid var(--bg-color); }
+        .section h3 { font-size: 1.1em; margin: 20px 0 10px; }
+        .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+        .info-item { background: var(--bg-color); padding: 15px; border-radius: 8px; }
+        .info-item .label { font-size: 0.85em; color: var(--text-muted); margin-bottom: 5px; }
+        .info-item .value { font-weight: 600; color: var(--text-color); }
+        table { width: 100%; border-collapse: collapse; font-size: 0.95em; }
+        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid var(--border-color); }
+        th { background: var(--bg-color); font-weight: 600; }
+        tr:hover { background: #f1f5f9; }
+        pre { background: #1e293b; color: #e2e8f0; padding: 20px; border-radius: 8px; overflow-x: auto; font-family: 'Consolas', monospace; font-size: 0.9em; }
+        .code-inline { background: #f1f5f9; padding: 2px 6px; border-radius: 4px; font-family: 'Consolas', monospace; font-size: 0.9em; color: var(--primary-color); }
+        .tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.8em; font-weight: 500; background: #dbeafe; color: #1d4ed8; }
+        .footer { text-align: center; padding: 40px 20px; color: var(--text-muted); font-size: 0.9em; }
+        .lang-switcher {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 10px;
+            z-index: 1000;
+        }
+        .lang-switcher a {
+            display: block;
+            padding: 5px 15px;
+            color: var(--text-color);
+            text-decoration: none;
+            border-radius: 4px;
+        }
+        .lang-switcher a:hover { background: var(--bg-color); }
+        .lang-switcher a.active { background: var(--primary-color); color: white; }
+    </style>
+</head>
+<body>
+    <div class="lang-switcher">
+        <a href="../product-process-get.html">繁體中文</a>
+        <a href="../en/product-process-get.html">English</a>
+        <a href="product-process-get.html" class="active">Tiếng Việt</a>
+        <a href="../th/product-process-get.html">ภาษาไทย</a>
+    </div>
+
+    <div class="header">
+        <div class="header-content">
+            <a href="index.html" class="back-link">← Quay lai danh sach API</a>
+            <div class="api-title">
+                <h1>Du lieu quy trinh san pham</h1>
+                <span class="method-badge">GET</span>
+                <span class="method-badge">ERP → MES</span>
+            </div>
+            <div class="api-code">product.process.get</div>
+            <p class="api-desc">Dong bo du lieu quy trinh san pham (BOM) tu ERP sang MES. Bao gom header quy trinh (SFT_BOMME) va chi tiet quy trinh (SFT_BOMMF).</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="section">
+            <h2>Thong tin co ban</h2>
+            <div class="info-grid">
+                <div class="info-item"><div class="label">Ten API</div><div class="value">product.process.get</div></div>
+                <div class="info-item"><div class="label">Ten phuong thuc</div><div class="value">upBomCROSS</div></div>
+                <div class="info-item"><div class="label">Bang du lieu dich</div><div class="value">SFT_BOMME (header) / SFT_BOMMF (chi tiet)</div></div>
+                <div class="info-item"><div class="label">Node JSON</div><div class="value">process_data</div></div>
+                <div class="info-item"><div class="label">Khoa chinh</div><div class="value">ME001 + ME002</div></div>
+                <div class="info-item"><div class="label">Vi tri chuong trinh</div><div class="value">RegularESB.java:2614</div></div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Truong phan hoi</h2>
+
+            <h3><span class="tag">HEADER</span> Header quy trinh (SFT_BOMME)</h3>
+            <table>
+                <thead><tr><th>Truong ERP</th><th>Truong MES</th><th>Mo ta</th></tr></thead>
+                <tbody>
+                    <tr><td><code class="code-inline">process_item</code></td><td>ME001</td><td>Ma hang quy trinh</td></tr>
+                    <tr><td><code class="code-inline">process_code</code></td><td>ME002</td><td>Ma quy trinh</td></tr>
+                    <tr><td><code class="code-inline">process_name</code></td><td>ME003</td><td>Ten quy trinh</td></tr>
+                    <tr><td><code class="code-inline">description</code></td><td>ME004</td><td>Mo ta quy trinh</td></tr>
+                </tbody>
+            </table>
+
+            <h3><span class="tag">LINE</span> Chi tiet quy trinh (SFT_BOMMF)</h3>
+            <table>
+                <thead><tr><th>Truong ERP</th><th>Truong MES</th><th>Mo ta</th></tr></thead>
+                <tbody>
+                    <tr><td><code class="code-inline">process_seq</code></td><td>MF003</td><td>So thu tu quy trinh</td></tr>
+                    <tr><td><code class="code-inline">operation_no</code></td><td>MF004</td><td>Ma quy trinh (ERP_OPID)</td></tr>
+                    <tr><td><code class="code-inline">workstation_no</code></td><td>MF005</td><td>Ma tram lam viec (ERP_WSID)</td></tr>
+                    <tr><td><code class="code-inline">std_time</code></td><td>MF006</td><td>Thoi gian tieu chuan</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2>Vi du phan hoi</h2>
+            <pre>{
+  "process_data": [
+    {
+      "process_item": "ITEM-001",
+      "process_code": "RT001",
+      "process_name": "Quy trinh lap rap tieu chuan",
+      "description": "Quy trinh tieu chuan lap rap san pham",
+      "process_detail": [
+        {
+          "process_seq": "10",
+          "operation_no": "OP001",
+          "workstation_no": "WS001",
+          "std_time": "30"
+        },
+        {
+          "process_seq": "20",
+          "operation_no": "OP002",
+          "workstation_no": "WS002",
+          "std_time": "45"
+        }
+      ],
+      "modify_no": "USER001"
+    }
+  ]
+}</pre>
+        </div>
+
+        <div class="section">
+            <h2>SQL cap nhat co so du lieu</h2>
+            <h3 style="font-size: 1.1em; margin: 20px 0 10px;">Header quy trinh SFT_BOMME (xoa truoc them moi)</h3>
+            <pre>-- Xoa du lieu cu
+DELETE FROM SFT_BOMME WHERE ME001 = :ME001 AND ME002 = :ME002
+
+-- Them moi header
+INSERT INTO SFT_BOMME (
+    ME001, ME002, ME003, ME004, ME007,
+    MES001, MES004, CREATER, CREATE_DATE, FLAG
+) VALUES (
+    :ME001, :ME002, :ME003, :ME004, :ME007,
+    'N', 'N', :userid, N'{thoi gian hien tai}', 0
+)</pre>
+
+            <h3 style="font-size: 1.1em; margin: 20px 0 10px;">Chi tiet quy trinh SFT_BOMMF (xoa truoc them moi)</h3>
+            <pre>-- Xoa chi tiet cu
+DELETE FROM SFT_BOMMF WHERE MF001 = :MF001 AND MF002 = :MF002
+
+-- Them moi chi tiet (moi buoc quy trinh)
+INSERT INTO SFT_BOMMF (
+    MF001, MF002, MF003, MF004, MF005, MF006, MF007, MF008,
+    MF009, MF010, MF011, MF012, MF013, MF014, MF015, MF016,
+    MF017, MF018, MF019, MF020, MF021, MF022, MF023, MF024,
+    MF025, MF026, MF027, MF029, CONVERTUNIT, ITEM004, ITEM005
+) VALUES (
+    :MF001, :MF002, :MF003, :MF004, :MF005, :MF006, :MF007, :MF008,
+    {MF009}, {MF010}, :MF011, :MF012, :MF013, :MF014, :MF015, 1,
+    :MF017, :MF018, :MF019, :MF020, 'N', :MF022, :MF023, {MF024},
+    {MF025}, :MF026, :MF027, :MF029, :CONVERTUNIT, :ITEM004, :ITEM005
+)</pre>
+
+            <h3 style="font-size: 1.1em; margin: 20px 0 10px;">Them moi lien dong OPERATION</h3>
+            <pre>-- Kiem tra quy trinh da ton tai chua
+SELECT COUNT(*) FROM OPERATION
+WHERE ERP_OPID = N'{MF004}' AND ERP_WSID = N'{MF006}'
+
+-- Neu chua ton tai thi tu dong them moi
+INSERT INTO OPERATION (
+    ID, NAME, DESCRIPTION, COMPLEXION,
+    ERP_OPID, WORKSTATIONID, ERP_WSID,
+    LASTMAINTAINUSER, LASTMAINTAINDATETIME, FLAG
+) VALUES (
+    :MF004---:MF006,
+    :OpName,
+    :OpDESCRIPTION,
+    :MF005,
+    :MF004,
+    :MF006,
+    :MF006,
+    :userid,
+    N'{thoi gian hien tai}',
+    0
+)</pre>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>eMES API | Dong bo du lieu co ban | Ngay cap nhat: 2026-03-19</p>
+    </div>
+</body>
+</html>

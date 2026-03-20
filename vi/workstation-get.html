@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>workstation.get - Du lieu co ban day chuyen san xuat | eMES API</title>
+    <style>
+        :root { --primary-color: #2563eb; --bg-color: #f8fafc; --border-color: #e2e8f0; --text-color: #1e293b; --text-muted: #64748b; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif; line-height: 1.6; color: var(--text-color); background: var(--bg-color); }
+        .header { background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); color: white; padding: 40px 20px; }
+        .header-content { max-width: 1200px; margin: 0 auto; }
+        .back-link { color: rgba(255,255,255,0.8); text-decoration: none; display: inline-flex; align-items: center; gap: 5px; margin-bottom: 20px; font-size: 0.9em; }
+        .api-title { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
+        .api-title h1 { font-size: 2em; margin: 0; }
+        .method-badge { background: rgba(255,255,255,0.2); padding: 5px 15px; border-radius: 20px; font-size: 0.9em; font-weight: 600; }
+        .api-code { font-family: 'Consolas', monospace; background: rgba(0,0,0,0.2); padding: 10px 20px; border-radius: 8px; margin-top: 15px; font-size: 1.1em; display: inline-block; }
+        .api-desc { margin-top: 15px; opacity: 0.9; max-width: 800px; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+        .section { background: white; border-radius: 12px; padding: 30px; margin-bottom: 30px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .section h2 { font-size: 1.4em; color: var(--text-color); margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid var(--bg-color); }
+        .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+        .info-item { background: var(--bg-color); padding: 15px; border-radius: 8px; }
+        .info-item .label { font-size: 0.85em; color: var(--text-muted); margin-bottom: 5px; }
+        .info-item .value { font-weight: 600; color: var(--text-color); }
+        table { width: 100%; border-collapse: collapse; font-size: 0.95em; }
+        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid var(--border-color); }
+        th { background: var(--bg-color); font-weight: 600; }
+        tr:hover { background: #f1f5f9; }
+        pre { background: #1e293b; color: #e2e8f0; padding: 20px; border-radius: 8px; overflow-x: auto; font-family: 'Consolas', monospace; font-size: 0.9em; }
+        .code-inline { background: #f1f5f9; padding: 2px 6px; border-radius: 4px; font-family: 'Consolas', monospace; font-size: 0.9em; color: var(--primary-color); }
+        .footer { text-align: center; padding: 40px 20px; color: var(--text-muted); font-size: 0.9em; }
+        .lang-switcher {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 10px;
+            z-index: 1000;
+        }
+        .lang-switcher a {
+            display: block;
+            padding: 5px 15px;
+            color: var(--text-color);
+            text-decoration: none;
+            border-radius: 4px;
+        }
+        .lang-switcher a:hover { background: var(--bg-color); }
+        .lang-switcher a.active { background: var(--primary-color); color: white; }
+    </style>
+</head>
+<body>
+    <div class="lang-switcher">
+        <a href="../workstation-get.html">繁體中文</a>
+        <a href="../en/workstation-get.html">English</a>
+        <a href="workstation-get.html" class="active">Tiếng Việt</a>
+        <a href="../th/workstation-get.html">ภาษาไทย</a>
+    </div>
+
+    <div class="header">
+        <div class="header-content">
+            <a href="index.html" class="back-link">← Quay lai danh sach API</a>
+            <div class="api-title">
+                <h1>Du lieu co ban day chuyen san xuat</h1>
+                <span class="method-badge">GET</span>
+                <span class="method-badge">ERP → MES</span>
+            </div>
+            <div class="api-code">workstation.get</div>
+            <p class="api-desc">Dong bo du lieu co ban day chuyen/tram lam viec tu ERP sang bang WORKSTATION cua MES.</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="section">
+            <h2>Thong tin co ban</h2>
+            <div class="info-grid">
+                <div class="info-item"><div class="label">Ten API</div><div class="value">workstation.get</div></div>
+                <div class="info-item"><div class="label">Ten phuong thuc</div><div class="value">upWorkStationCROSS_workstation</div></div>
+                <div class="info-item"><div class="label">Bang du lieu dich</div><div class="value">WORKSTATION</div></div>
+                <div class="info-item"><div class="label">Node JSON</div><div class="value">workstation_data</div></div>
+                <div class="info-item"><div class="label">Khoa chinh</div><div class="value">ID</div></div>
+                <div class="info-item"><div class="label">Vi tri chuong trinh</div><div class="value">RegularESB.java:3830</div></div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Truong phan hoi</h2>
+            <table>
+                <thead><tr><th>Truong ERP</th><th>Truong MES</th><th>Mo ta</th></tr></thead>
+                <tbody>
+                    <tr><td><code class="code-inline">workstation_no</code></td><td>ID</td><td>Ma tram lam viec (khoa chinh)</td></tr>
+                    <tr><td><code class="code-inline">workstation_name</code></td><td>NAME</td><td>Ten tram lam viec</td></tr>
+                    <tr><td><code class="code-inline">factory_no</code></td><td>FACTORYID</td><td>Ma nha may</td></tr>
+                    <tr><td><code class="code-inline">modify_no</code></td><td>-</td><td>Nguoi thay doi</td></tr>
+                    <tr><td><code class="code-inline">tran_status</code></td><td>TRAN_STATUS</td><td>Trang thai giao dich</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2>Vi du phan hoi</h2>
+            <pre>{
+  "workstation_data": [
+    {
+      "workstation_no": "WS001",
+      "workstation_name": "Day chuyen lap rap A",
+      "factory_no": "FACTORY01",
+      "modify_no": "USER001",
+      "tran_status": "AU"
+    }
+  ]
+}</pre>
+        </div>
+
+        <div class="section">
+            <h2>SQL cap nhat co so du lieu</h2>
+            <h3 style="font-size: 1.1em; margin: 20px 0 10px;">Xac dinh them moi hoac cap nhat</h3>
+            <pre>SELECT COUNT(1) FROM WORKSTATION WHERE ID = N'{workstation_no}'
+-- count > 0 → UPDATE, count = 0 → INSERT</pre>
+
+            <h3 style="font-size: 1.1em; margin: 20px 0 10px;">INSERT (Them moi tram lam viec)</h3>
+            <pre>INSERT INTO WORKSTATION (
+    ID, NAME, DESCRIPTION, LOCATION,
+    LASTMAINTAINUSER, LASTMAINTAINDATETIME,
+    WS002, WS003, WS004, WS007, BARCODEUSE, DISPATCHUSE
+) VALUES (
+    :WSID,
+    :WSNAME,
+    :WSDESCRIPTION,
+    :WSLOCATION,          -- Nha may thuoc ve
+    :userid,
+    N'{thoi gian hien tai}',
+    'N',                  -- WS002
+    'Y',                  -- WS003
+    'N',                  -- WS004
+    'Y',                  -- WS007
+    2,                    -- BARCODEUSE
+    2                     -- DISPATCHUSE
+)</pre>
+
+            <h3 style="font-size: 1.1em; margin: 20px 0 10px;">UPDATE (Cap nhat tram lam viec)</h3>
+            <pre>UPDATE WORKSTATION SET
+    NAME = :WSNAME,
+    DESCRIPTION = :WSDESCRIPTION,
+    LASTMAINTAINUSER = :userid,
+    LASTMAINTAINDATETIME = N'{thoi gian hien tai}'
+WHERE ID = :WSID AND LOCATION = :WSLOCATION</pre>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>Tai lieu API eMES | Dong bo du lieu co ban | Ngay cap nhat: 2026-03-19</p>
+    </div>
+</body>
+</html>

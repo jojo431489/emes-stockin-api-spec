@@ -33,11 +33,40 @@
         .note-title { font-weight: 600; color: #1e40af; margin-bottom: 5px; }
         .note-content { color: #1e3a8a; font-size: 0.95em; }
         .footer { text-align: center; padding: 40px 20px; color: var(--text-muted); font-size: 0.9em; }
+        .lang-switcher {
+            float: right;
+            display: flex;
+            gap: 10px;
+        }
+
+        .lang-switcher a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.85em;
+        }
+
+        .lang-switcher a:hover {
+            color: white;
+            background: rgba(255,255,255,0.1);
+        }
+
+        .lang-switcher a.active {
+            color: white;
+            background: rgba(255,255,255,0.2);
+        }
     </style>
 </head>
 <body>
     <div class="header">
         <div class="header-content">
+            <div class="lang-switcher">
+                <a href="op-get.html" class="active">繁體中文</a>
+                <a href="en/op-get.html">English</a>
+                <a href="vi/op-get.html">Tiếng Việt</a>
+                <a href="th/op-get.html">ภาษาไทย</a>
+            </div>
             <a href="index.html" class="back-link">← 返回 API 列表</a>
             <div class="api-title">
                 <h1>製程基本資料</h1>

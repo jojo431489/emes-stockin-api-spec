@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>supplier.get - ข้อมูลพื้นฐานผู้จัดหา | eMES API</title>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #1e40af;
+            --success-color: #16a34a;
+            --error-color: #dc2626;
+            --warning-color: #d97706;
+            --bg-color: #f8fafc;
+            --border-color: #e2e8f0;
+            --text-color: #1e293b;
+            --text-muted: #64748b;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', 'Tahoma', sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+        }
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .navbar a { color: white; text-decoration: none; }
+        .navbar .brand { font-size: 1.2em; font-weight: 600; }
+        .navbar .back { opacity: 0.9; }
+        .navbar .back:hover { opacity: 1; }
+        .lang-switcher {
+            display: flex;
+            gap: 10px;
+        }
+        .lang-switcher a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.85em;
+        }
+        .lang-switcher a:hover {
+            color: white;
+            background: rgba(255,255,255,0.1);
+        }
+        .lang-switcher a.active {
+            color: white;
+            background: rgba(255,255,255,0.2);
+        }
+        .header { background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); color: white; padding: 40px 20px; }
+        .header-content { max-width: 1200px; margin: 0 auto; }
+        .back-link { color: rgba(255,255,255,0.8); text-decoration: none; display: inline-flex; align-items: center; gap: 5px; margin-bottom: 20px; font-size: 0.9em; }
+        .api-title { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
+        .api-title h1 { font-size: 2em; margin: 0; }
+        .method-badge { background: rgba(255,255,255,0.2); padding: 5px 15px; border-radius: 20px; font-size: 0.9em; font-weight: 600; }
+        .api-code { font-family: 'Consolas', monospace; background: rgba(0,0,0,0.2); padding: 10px 20px; border-radius: 8px; margin-top: 15px; font-size: 1.1em; display: inline-block; }
+        .api-desc { margin-top: 15px; opacity: 0.9; max-width: 800px; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+        .section { background: white; border-radius: 12px; padding: 30px; margin-bottom: 30px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .section h2 { font-size: 1.4em; color: var(--text-color); margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid var(--bg-color); }
+        .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+        .info-item { background: var(--bg-color); padding: 15px; border-radius: 8px; }
+        .info-item .label { font-size: 0.85em; color: var(--text-muted); margin-bottom: 5px; }
+        .info-item .value { font-weight: 600; color: var(--text-color); }
+        table { width: 100%; border-collapse: collapse; font-size: 0.95em; }
+        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid var(--border-color); }
+        th { background: var(--bg-color); font-weight: 600; }
+        tr:hover { background: #f1f5f9; }
+        pre { background: #1e293b; color: #e2e8f0; padding: 20px; border-radius: 8px; overflow-x: auto; font-family: 'Consolas', monospace; font-size: 0.9em; }
+        .code-inline { background: #f1f5f9; padding: 2px 6px; border-radius: 4px; font-family: 'Consolas', monospace; font-size: 0.9em; color: var(--primary-color); }
+        .note { background: #fef3c7; border-left: 4px solid #f59e0b; padding: 15px 20px; border-radius: 0 8px 8px 0; margin: 20px 0; }
+        .note-title { font-weight: 600; color: #92400e; margin-bottom: 5px; }
+        .note-content { color: #78350f; font-size: 0.95em; }
+        .footer { text-align: center; padding: 40px 20px; color: var(--text-muted); font-size: 0.9em; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="index.html" class="back">← กลับไปรายการ API</a>
+        <div class="lang-switcher">
+            <a href="../supplier-get.html">繁體中文</a>
+            <a href="../en/supplier-get.html">English</a>
+            <a href="../vi/supplier-get.html">Tiếng Việt</a>
+            <a href="supplier-get.html" class="active">ภาษาไทย</a>
+        </div>
+        <span class="brand">เอกสารข้อกำหนด eMES API</span>
+    </nav>
+
+    <div class="container">
+        <div class="section">
+            <h2>ข้อมูลพื้นฐาน</h2>
+            <div class="info-grid">
+                <div class="info-item"><div class="label">ชื่อ API</div><div class="value">supplier.get</div></div>
+                <div class="info-item"><div class="label">ชื่อเมธอด</div><div class="value">upWorkStationCROSS_supplier</div></div>
+                <div class="info-item"><div class="label">ตารางเป้าหมาย</div><div class="value">WORKSTATION</div></div>
+                <div class="info-item"><div class="label">โหนด JSON</div><div class="value">supplier_data</div></div>
+                <div class="info-item"><div class="label">Primary Key</div><div class="value">ID (supplier_no)</div></div>
+                <div class="info-item"><div class="label">ตำแหน่งโปรแกรม</div><div class="value">RegularESB.java:3628</div></div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>ฟิลด์การตอบกลับ</h2>
+            <table>
+                <thead><tr><th>ฟิลด์ ERP</th><th>ฟิลด์ MES</th><th>คำอธิบาย</th></tr></thead>
+                <tbody>
+                    <tr><td><code class="code-inline">supplier_no</code></td><td>ID</td><td>รหัสผู้จัดหา (Primary Key)</td></tr>
+                    <tr><td><code class="code-inline">supplier_name</code></td><td>NAME</td><td>ชื่อผู้จัดหา</td></tr>
+                    <tr><td><code class="code-inline">modify_no</code></td><td>-</td><td>ผู้แก้ไข</td></tr>
+                    <tr><td><code class="code-inline">tran_status</code></td><td>TRAN_STATUS</td><td>สถานะธุรกรรม</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2>ตัวอย่างการตอบกลับ</h2>
+            <pre>{
+  "supplier_data": [
+    {
+      "supplier_no": "SUP001",
+      "supplier_name": "บริษัทผู้จัดหา A",
+      "modify_no": "USER001",
+      "tran_status": "AU"
+    }
+  ]
+}</pre>
+        </div>
+
+        <div class="section">
+            <h2>การประมวลผลพิเศษ</h2>
+            <div class="note">
+                <div class="note-title">ผู้จัดหาและสถานีงานใช้ตารางเดียวกัน</div>
+                <div class="note-content">
+                    ข้อมูลผู้จัดหาถูกเก็บในตาราง <code class="code-inline">WORKSTATION</code> โดยใช้ <code class="code-inline">LOCATION = 'outSource'</code> เป็นเครื่องหมายระบุผู้จัดหาจ้างภายนอก
+                    เมื่อเพิ่มใหม่จะตั้งค่าเริ่มต้น WS002-WS013 โดยอัตโนมัติ
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>SQL อัปเดตฐานข้อมูล</h2>
+            <h3 style="font-size: 1.1em; margin: 20px 0 10px;">ตรวจสอบเพิ่มหรือแก้ไข</h3>
+            <pre>SELECT COUNT(1) FROM WORKSTATION WHERE ID = N'{supplier_no}'
+-- count > 0 → UPDATE, count = 0 → INSERT</pre>
+
+            <h3 style="font-size: 1.1em; margin: 20px 0 10px;">INSERT (เพิ่มผู้จัดหา)</h3>
+            <pre>INSERT INTO WORKSTATION (
+    ID, NAME, DESCRIPTION, LOCATION,
+    LASTMAINTAINUSER, LASTMAINTAINDATETIME,
+    WS002, WS003, WS004, WS005, WS006, WS007,
+    WS008, WS009, WS010, WS011, WS012, WS013,
+    BARCODEUSE, DISPATCHUSE
+) VALUES (
+    :ID,
+    :NAME,
+    '',
+    'outSource',           -- เครื่องหมายจ้างภายนอก
+    :userid,
+    N'{เวลาปัจจุบัน}',
+    'N', 'Y', 'N', 'N', 'N', 'Y',
+    'N', 'N', 'N', 'N', 'N', 'N',
+    2, 2
+)</pre>
+
+            <h3 style="font-size: 1.1em; margin: 20px 0 10px;">UPDATE (แก้ไขผู้จัดหา)</h3>
+            <pre>UPDATE WORKSTATION SET
+    NAME = :NAME,
+    LASTMAINTAINUSER = :userid,
+    LASTMAINTAINDATETIME = N'{เวลาปัจจุบัน}'
+WHERE ID = :ID AND LOCATION = 'outSource'</pre>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>เอกสารข้อกำหนด eMES API | การซิงค์ข้อมูลพื้นฐาน | วันที่อัปเดต: 2026-03-19</p>
+    </div>
+</body>
+</html>

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>document.type.get - Du lieu loai chung tu | eMES API</title>
+    <style>
+        :root { --primary-color: #2563eb; --bg-color: #f8fafc; --border-color: #e2e8f0; --text-color: #1e293b; --text-muted: #64748b; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif; line-height: 1.6; color: var(--text-color); background: var(--bg-color); }
+        .header { background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); color: white; padding: 40px 20px; }
+        .header-content { max-width: 1200px; margin: 0 auto; }
+        .back-link { color: rgba(255,255,255,0.8); text-decoration: none; display: inline-flex; align-items: center; gap: 5px; margin-bottom: 20px; font-size: 0.9em; }
+        .api-title { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
+        .api-title h1 { font-size: 2em; margin: 0; }
+        .method-badge { background: rgba(255,255,255,0.2); padding: 5px 15px; border-radius: 20px; font-size: 0.9em; font-weight: 600; }
+        .api-code { font-family: 'Consolas', monospace; background: rgba(0,0,0,0.2); padding: 10px 20px; border-radius: 8px; margin-top: 15px; font-size: 1.1em; display: inline-block; }
+        .api-desc { margin-top: 15px; opacity: 0.9; max-width: 800px; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+        .section { background: white; border-radius: 12px; padding: 30px; margin-bottom: 30px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .section h2 { font-size: 1.4em; color: var(--text-color); margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid var(--bg-color); }
+        .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+        .info-item { background: var(--bg-color); padding: 15px; border-radius: 8px; }
+        .info-item .label { font-size: 0.85em; color: var(--text-muted); margin-bottom: 5px; }
+        .info-item .value { font-weight: 600; color: var(--text-color); }
+        table { width: 100%; border-collapse: collapse; font-size: 0.95em; }
+        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid var(--border-color); }
+        th { background: var(--bg-color); font-weight: 600; }
+        tr:hover { background: #f1f5f9; }
+        pre { background: #1e293b; color: #e2e8f0; padding: 20px; border-radius: 8px; overflow-x: auto; font-family: 'Consolas', monospace; font-size: 0.9em; }
+        .code-inline { background: #f1f5f9; padding: 2px 6px; border-radius: 4px; font-family: 'Consolas', monospace; font-size: 0.9em; color: var(--primary-color); }
+        .note { background: #dbeafe; border-left: 4px solid #3b82f6; padding: 15px 20px; border-radius: 0 8px 8px 0; margin: 20px 0; }
+        .note-title { font-weight: 600; color: #1e40af; margin-bottom: 5px; }
+        .note-content { color: #1e3a8a; font-size: 0.95em; }
+        .footer { text-align: center; padding: 40px 20px; color: var(--text-muted); font-size: 0.9em; }
+        .lang-switcher {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 10px;
+            z-index: 1000;
+        }
+        .lang-switcher a {
+            display: block;
+            padding: 5px 15px;
+            color: var(--text-color);
+            text-decoration: none;
+            border-radius: 4px;
+        }
+        .lang-switcher a:hover { background: var(--bg-color); }
+        .lang-switcher a.active { background: var(--primary-color); color: white; }
+    </style>
+</head>
+<body>
+    <div class="lang-switcher">
+        <a href="../document-type-get.html">繁體中文</a>
+        <a href="../en/document-type-get.html">English</a>
+        <a href="document-type-get.html" class="active">Tiếng Việt</a>
+        <a href="../th/document-type-get.html">ภาษาไทย</a>
+    </div>
+
+    <div class="header">
+        <div class="header-content">
+            <a href="index.html" class="back-link">← Quay lai danh sach API</a>
+            <div class="api-title">
+                <h1>Du lieu loai chung tu</h1>
+                <span class="method-badge">GET</span>
+                <span class="method-badge">ERP → MES</span>
+            </div>
+            <div class="api-code">document.type.get</div>
+            <p class="api-desc">Dong bo du lieu dinh nghia loai chung tu tu ERP sang bang ERP_ORDERTYPEDEF cua MES, dung de dinh nghia thuoc tinh va quy tac ma hoa cac loai chung tu.</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="section">
+            <h2>Thong tin co ban</h2>
+            <div class="info-grid">
+                <div class="info-item"><div class="label">Ten API</div><div class="value">document.type.get</div></div>
+                <div class="info-item"><div class="label">Ten phuong thuc</div><div class="value">upDocumentTypeCROSS</div></div>
+                <div class="info-item"><div class="label">Bang du lieu dich</div><div class="value">ERP_ORDERTYPEDEF</div></div>
+                <div class="info-item"><div class="label">Node JSON</div><div class="value">document_data</div></div>
+                <div class="info-item"><div class="label">Khoa chinh</div><div class="value">doc_type + doc_type_no (phuc hop)</div></div>
+                <div class="info-item"><div class="label">Vi tri chuong trinh</div><div class="value">RegularESB.java:2949</div></div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Tham so yeu cau</h2>
+            <table>
+                <thead><tr><th>Truong</th><th>Kieu</th><th>Bat buoc</th><th>Mo ta</th></tr></thead>
+                <tbody>
+                    <tr><td><code class="code-inline">doc_type</code></td><td>String</td><td>Bat buoc</td><td>Loai chung tu (vi du: MO, WO, SO...)</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2>Truong phan hoi</h2>
+            <table>
+                <thead><tr><th>Truong ERP</th><th>Truong MES</th><th>Mo ta</th></tr></thead>
+                <tbody>
+                    <tr><td><code class="code-inline">doc_type_no</code></td><td>doc_type_no</td><td>Ma loai chung tu (khoa chinh phuc hop)</td></tr>
+                    <tr><td><code class="code-inline">doc_type_name</code></td><td>doc_type_name</td><td>Ten loai chung tu</td></tr>
+                    <tr><td><code class="code-inline">status</code></td><td>status</td><td>Ma trang thai</td></tr>
+                    <tr><td><code class="code-inline">auto_numbering</code></td><td>auto_numbering</td><td>Tu dong danh so</td></tr>
+                    <tr><td><code class="code-inline">op_control</code></td><td>op_control</td><td>Su dung quan ly quy trinh (Y/N)</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2>Vi du phan hoi</h2>
+            <pre>{
+  "document_data": [
+    {
+      "doc_type_no": "5101",
+      "doc_type_name": "Lenh san xuat chung",
+      "status": "Y",
+      "auto_numbering": "Y",
+      "op_control": "Y"
+    },
+    {
+      "doc_type_no": "5102",
+      "doc_type_name": "Lenh gia cong ngoai",
+      "status": "Y",
+      "auto_numbering": "Y",
+      "op_control": "N"
+    }
+  ]
+}</pre>
+        </div>
+
+        <div class="section">
+            <h2>Logic xu ly</h2>
+            <div class="note">
+                <div class="note-title">Thiet ke khoa chinh phuc hop</div>
+                <div class="note-content">
+                    Su dung <code class="code-inline">doc_type</code> (loai chung tu, truyen tu tham so yeu cau) +
+                    <code class="code-inline">doc_type_no</code> (ma loai chung tu) lam khoa chinh phuc hop.<br><br>
+                    Vi du: doc_type='MO' + doc_type_no='5101' = Loai lenh san xuat "Lenh san xuat chung"
+                </div>
+            </div>
+            <div class="note">
+                <div class="note-title">Xu ly chong loi khi khong co du lieu</div>
+                <div class="note-content">
+                    Khi ERP khong co du lieu phu hop, cau truc tra ve khong chua node <code class="code-inline">document_data</code>,
+                    chuong trinh se kiem tra va tra ve thanh cong (no data from ERP), tranh loi.
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>SQL cap nhat co so du lieu</h2>
+            <h3 style="font-size: 1.1em; margin: 20px 0 10px;">Xac dinh them moi hoac cap nhat</h3>
+            <pre>SELECT COUNT(1) FROM ERP_ORDERTYPEDEF WITH (NOLOCK)
+WHERE doc_type = N'{doc_type}' AND doc_type_no = N'{doc_type_no}'
+-- count > 0 → UPDATE, count = 0 → INSERT</pre>
+
+            <h3 style="font-size: 1.1em; margin: 20px 0 10px;">INSERT (Them moi loai chung tu)</h3>
+            <pre>INSERT INTO ERP_ORDERTYPEDEF (
+    doc_type, doc_type_no, status,
+    doc_type_name, auto_numbering, op_control
+) VALUES (
+    :doc_type,          -- Loai chung tu (tham so yeu cau)
+    :doc_type_no,       -- Ma loai chung tu
+    :status,            -- Ma trang thai
+    :doc_type_name,     -- Ten loai chung tu
+    :auto_numbering,    -- Tu dong danh so
+    :op_control         -- Su dung quan ly quy trinh (mac dinh 'N')
+)</pre>
+
+            <h3 style="font-size: 1.1em; margin: 20px 0 10px;">UPDATE (Cap nhat loai chung tu)</h3>
+            <pre>UPDATE ERP_ORDERTYPEDEF SET
+    status = :status,
+    doc_type_name = :doc_type_name,
+    auto_numbering = :auto_numbering,
+    op_control = :op_control
+WHERE doc_type = :doc_type AND doc_type_no = :doc_type_no</pre>
+
+            <div class="note">
+                <div class="note-title">Gia tri mac dinh cua truong</div>
+                <div class="note-content">
+                    Neu ERP khong tra ve cac truong sau, tu dong dien gia tri mac dinh:<br>
+                    • status = '' (chuoi rong)<br>
+                    • doc_type_name = '' (chuoi rong)<br>
+                    • auto_numbering = '' (chuoi rong)<br>
+                    • op_control = 'N'
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>eMES API | Dong bo du lieu co ban | Ngay cap nhat: 2026-03-19</p>
+    </div>
+</body>
+</html>

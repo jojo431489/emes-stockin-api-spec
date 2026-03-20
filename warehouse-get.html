@@ -30,11 +30,40 @@
         pre { background: #1e293b; color: #e2e8f0; padding: 20px; border-radius: 8px; overflow-x: auto; font-family: 'Consolas', monospace; font-size: 0.9em; }
         .code-inline { background: #f1f5f9; padding: 2px 6px; border-radius: 4px; font-family: 'Consolas', monospace; font-size: 0.9em; color: var(--primary-color); }
         .footer { text-align: center; padding: 40px 20px; color: var(--text-muted); font-size: 0.9em; }
+        .lang-switcher {
+            float: right;
+            display: flex;
+            gap: 10px;
+        }
+
+        .lang-switcher a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.85em;
+        }
+
+        .lang-switcher a:hover {
+            color: white;
+            background: rgba(255,255,255,0.1);
+        }
+
+        .lang-switcher a.active {
+            color: white;
+            background: rgba(255,255,255,0.2);
+        }
     </style>
 </head>
 <body>
     <div class="header">
         <div class="header-content">
+            <div class="lang-switcher">
+                <a href="warehouse-get.html" class="active">繁體中文</a>
+                <a href="en/warehouse-get.html">English</a>
+                <a href="vi/warehouse-get.html">Tiếng Việt</a>
+                <a href="th/warehouse-get.html">ภาษาไทย</a>
+            </div>
             <a href="index.html" class="back-link">← 返回 API 列表</a>
             <div class="api-title">
                 <h1>倉庫基本資料</h1>

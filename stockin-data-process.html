@@ -123,11 +123,39 @@
         .toc ul { list-style: none; display: flex; flex-wrap: wrap; gap: 15px; }
         .toc a { color: var(--primary-color); text-decoration: none; }
         .toc a:hover { text-decoration: underline; }
+        .lang-switcher {
+            display: flex;
+            gap: 10px;
+        }
+
+        .lang-switcher a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.85em;
+        }
+
+        .lang-switcher a:hover {
+            color: white;
+            background: rgba(255,255,255,0.1);
+        }
+
+        .lang-switcher a.active {
+            color: white;
+            background: rgba(255,255,255,0.2);
+        }
     </style>
 </head>
 <body>
     <nav class="navbar">
         <a href="index.html" class="back">← 返回 API 列表</a>
+        <div class="lang-switcher">
+            <a href="stockin-data-process.html" class="active">繁體中文</a>
+            <a href="en/stockin-data-process.html">English</a>
+            <a href="vi/stockin-data-process.html">Tiếng Việt</a>
+            <a href="th/stockin-data-process.html">ภาษาไทย</a>
+        </div>
         <span class="brand">eMES API 規格書</span>
     </nav>
 

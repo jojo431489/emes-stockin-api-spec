@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>issue.wo.item.process - Xu ly trang thai chuan bi nguyen lieu | eMES API</title>
+    <style>
+        :root { --primary-color: #2563eb; --bg-color: #f8fafc; --border-color: #e2e8f0; --text-color: #1e293b; --text-muted: #64748b; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif; line-height: 1.6; color: var(--text-color); background: var(--bg-color); }
+        .header { background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%); color: white; padding: 40px 20px; }
+        .header-content { max-width: 1200px; margin: 0 auto; }
+        .back-link { color: rgba(255,255,255,0.8); text-decoration: none; display: inline-flex; align-items: center; gap: 5px; margin-bottom: 20px; font-size: 0.9em; }
+        .api-title { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
+        .api-title h1 { font-size: 2em; margin: 0; }
+        .method-badge { background: rgba(255,255,255,0.2); padding: 5px 15px; border-radius: 20px; font-size: 0.9em; font-weight: 600; }
+        .api-code { font-family: 'Consolas', monospace; background: rgba(0,0,0,0.2); padding: 10px 20px; border-radius: 8px; margin-top: 15px; font-size: 1.1em; display: inline-block; }
+        .api-desc { margin-top: 15px; opacity: 0.9; max-width: 800px; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+        .section { background: white; border-radius: 12px; padding: 30px; margin-bottom: 30px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .section h2 { font-size: 1.4em; color: var(--text-color); margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid var(--bg-color); }
+        .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+        .info-item { background: var(--bg-color); padding: 15px; border-radius: 8px; }
+        .info-item .label { font-size: 0.85em; color: var(--text-muted); margin-bottom: 5px; }
+        .info-item .value { font-weight: 600; color: var(--text-color); }
+        table { width: 100%; border-collapse: collapse; font-size: 0.95em; }
+        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid var(--border-color); }
+        th { background: var(--bg-color); font-weight: 600; }
+        tr:hover { background: #f1f5f9; }
+        pre { background: #1e293b; color: #e2e8f0; padding: 20px; border-radius: 8px; overflow-x: auto; font-family: 'Consolas', monospace; font-size: 0.9em; }
+        .code-inline { background: #f1f5f9; padding: 2px 6px; border-radius: 4px; font-family: 'Consolas', monospace; font-size: 0.9em; color: var(--primary-color); }
+        .note { background: #f3e8ff; border-left: 4px solid #8b5cf6; padding: 15px 20px; border-radius: 0 8px 8px 0; margin: 20px 0; }
+        .note-title { font-weight: 600; color: #6d28d9; margin-bottom: 5px; }
+        .note-content { color: #5b21b6; font-size: 0.95em; }
+        .footer { text-align: center; padding: 40px 20px; color: var(--text-muted); font-size: 0.9em; }
+        .lang-switcher {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 10px;
+            z-index: 1000;
+        }
+        .lang-switcher a {
+            display: block;
+            padding: 5px 15px;
+            color: var(--text-color);
+            text-decoration: none;
+            border-radius: 4px;
+        }
+        .lang-switcher a:hover { background: var(--bg-color); }
+        .lang-switcher a.active { background: var(--primary-color); color: white; }
+    </style>
+</head>
+<body>
+    <div class="lang-switcher">
+        <a href="../issue-wo-item-process.html">繁體中文</a>
+        <a href="../en/issue-wo-item-process.html">English</a>
+        <a href="issue-wo-item-process.html" class="active">Tiếng Việt</a>
+        <a href="../th/issue-wo-item-process.html">ภาษาไทย</a>
+    </div>
+
+    <div class="header">
+        <div class="header-content">
+            <a href="index.html" class="back-link">← Quay lai danh sach API</a>
+            <div class="api-title">
+                <h1>Xu ly trang thai chuan bi nguyen lieu</h1>
+                <span class="method-badge">POST</span>
+                <span class="method-badge">ERP → MES</span>
+            </div>
+            <div class="api-code">issue.wo.item.process</div>
+            <p class="api-desc">ERP thong bao MES ve thay doi trang thai chuan bi nguyen lieu cua lenh san xuat, dung de cap nhat thong tin chuan bi nguyen lieu trong MES.</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="section">
+            <h2>Thong tin co ban</h2>
+            <div class="info-grid">
+                <div class="info-item"><div class="label">Ten API</div><div class="value">issue.wo.item.process</div></div>
+                <div class="info-item"><div class="label">Ten phuong thuc</div><div class="value">issueWoItemProcess</div></div>
+                <div class="info-item"><div class="label">Bang du lieu dich</div><div class="value">MODETAIL / SFT_WO_ISSUE</div></div>
+                <div class="info-item"><div class="label">Huong du lieu</div><div class="value">ERP → MES</div></div>
+                <div class="info-item"><div class="label">Muc dich</div><div class="value">Dong bo trang thai chuan bi nguyen lieu</div></div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Tham so yeu cau</h2>
+            <table>
+                <thead><tr><th>Truong</th><th>Kieu</th><th>Bat buoc</th><th>Mo ta</th></tr></thead>
+                <tbody>
+                    <tr><td><code class="code-inline">enterprise_no</code></td><td>String</td><td>Bat buoc</td><td>Ma cong ty</td></tr>
+                    <tr><td><code class="code-inline">site_no</code></td><td>String</td><td>Bat buoc</td><td>Ma chi nhanh</td></tr>
+                    <tr><td><code class="code-inline">wo_no</code></td><td>String</td><td>Bat buoc</td><td>So lenh san xuat</td></tr>
+                    <tr><td><code class="code-inline">issue_status</code></td><td>String</td><td>Bat buoc</td><td>Trang thai chuan bi nguyen lieu</td></tr>
+                    <tr><td><code class="code-inline">issue_date</code></td><td>Date</td><td>Khong bat buoc</td><td>Ngay chuan bi nguyen lieu</td></tr>
+                    <tr><td><code class="code-inline">issue_qty</code></td><td>Numeric</td><td>Khong bat buoc</td><td>So luong chuan bi nguyen lieu</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2>Mo ta trang thai chuan bi nguyen lieu</h2>
+            <table>
+                <thead><tr><th>Ma trang thai</th><th>Mo ta</th></tr></thead>
+                <tbody>
+                    <tr><td><code class="code-inline">0</code></td><td>Chua chuan bi nguyen lieu</td></tr>
+                    <tr><td><code class="code-inline">1</code></td><td>Chuan bi nguyen lieu mot phan</td></tr>
+                    <tr><td><code class="code-inline">2</code></td><td>Hoan thanh chuan bi nguyen lieu</td></tr>
+                    <tr><td><code class="code-inline">3</code></td><td>Huy chuan bi nguyen lieu</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2>Vi du yeu cau</h2>
+            <pre>{
+  "enterprise_no": "COMP01",
+  "site_no": "SITE01",
+  "wo_no": "5101-20260319001",
+  "issue_status": "2",
+  "issue_date": "2026-03-19",
+  "issue_qty": "100"
+}</pre>
+        </div>
+
+        <div class="section">
+            <h2>Logic xu ly</h2>
+            <div class="note">
+                <div class="note-title">Cap nhat trang thai chuan bi nguyen lieu</div>
+                <div class="note-content">
+                    API nay duoc ERP chu dong goi de thong bao MES rang trang thai chuan bi nguyen lieu cua lenh san xuat da thay doi.
+                    Sau khi MES nhan duoc, se cap nhat truong trang thai chuan bi nguyen lieu trong bang MODETAIL,
+                    va co the anh huong den trang thai co the phat hanh cua lenh san xuat.
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>SQL cap nhat co so du lieu</h2>
+            <h3 style="font-size: 1.1em; margin: 20px 0 10px;">Truy van lenh san xuat</h3>
+            <pre>-- Ket hop so lenh san xuat CMOID = wo_no
+SELECT COUNT(1) FROM MODETAIL WHERE CMOID = N'{wo_no}'</pre>
+
+            <h3 style="font-size: 1.1em; margin: 20px 0 10px;">UPDATE (Cap nhat trang thai chuan bi nguyen lieu)</h3>
+            <pre>UPDATE MODETAIL SET
+    ISSUE_STATUS = :issue_status,
+    ISSUE_DATE = :issue_date,
+    ISSUE_QTY = :issue_qty,
+    LASTMAINTAINUSER = :userid,
+    LASTMAINTAINDATETIME = N'{thoi gian hien tai}'
+WHERE CMOID = :wo_no</pre>
+
+            <h3 style="font-size: 1.1em; margin: 20px 0 10px;">Lien dong SFT_WO_ISSUE (neu co)</h3>
+            <pre>-- Neu co bang SFT_WO_ISSUE thi cap nhat cung
+UPDATE SFT_WO_ISSUE SET
+    ISSUE_STATUS = :issue_status,
+    ISSUE_DATE = :issue_date,
+    ISSUE_QTY = :issue_qty
+WHERE WO_NO = :wo_no</pre>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>eMES API | Dong bo chuan bi nguyen lieu | Ngay cap nhat: 2026-03-19</p>
+    </div>
+</body>
+</html>

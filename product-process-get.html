@@ -32,11 +32,40 @@
         .code-inline { background: #f1f5f9; padding: 2px 6px; border-radius: 4px; font-family: 'Consolas', monospace; font-size: 0.9em; color: var(--primary-color); }
         .tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.8em; font-weight: 500; background: #dbeafe; color: #1d4ed8; }
         .footer { text-align: center; padding: 40px 20px; color: var(--text-muted); font-size: 0.9em; }
+        .lang-switcher {
+            float: right;
+            display: flex;
+            gap: 10px;
+        }
+
+        .lang-switcher a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.85em;
+        }
+
+        .lang-switcher a:hover {
+            color: white;
+            background: rgba(255,255,255,0.1);
+        }
+
+        .lang-switcher a.active {
+            color: white;
+            background: rgba(255,255,255,0.2);
+        }
     </style>
 </head>
 <body>
     <div class="header">
         <div class="header-content">
+            <div class="lang-switcher">
+                <a href="product-process-get.html" class="active">繁體中文</a>
+                <a href="en/product-process-get.html">English</a>
+                <a href="vi/product-process-get.html">Tiếng Việt</a>
+                <a href="th/product-process-get.html">ภาษาไทย</a>
+            </div>
             <a href="index.html" class="back-link">← 返回 API 列表</a>
             <div class="api-title">
                 <h1>產品途程資料</h1>

@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>wo.create - eMES API</title>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #1e40af;
+            --success-color: #16a34a;
+            --error-color: #dc2626;
+            --warning-color: #d97706;
+            --bg-color: #f8fafc;
+            --border-color: #e2e8f0;
+            --text-color: #1e293b;
+            --text-muted: #64748b;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+        }
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .navbar a { color: white; text-decoration: none; }
+        .navbar .brand { font-size: 1.2em; font-weight: 600; }
+        .navbar .back { opacity: 0.9; }
+        .navbar .back:hover { opacity: 1; }
+        .container { max-width: 1100px; margin: 0 auto; padding: 30px; }
+        .api-header {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .api-header h1 { color: var(--primary-color); font-size: 1.8em; margin-bottom: 10px; }
+        .api-code {
+            font-family: 'Consolas', monospace;
+            background: var(--bg-color);
+            padding: 8px 15px;
+            border-radius: 6px;
+            display: inline-block;
+            color: var(--primary-color);
+            font-size: 1.1em;
+        }
+        .badges { margin-top: 15px; display: flex; gap: 10px; flex-wrap: wrap; }
+        .badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+        .badge-post { background: #dcfce7; color: #16a34a; }
+        .badge-json { background: #dbeafe; color: #2563eb; }
+        .badge-sync { background: #fef3c7; color: #d97706; }
+        .badge-erp { background: #f3e8ff; color: #7c3aed; }
+        h2 {
+            color: var(--secondary-color);
+            font-size: 1.4em;
+            margin: 30px 0 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--border-color);
+        }
+        h3 { color: var(--text-color); font-size: 1.1em; margin: 20px 0 10px; }
+        h4 { color: var(--text-muted); font-size: 1em; margin: 15px 0 10px; }
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; font-size: 0.9em; }
+        th, td { border: 1px solid var(--border-color); padding: 10px 12px; text-align: left; }
+        th { background: var(--primary-color); color: white; font-weight: 600; }
+        tr:nth-child(even) { background: var(--bg-color); }
+        tr:hover { background: #e0e7ff; }
+        .required { background: var(--error-color); color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.75em; }
+        .optional { background: var(--text-muted); color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.75em; }
+        .code-block {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Consolas', monospace;
+            font-size: 0.85em;
+            line-height: 1.5;
+            margin: 15px 0;
+        }
+        .code-block .key { color: #7dd3fc; }
+        .code-block .string { color: #86efac; }
+        .code-block .number { color: #fbbf24; }
+        .code-block .comment { color: #64748b; font-style: italic; }
+        .info-box {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        .info-box.info { background: #dbeafe; border-left: 4px solid var(--primary-color); }
+        .info-box.warning { background: #fef3c7; border-left: 4px solid var(--warning-color); }
+        .info-box.success { background: #dcfce7; border-left: 4px solid var(--success-color); }
+        .info-box.purple { background: #f3e8ff; border-left: 4px solid #7c3aed; }
+        .flow-diagram { text-align: center; margin: 20px 0; padding: 20px; background: white; border-radius: 10px; }
+        .toc {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .toc ul { list-style: none; display: flex; flex-wrap: wrap; gap: 15px; }
+        .toc a { color: var(--primary-color); text-decoration: none; }
+        .toc a:hover { text-decoration: underline; }
+        .lang-switcher {
+            display: flex;
+            gap: 10px;
+        }
+
+        .lang-switcher a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.85em;
+        }
+
+        .lang-switcher a:hover {
+            color: white;
+            background: rgba(255,255,255,0.1);
+        }
+
+        .lang-switcher a.active {
+            color: white;
+            background: rgba(255,255,255,0.2);
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="index.html" class="back">← Back to API List</a>
+        <div class="lang-switcher">
+            <a href="../wo-create.html">繁體中文</a>
+            <a href="wo-create.html" class="active">English</a>
+            <a href="../vi/wo-create.html">Tiếng Việt</a>
+            <a href="../th/wo-create.html">ภาษาไทย</a>
+        </div>
+        <span class="brand">eMES API Specification</span>
+    </nav>
+
+    <div class="container">
+        <!-- API Header -->
+        <div class="api-header">
+            <h1>Work Order Create</h1>
+            <div class="api-code">wo.create</div>
+            <div class="badges">
+                <span class="badge badge-post">POST</span>
+                <span class="badge badge-json">JSON</span>
+                <span class="badge badge-sync">Sync</span>
+                <span class="badge badge-erp">ERP → MES</span>
+            </div>
+        </div>
+
+        <!-- TOC -->
+        <div class="toc">
+            <ul>
+                <li><a href="#basic">Basic Info</a></li>
+                <li><a href="#flow">Business Flow</a></li>
+                <li><a href="#request">Request</a></li>
+                <li><a href="#response">Response</a></li>
+                <li><a href="#rules">Validation Rules</a></li>
+                <li><a href="#errors">Error Codes</a></li>
+                <li><a href="#example">JSON Examples</a></li>
+                <li><a href="#tables">Database Tables</a></li>
+            </ul>
+        </div>
+
+        <!-- Basic Info -->
+        <div class="card" id="basic">
+            <h2>1. Basic Information</h2>
+            <table>
+                <tr><th width="25%">Item</th><th>Description</th></tr>
+                <tr><td>API Chinese Name</td><td>Work Order Create (Manufacturing Order Create)</td></tr>
+                <tr><td>API English Name</td><td>Work Order Create</td></tr>
+                <tr><td>API Code</td><td><code>wo.create</code></td></tr>
+                <tr><td>Case Number</td><td>0189142</td></tr>
+                <tr><td>REST Endpoint</td><td><code>POST /ESB/API/upModetail</code></td></tr>
+                <tr><td>Call Direction</td><td><strong>ERP → MES</strong></td></tr>
+                <tr><td>Trigger Timing</td><td>When ERP creates a new work order, sync to MES</td></tr>
+                <tr><td>Main Business Scenario</td><td>After ERP creates a manufacturing order, push work order information to MES, MES creates corresponding order, lot and process records</td></tr>
+                <tr><td>Request Format</td><td><strong>JSON</strong> (Content-Type: application/json)</td></tr>
+                <tr><td>Sync/Async</td><td>Synchronous call</td></tr>
+                <tr><td>Transaction Control</td><td>Required (setAutoCommit(false) + transactionCommit())</td></tr>
+            </table>
+
+            <div class="info-box purple">
+                <strong>Call Direction Note</strong><br>
+                This API is <strong>ERP → MES</strong> one-way push, ERP actively calls MES interface to create work order data.
+            </div>
+        </div>
+
+        <!-- Business Flow -->
+        <div class="card" id="flow">
+            <h2>2. Business Flow</h2>
+            <div class="flow-diagram">
+                <svg width="850" height="280" viewBox="0 0 850 280" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <marker id="arrow" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#7c3aed"/>
+                        </marker>
+                    </defs>
+                    <!-- ERP Area -->
+                    <rect x="20" y="30" width="200" height="200" rx="10" fill="#f3e8ff" stroke="#7c3aed" stroke-width="2"/>
+                    <text x="120" y="55" text-anchor="middle" font-size="14" font-weight="bold" fill="#7c3aed">ERP System</text>
+
+                    <!-- MES Area -->
+                    <rect x="280" y="30" width="550" height="200" rx="10" fill="#dbeafe" stroke="#3b82f6" stroke-width="2"/>
+                    <text x="555" y="55" text-anchor="middle" font-size="14" font-weight="bold" fill="#3b82f6">MES System</text>
+
+                    <!-- ERP Node -->
+                    <rect x="40" y="80" width="160" height="50" rx="6" fill="#7c3aed"/>
+                    <text x="120" y="100" text-anchor="middle" fill="white" font-size="11">1. Create Order</text>
+                    <text x="120" y="118" text-anchor="middle" fill="white" font-size="9">(wo.create)</text>
+
+                    <!-- MES Nodes -->
+                    <rect x="300" y="80" width="120" height="50" rx="6" fill="#3b82f6"/>
+                    <text x="360" y="100" text-anchor="middle" fill="white" font-size="10">2. Validate Data</text>
+                    <text x="360" y="118" text-anchor="middle" fill="white" font-size="9">(WoCreate)</text>
+
+                    <rect x="440" y="80" width="120" height="50" rx="6" fill="#3b82f6"/>
+                    <text x="500" y="100" text-anchor="middle" fill="white" font-size="10">3. Create Order</text>
+                    <text x="500" y="118" text-anchor="middle" fill="white" font-size="9">(MODETAIL)</text>
+
+                    <rect x="580" y="80" width="110" height="50" rx="6" fill="#3b82f6"/>
+                    <text x="635" y="100" text-anchor="middle" fill="white" font-size="10">4. Create Lot</text>
+                    <text x="635" y="118" text-anchor="middle" fill="white" font-size="9">(LOT)</text>
+
+                    <rect x="710" y="80" width="100" height="50" rx="6" fill="#10b981"/>
+                    <text x="760" y="100" text-anchor="middle" fill="white" font-size="10">5. Initialize</text>
+                    <text x="760" y="118" text-anchor="middle" fill="white" font-size="9">(Process)</text>
+
+                    <!-- Arrows -->
+                    <line x1="200" y1="105" x2="295" y2="105" stroke="#7c3aed" stroke-width="2" stroke-dasharray="5,5" marker-end="url(#arrow)"/>
+                    <line x1="420" y1="105" x2="435" y2="105" stroke="#3b82f6" stroke-width="2" marker-end="url(#arrow)"/>
+                    <line x1="560" y1="105" x2="575" y2="105" stroke="#3b82f6" stroke-width="2" marker-end="url(#arrow)"/>
+                    <line x1="690" y1="105" x2="705" y2="105" stroke="#3b82f6" stroke-width="2" marker-end="url(#arrow)"/>
+
+                    <!-- Bottom Description -->
+                    <rect x="300" y="155" width="230" height="60" rx="6" fill="#dcfce7" stroke="#10b981"/>
+                    <text x="415" y="175" text-anchor="middle" fill="#059669" font-size="10">initOpRealRun_SftBommf()</text>
+                    <text x="415" y="192" text-anchor="middle" fill="#059669" font-size="10">initProcessTime()</text>
+                    <text x="415" y="209" text-anchor="middle" fill="#059669" font-size="9">→ SFT_OP_REALRUN initialization</text>
+
+                    <!-- Legend -->
+                    <text x="425" y="260" text-anchor="middle" font-size="11" fill="#64748b">Code Location: WoCreate.java → RegularESB.upModetail() → ESBapi.java:975-1007</text>
+                </svg>
+            </div>
+
+            <div class="info-box info">
+                <strong>Code Reference</strong>
+                <ul style="margin-top:10px; margin-left:20px;">
+                    <li>API Entry: <code>WoCreate.java</code> (SFT_ERPIntegrate)</li>
+                    <li>Core Logic: <code>RegularESB.upModetail()</code> (SFT_dataImport)</li>
+                    <li>SQL Execution: <code>ESBapi.java:975-1007</code> (KMI_Restful)</li>
+                    <li>Process Initialization: <code>dataMantain.initOpRealRun_SftBommf()</code></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Request Spec -->
+        <div class="card" id="request">
+            <h2>3. Request Specification</h2>
+
+            <div class="info-box success">
+                <strong>Format: JSON</strong><br>
+                <code>Content-Type: application/json</code>
+            </div>
+
+            <h3>3.1 Outer Structure</h3>
+            <table>
+                <tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr>
+                <tr><td>CompanyID</td><td>string</td><td><span class="required">Y</span></td><td>Company code</td></tr>
+                <tr><td>OperationType</td><td>int</td><td><span class="required">Y</span></td><td>Operation type (1=Create)</td></tr>
+                <tr><td>content</td><td>array</td><td><span class="required">Y</span></td><td>Work order data array</td></tr>
+            </table>
+
+            <h3>3.2 content Array Contents</h3>
+            <table>
+                <tr><th>Field</th><th>Type</th><th>Length</th><th>Required</th><th>Description</th><th>MES Field</th></tr>
+                <tr><td>wo_no</td><td>string</td><td>40</td><td><span class="required">Y</span></td><td>Work order number (type-number)</td><td>CMOID</td></tr>
+                <tr><td>item_no</td><td>string</td><td>40</td><td><span class="required">Y</span></td><td>Item number</td><td>ITEMID</td></tr>
+                <tr><td>unit_no</td><td>string</td><td>10</td><td><span class="required">Y</span></td><td>Unit code</td><td>UNIT</td></tr>
+                <tr><td>plan_date_s</td><td>string</td><td>19</td><td><span class="required">Y</span></td><td>Planned start date (yyyy-MM-dd HH:mm:ss)</td><td>PLANPROCESSST</td></tr>
+                <tr><td>plan_date_e</td><td>string</td><td>19</td><td><span class="required">Y</span></td><td>Planned end date (yyyy-MM-dd HH:mm:ss)</td><td>DUEDATETIME</td></tr>
+                <tr><td>wo_qty</td><td>decimal</td><td>-</td><td><span class="required">Y</span></td><td>Planned quantity</td><td>QTY / PLANRELEASEQTY</td></tr>
+                <tr><td>so_no</td><td>string</td><td>40</td><td><span class="optional">N</span></td><td>Sales order number</td><td>DOID</td></tr>
+                <tr><td>so_seq</td><td>string</td><td>10</td><td><span class="optional">N</span></td><td>Sales order line</td><td>SEQUENCE</td></tr>
+                <tr><td>factory_no</td><td>string</td><td>10</td><td><span class="required">Y</span></td><td>Factory code</td><td>FACTORYID</td></tr>
+                <tr><td>warehouse_no</td><td>string</td><td>10</td><td><span class="optional">N</span></td><td>Warehouse code</td><td>WAREHOUSEID</td></tr>
+                <tr><td>remark</td><td>string</td><td>500</td><td><span class="optional">N</span></td><td>Remarks</td><td>DESCRIPTION</td></tr>
+                <tr><td>priority</td><td>string</td><td>1</td><td><span class="optional">N</span></td><td>Priority (1=Urgent, 0=No)</td><td>MO032</td></tr>
+            </table>
+        </div>
+
+        <!-- Response -->
+        <div class="card" id="response">
+            <h2>4. Response Specification</h2>
+            <table>
+                <tr><th>Field</th><th>Type</th><th>Description</th></tr>
+                <tr><td>code</td><td>string</td><td>200=Success, 500=Failure</td></tr>
+                <tr><td>msg</td><td>string</td><td>Processing result message (returns order number on success)</td></tr>
+                <tr><td>query</td><td>array</td><td>Query result (usually empty array)</td></tr>
+            </table>
+
+            <h3>Success Behavior</h3>
+            <ul style="margin-left: 20px; margin-top: 10px;">
+                <li>INSERT MODETAIL (Work order master)</li>
+                <li>INSERT LOT (Lot record)</li>
+                <li>Initialize SFT_OP_REALRUN (Process execution record)</li>
+                <li>Calculate process time (initProcessTime)</li>
+            </ul>
+        </div>
+
+        <!-- Validation Rules -->
+        <div class="card" id="rules">
+            <h2>5. Validation Rules</h2>
+            <table>
+                <tr><th>#</th><th>Validation Item</th><th>Rule</th><th>Error Code</th></tr>
+                <tr><td>1</td><td>Order number duplicate</td><td>CMOID cannot exist in MODETAIL</td><td>JS_0126_00061</td></tr>
+                <tr><td>2</td><td>Item exists</td><td>ITEMID must exist in ITEM table</td><td>JS_0096_00058</td></tr>
+                <tr><td>3</td><td>Unit exists</td><td>unit_no must exist in UnitBasis</td><td>JS_0016_00134</td></tr>
+                <tr><td>4</td><td>Factory exists</td><td>factory_no must exist in FACTORY</td><td>JS_0016_00115</td></tr>
+                <tr><td>5</td><td>Warehouse exists</td><td>warehouse_no (if provided) must exist in WAREHOUSE</td><td>JS_0135_00036</td></tr>
+                <tr><td>6</td><td>Quantity validation</td><td>wo_qty must be greater than 0</td><td>-</td></tr>
+            </table>
+        </div>
+
+        <!-- Error Codes -->
+        <div class="card" id="errors">
+            <h2>6. Error Codes</h2>
+            <table>
+                <tr><th>Code</th><th>Message</th><th>Description</th></tr>
+                <tr><td>JS_0126_00061</td><td>Work order number already exists, cannot create</td><td>CMOID duplicate</td></tr>
+                <tr><td>JS_0096_00058</td><td>Item number does not exist</td><td>Item not found in ITEM table</td></tr>
+                <tr><td>JS_0016_00134</td><td>Unit does not exist, please confirm</td><td>Unit not found in UnitBasis</td></tr>
+                <tr><td>JS_0016_00115</td><td>Factory code does not exist</td><td>Factory not found in FACTORY</td></tr>
+                <tr><td>JS_0135_00036</td><td>Warehouse code does not exist</td><td>Warehouse not found in WAREHOUSE</td></tr>
+                <tr><td>remind_001</td><td>Data already exists</td><td>Duplicate create</td></tr>
+            </table>
+        </div>
+
+        <!-- JSON Examples -->
+        <div class="card" id="example">
+            <h2>7. JSON Examples</h2>
+
+            <h3>Request</h3>
+            <div class="code-block">
+<pre>{
+  <span class="key">"CompanyID"</span>: <span class="string">"COMP01"</span>,
+  <span class="key">"OperationType"</span>: <span class="number">1</span>,
+  <span class="key">"content"</span>: [{
+    <span class="key">"wo_no"</span>: <span class="string">"5101-20260319001"</span>,
+    <span class="key">"item_no"</span>: <span class="string">"FG-A001-001"</span>,
+    <span class="key">"unit_no"</span>: <span class="string">"PCS"</span>,
+    <span class="key">"plan_date_s"</span>: <span class="string">"2026-03-19 08:00:00"</span>,
+    <span class="key">"plan_date_e"</span>: <span class="string">"2026-03-20 17:00:00"</span>,
+    <span class="key">"wo_qty"</span>: <span class="number">1000</span>,
+    <span class="key">"so_no"</span>: <span class="string">"SO20260301001"</span>,
+    <span class="key">"so_seq"</span>: <span class="string">"001"</span>,
+    <span class="key">"factory_no"</span>: <span class="string">"P001"</span>,
+    <span class="key">"warehouse_no"</span>: <span class="string">"FG01"</span>,
+    <span class="key">"remark"</span>: <span class="string">"Urgent order"</span>,
+    <span class="key">"priority"</span>: <span class="string">"1"</span>
+  }]
+}</pre>
+            </div>
+
+            <h3>Response (Success)</h3>
+            <div class="code-block">
+<pre>{
+  <span class="key">"code"</span>: <span class="string">"200"</span>,
+  <span class="key">"msg"</span>: <span class="string">"[\"5101-20260319001\"]"</span>,
+  <span class="key">"query"</span>: []
+}</pre>
+            </div>
+
+            <h3>Response (Failure - Order Already Exists)</h3>
+            <div class="code-block">
+<pre>{
+  <span class="key">"code"</span>: <span class="string">"500"</span>,
+  <span class="key">"msg"</span>: <span class="string">"JS_0126_00061"</span>,
+  <span class="key">"query"</span>: []
+}</pre>
+            </div>
+        </div>
+
+        <!-- Database Tables -->
+        <div class="card" id="tables">
+            <h2>8. Related Database Tables</h2>
+
+            <h3>8.1 MODETAIL (Work Order Master)</h3>
+            <table>
+                <tr><th>Field</th><th>Type</th><th>Description</th></tr>
+                <tr><td>CMOID</td><td>NVARCHAR(40)</td><td>PK: Work order number (type-number)</td></tr>
+                <tr><td>MO004</td><td>NVARCHAR(10)</td><td>Order type</td></tr>
+                <tr><td>MO005</td><td>NVARCHAR(20)</td><td>Order number</td></tr>
+                <tr><td>ITEMID</td><td>NVARCHAR(40)</td><td>Item number</td></tr>
+                <tr><td>QTY</td><td>FLOAT</td><td>Planned quantity</td></tr>
+                <tr><td>PLANRELEASEQTY</td><td>FLOAT</td><td>Planned release quantity</td></tr>
+                <tr><td>RELEASEDQTY</td><td>FLOAT</td><td>Released quantity</td></tr>
+                <tr><td>STATUS</td><td>INT</td><td>Status (1=Not started 2=In progress 99=Closed 100=Cancelled)</td></tr>
+                <tr><td>PLANPROCESSST</td><td>DATETIME</td><td>Planned start date</td></tr>
+                <tr><td>DUEDATETIME</td><td>DATETIME</td><td>Planned end date</td></tr>
+                <tr><td>FLAG</td><td>INT</td><td>Version number</td></tr>
+            </table>
+
+            <h3>8.2 LOT (Lot Record)</h3>
+            <table>
+                <tr><th>Field</th><th>Type</th><th>Description</th></tr>
+                <tr><td>ID</td><td>NVARCHAR(40)</td><td>PK: Lot number (usually=CMOID)</td></tr>
+                <tr><td>MOID</td><td>NVARCHAR(40)</td><td>FK: Work order number</td></tr>
+                <tr><td>TYPE</td><td>INT</td><td>Lot type (1=Planned lot)</td></tr>
+                <tr><td>LOTSIZE</td><td>FLOAT</td><td>Lot quantity (pending release quantity)</td></tr>
+                <tr><td>STATUS</td><td>INT</td><td>Status (0=Pending release 1=Released)</td></tr>
+                <tr><td>LOCATION</td><td>NVARCHAR(20)</td><td>Location (usually='release')</td></tr>
+            </table>
+        </div>
+
+        <!-- Database SQL -->
+        <div class="card" id="sql">
+            <h2>9. Database Update SQL</h2>
+
+            <h3>9.1 Check if Order Exists</h3>
+            <div class="code-block">
+<pre><span class="comment">-- Check before create, throw JS_0126_00061 if exists</span>
+<span class="key">SELECT COUNT</span>(1) <span class="key">FROM</span> MODETAIL <span class="key">WHERE</span> CMOID = N'{wo_no}'</pre>
+            </div>
+
+            <h3>9.2 INSERT MODETAIL (Create Work Order Master)</h3>
+            <div class="code-block">
+<pre><span class="key">INSERT INTO</span> MODETAIL (
+    CMOID, MO004, MO005, ITEMID, MO021, MO022, UNIT,
+    PLANPROCESSST, DUEDATETIME, QTY, STATUS, DOID,
+    SEQUENCE, FACTORYID, WAREHOUSEID, DESCRIPTION,
+    MO008, MO012, MO016, MO032, PLANRELEASEQTY,
+    FLAG, LASTMAINTAINUSER, LASTMAINTAINDATETIME
+) <span class="key">VALUES</span> (
+    :CMOID,              <span class="comment">-- Work order number (type-number)</span>
+    :MO004,              <span class="comment">-- Order type</span>
+    :MO005,              <span class="comment">-- Order number</span>
+    :ITEMID,             <span class="comment">-- Item number</span>
+    :MO021,              <span class="comment">-- Item name</span>
+    :MO022,              <span class="comment">-- Specification</span>
+    :UNIT,               <span class="comment">-- Unit</span>
+    :PLANPROCESSST,      <span class="comment">-- Planned start date</span>
+    :DUEDATETIME,        <span class="comment">-- Planned end date</span>
+    :QTY,                <span class="comment">-- Planned quantity</span>
+    <span class="number">1</span>,                   <span class="comment">-- STATUS = 1 (Not started)</span>
+    :DOID,               <span class="comment">-- Sales order number</span>
+    :SEQUENCE,           <span class="comment">-- Sales order line</span>
+    :FACTORYID,          <span class="comment">-- Factory code</span>
+    :WAREHOUSEID,        <span class="comment">-- Warehouse code</span>
+    :DESCRIPTION,        <span class="comment">-- Remarks</span>
+    <span class="number">1</span>,                   <span class="comment">-- MO008 = 1</span>
+    :MO012,              <span class="comment">-- Order date</span>
+    <span class="number">0</span>,                   <span class="comment">-- MO016 = 0</span>
+    :MO032,              <span class="comment">-- Priority (1=Urgent)</span>
+    :QTY,                <span class="comment">-- Planned release qty = Planned qty</span>
+    <span class="number">1</span>,                   <span class="comment">-- FLAG version number</span>
+    :userid,
+    N'{current_time}'
+)</pre>
+            </div>
+
+            <h3>9.3 INSERT LOT (Create Lot Record)</h3>
+            <div class="code-block">
+<pre><span class="key">INSERT INTO</span> LOT (
+    ID, TYPE, MOID, ITEMID, LOTSIZE, STATUS, UNIT,
+    QTYPER, LOCATION, ERP_OPSEQ, ERP_OPID, ERP_WSID,
+    LOT004, PKQTY, PKQTYPER, LOT007, LOT011,
+    LASTMAINTAINUSER, LASTMAINTAINDATETIME
+) <span class="key">VALUES</span> (
+    :CMOID,              <span class="comment">-- Lot number = Work order number</span>
+    <span class="number">1</span>,                   <span class="comment">-- TYPE = 1 (Planned lot)</span>
+    :CMOID,              <span class="comment">-- MOID = Work order number</span>
+    :ITEMID,             <span class="comment">-- Item number</span>
+    :QTY,                <span class="comment">-- LOTSIZE = Planned quantity</span>
+    <span class="number">0</span>,                   <span class="comment">-- STATUS = 0 (Pending release)</span>
+    :UNIT,               <span class="comment">-- Unit</span>
+    <span class="number">1</span>,                   <span class="comment">-- QTYPER = 1</span>
+    <span class="string">'release'</span>,           <span class="comment">-- LOCATION = 'release'</span>
+    <span class="string">''</span>, <span class="string">''</span>, <span class="string">''</span>,          <span class="comment">-- ERP process fields (empty)</span>
+    <span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>,             <span class="comment">-- LOT004, PKQTY, PKQTYPER</span>
+    <span class="string">'0'</span>, <span class="string">'N'</span>,            <span class="comment">-- LOT007, LOT011</span>
+    :userid,
+    N'{current_time}'
+)</pre>
+            </div>
+
+            <h3>9.4 Initialize Process SFT_OP_REALRUN (Read from SFT_BOMMF)</h3>
+            <div class="code-block">
+<pre><span class="comment">-- Check if item has standard routing</span>
+<span class="key">SELECT</span> ME007 <span class="key">FROM</span> SFT_BOMME, MODETAIL, ITEM
+<span class="key">WHERE</span> ITEM.ID = MODETAIL.ITEMID
+  <span class="key">AND</span> CMOID = N'{wo_no}'
+  <span class="key">AND</span> RTRIM(ME001) = ITEM.STDROUTEITEMID
+  <span class="key">AND</span> RTRIM(ME002) = ITEM.STDROUTEID
+
+<span class="comment">-- If has routing, delete then insert</span>
+<span class="key">DELETE</span> SFT_OP_REALRUN <span class="key">WHERE</span> ID = N'{wo_no}'
+
+<span class="comment">-- Copy process data from SFT_BOMMF</span>
+<span class="key">INSERT INTO</span> SFT_OP_REALRUN (
+    ID, SEQUENCE, OPID, OPDESCRIPTION,
+    ARRIVEQTY, OUTQTY, REWORKQTY, DEFECTQTY,
+    ERP_OPSEQ, PERLOTWORKTIME, STANDARDEQWORKTIME, STANDARDMANWORKTIME,
+    ERP_OPID, ERP_WSID, ERP_FIXEDLEADTIME, ERP_TRANSQTY, ...
+)
+<span class="key">SELECT</span>
+    CMOID,                          <span class="comment">-- ID = Work order number</span>
+    0,                              <span class="comment">-- SEQUENCE = 0</span>
+    RTRIM(MF004)+'---'+RTRIM(MF006), <span class="comment">-- OPID = Process+Workstation</span>
+    MF008,                          <span class="comment">-- OPDESCRIPTION = Process description</span>
+    0, 0, 0, 0,                     <span class="comment">-- Quantity fields init to 0</span>
+    RTRIM(MF003),                   <span class="comment">-- ERP_OPSEQ = Process sequence</span>
+    MF019,                          <span class="comment">-- PERLOTWORKTIME = Per lot work time</span>
+    ...
+<span class="key">FROM</span> SFT_BOMMF, MODETAIL, ITEM
+<span class="key">WHERE</span> ITEM.ID = MODETAIL.ITEMID
+  <span class="key">AND</span> CMOID = N'{wo_no}'
+  <span class="key">AND</span> RTRIM(MF001) = ITEM.STDROUTEITEMID
+  <span class="key">AND</span> RTRIM(MF002) = ITEM.STDROUTEID</pre>
+            </div>
+
+            <div class="info-box warning">
+                <strong>Tables Affected by Work Order Creation</strong>
+                <table style="margin-top:10px;">
+                    <tr><th>Table</th><th>Operation</th><th>Description</th></tr>
+                    <tr><td>MODETAIL</td><td>INSERT</td><td>Work order master</td></tr>
+                    <tr><td>LOT</td><td>INSERT</td><td>Lot record</td></tr>
+                    <tr><td>SFT_OP_REALRUN</td><td>DELETE + INSERT</td><td>Process execution (copy from SFT_BOMMF)</td></tr>
+                    <tr><td>SFT_OP_BACK_RUN</td><td>DELETE + INSERT</td><td>Process routing relationships (network routing)</td></tr>
+                </table>
+            </div>
+
+            <div class="info-box info">
+                <strong>Code Location</strong><br>
+                SQL Execution: <code>ESBapi.java:1007-1046</code><br>
+                Process Initialization: <code>dataMantain.initOpRealRun_SftBommf()</code><br>
+                Routing Relationships: <code>UpdateData.InsertOpBackRun()</code>
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>

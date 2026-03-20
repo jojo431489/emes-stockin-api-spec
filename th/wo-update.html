@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>wo.update - eMES API</title>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #1e40af;
+            --success-color: #16a34a;
+            --error-color: #dc2626;
+            --warning-color: #d97706;
+            --bg-color: #f8fafc;
+            --border-color: #e2e8f0;
+            --text-color: #1e293b;
+            --text-muted: #64748b;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', 'Tahoma', sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+        }
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .navbar a { color: white; text-decoration: none; }
+        .navbar .brand { font-size: 1.2em; font-weight: 600; }
+        .navbar .back { opacity: 0.9; }
+        .navbar .back:hover { opacity: 1; }
+        .container { max-width: 1100px; margin: 0 auto; padding: 30px; }
+        .api-header {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .api-header h1 { color: var(--warning-color); font-size: 1.8em; margin-bottom: 10px; }
+        .api-code {
+            font-family: 'Consolas', monospace;
+            background: var(--bg-color);
+            padding: 8px 15px;
+            border-radius: 6px;
+            display: inline-block;
+            color: var(--warning-color);
+            font-size: 1.1em;
+        }
+        .badges { margin-top: 15px; display: flex; gap: 10px; flex-wrap: wrap; }
+        .badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+        .badge-put { background: #fef3c7; color: #d97706; }
+        .badge-json { background: #dbeafe; color: #2563eb; }
+        .badge-sync { background: #fef3c7; color: #d97706; }
+        .badge-erp { background: #f3e8ff; color: #7c3aed; }
+        h2 {
+            color: var(--secondary-color);
+            font-size: 1.4em;
+            margin: 30px 0 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--border-color);
+        }
+        h3 { color: var(--text-color); font-size: 1.1em; margin: 20px 0 10px; }
+        h4 { color: var(--text-muted); font-size: 1em; margin: 15px 0 10px; }
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; font-size: 0.9em; }
+        th, td { border: 1px solid var(--border-color); padding: 10px 12px; text-align: left; }
+        th { background: var(--warning-color); color: white; font-weight: 600; }
+        tr:nth-child(even) { background: var(--bg-color); }
+        tr:hover { background: #fef3c7; }
+        .required { background: var(--error-color); color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.75em; }
+        .optional { background: var(--text-muted); color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.75em; }
+        .code-block {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Consolas', monospace;
+            font-size: 0.85em;
+            line-height: 1.5;
+            margin: 15px 0;
+        }
+        .code-block .key { color: #7dd3fc; }
+        .code-block .string { color: #86efac; }
+        .code-block .number { color: #fbbf24; }
+        .code-block .comment { color: #64748b; font-style: italic; }
+        .info-box {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        .info-box.info { background: #dbeafe; border-left: 4px solid var(--primary-color); }
+        .info-box.warning { background: #fef3c7; border-left: 4px solid var(--warning-color); }
+        .info-box.danger { background: #fee2e2; border-left: 4px solid var(--error-color); }
+        .info-box.success { background: #dcfce7; border-left: 4px solid var(--success-color); }
+        .info-box.purple { background: #f3e8ff; border-left: 4px solid #7c3aed; }
+        .flow-diagram { text-align: center; margin: 20px 0; padding: 20px; background: white; border-radius: 10px; }
+        .toc {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .toc ul { list-style: none; display: flex; flex-wrap: wrap; gap: 15px; }
+        .toc a { color: var(--primary-color); text-decoration: none; }
+        .toc a:hover { text-decoration: underline; }
+        .lang-switcher {
+            display: flex;
+            gap: 10px;
+        }
+
+        .lang-switcher a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.85em;
+        }
+
+        .lang-switcher a:hover {
+            color: white;
+            background: rgba(255,255,255,0.1);
+        }
+
+        .lang-switcher a.active {
+            color: white;
+            background: rgba(255,255,255,0.2);
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="index.html" class="back">← กลับไปรายการ API</a>
+        <div class="lang-switcher">
+            <a href="../wo-update.html">繁體中文</a>
+            <a href="../en/wo-update.html">English</a>
+            <a href="../vi/wo-update.html">Tiếng Việt</a>
+            <a href="wo-update.html" class="active">ภาษาไทย</a>
+        </div>
+        <span class="brand">เอกสารข้อกำหนด eMES API</span>
+    </nav>
+
+    <div class="container">
+        <!-- API Header -->
+        <div class="api-header">
+            <h1>อัปเดตใบสั่งผลิต (ปรับจำนวน/วันที่)</h1>
+            <div class="api-code">wo.update</div>
+            <div class="badges">
+                <span class="badge badge-put">PUT</span>
+                <span class="badge badge-json">JSON</span>
+                <span class="badge badge-sync">ซิงโครนัส</span>
+                <span class="badge badge-erp">ERP → MES</span>
+            </div>
+        </div>
+
+        <!-- TOC -->
+        <div class="toc">
+            <ul>
+                <li><a href="#basic">ข้อมูลพื้นฐาน</a></li>
+                <li><a href="#flow">กระบวนการทางธุรกิจ</a></li>
+                <li><a href="#request">Request</a></li>
+                <li><a href="#response">Response</a></li>
+                <li><a href="#qty-logic">ลอจิกตรวจสอบจำนวน</a></li>
+                <li><a href="#errors">รหัสข้อผิดพลาด</a></li>
+                <li><a href="#example">ตัวอย่าง JSON</a></li>
+            </ul>
+        </div>
+
+        <!-- ข้อมูลพื้นฐาน -->
+        <div class="card" id="basic">
+            <h2>1. ข้อมูลพื้นฐาน</h2>
+            <table>
+                <tr><th width="25%">รายการ</th><th>คำอธิบาย</th></tr>
+                <tr><td>ชื่อ API ภาษาไทย</td><td>อัปเดตใบสั่งผลิต (ปรับจำนวน/วันที่ใบสั่งผลิต)</td></tr>
+                <tr><td>ชื่อ API ภาษาอังกฤษ</td><td>Work Order Update</td></tr>
+                <tr><td>รหัส API</td><td><code>wo.update</code></td></tr>
+                <tr><td>หมายเลขเคส</td><td>0189142</td></tr>
+                <tr><td>REST Endpoint</td><td><code>POST /ESB/API/upModetail</code></td></tr>
+                <tr><td>ทิศทางการเรียก</td><td><strong>ERP → MES</strong></td></tr>
+                <tr><td>เวลาที่เรียก</td><td>หลังจาก ERP แก้ไขจำนวนหรือวันที่ใบสั่งผลิต ซิงค์ไปยัง MES</td></tr>
+                <tr><td>สถานการณ์ทางธุรกิจหลัก</td><td>ERP ปรับจำนวนผลิตหรือวันที่ตามกำหนดการของใบสั่งผลิต อัปเดตใบสั่งผลิตและข้อมูลแบตช์ใน MES พร้อมกัน</td></tr>
+                <tr><td>รูปแบบ Request</td><td><strong>JSON</strong> (Content-Type: application/json)</td></tr>
+                <tr><td>ซิงโครนัส/อะซิงโครนัส</td><td>เรียกแบบซิงโครนัส</td></tr>
+                <tr><td>การควบคุมธุรกรรม</td><td>ต้องการ</td></tr>
+            </table>
+
+            <div class="info-box purple">
+                <strong>คำอธิบายทิศทางการเรียก</strong><br>
+                API นี้เป็นการส่งทางเดียว <strong>ERP → MES</strong><br>
+                OperationType = 2 หมายถึงการแก้ไข
+            </div>
+        </div>
+
+        <!-- กระบวนการทางธุรกิจ -->
+        <div class="card" id="flow">
+            <h2>2. กระบวนการทางธุรกิจ</h2>
+            <div class="flow-diagram">
+                <svg width="850" height="300" viewBox="0 0 850 300" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <marker id="arrow" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#d97706"/>
+                        </marker>
+                    </defs>
+                    <!-- พื้นที่ ERP -->
+                    <rect x="20" y="30" width="200" height="220" rx="10" fill="#f3e8ff" stroke="#7c3aed" stroke-width="2"/>
+                    <text x="120" y="55" text-anchor="middle" font-size="14" font-weight="bold" fill="#7c3aed">ระบบ ERP</text>
+
+                    <!-- พื้นที่ MES -->
+                    <rect x="280" y="30" width="550" height="220" rx="10" fill="#fef3c7" stroke="#d97706" stroke-width="2"/>
+                    <text x="555" y="55" text-anchor="middle" font-size="14" font-weight="bold" fill="#d97706">ระบบ MES</text>
+
+                    <!-- โหนด ERP -->
+                    <rect x="40" y="80" width="160" height="50" rx="6" fill="#7c3aed"/>
+                    <text x="120" y="100" text-anchor="middle" fill="white" font-size="11">1. แก้ไขใบสั่งผลิต</text>
+                    <text x="120" y="118" text-anchor="middle" fill="white" font-size="9">(wo.update)</text>
+
+                    <!-- โหนด MES -->
+                    <rect x="300" y="80" width="130" height="50" rx="6" fill="#d97706"/>
+                    <text x="365" y="100" text-anchor="middle" fill="white" font-size="10">2. ตรวจสอบจำนวน</text>
+                    <text x="365" y="118" text-anchor="middle" fill="white" font-size="9">(WoUpdate)</text>
+
+                    <rect x="450" y="80" width="130" height="50" rx="6" fill="#d97706"/>
+                    <text x="515" y="100" text-anchor="middle" fill="white" font-size="10">3. อัปเดตใบสั่งผลิต</text>
+                    <text x="515" y="118" text-anchor="middle" fill="white" font-size="9">(MODETAIL)</text>
+
+                    <rect x="600" y="80" width="110" height="50" rx="6" fill="#d97706"/>
+                    <text x="655" y="100" text-anchor="middle" fill="white" font-size="10">4. ปรับแบตช์</text>
+                    <text x="655" y="118" text-anchor="middle" fill="white" font-size="9">(LOT)</text>
+
+                    <rect x="730" y="80" width="80" height="50" rx="6" fill="#10b981"/>
+                    <text x="770" y="105" text-anchor="middle" fill="white" font-size="10">เสร็จสิ้น</text>
+
+                    <!-- เส้นเชื่อมต่อ -->
+                    <line x1="200" y1="105" x2="295" y2="105" stroke="#d97706" stroke-width="2" stroke-dasharray="5,5" marker-end="url(#arrow)"/>
+                    <line x1="430" y1="105" x2="445" y2="105" stroke="#d97706" stroke-width="2" marker-end="url(#arrow)"/>
+                    <line x1="580" y1="105" x2="595" y2="105" stroke="#d97706" stroke-width="2" marker-end="url(#arrow)"/>
+                    <line x1="710" y1="105" x2="725" y2="105" stroke="#d97706" stroke-width="2" marker-end="url(#arrow)"/>
+
+                    <!-- คำอธิบายการตรวจสอบจำนวน -->
+                    <rect x="300" y="155" width="280" height="80" rx="6" fill="#fee2e2" stroke="#dc2626"/>
+                    <text x="440" y="175" text-anchor="middle" fill="#dc2626" font-size="10" font-weight="bold">ลอจิกตรวจสอบจำนวน</text>
+                    <text x="440" y="195" text-anchor="middle" fill="#dc2626" font-size="9">newQTY vs (MOQTY - MODIQTY)</text>
+                    <text x="440" y="210" text-anchor="middle" fill="#dc2626" font-size="9">เพิ่ม: เพิ่ม LOTSIZE โดยตรง</text>
+                    <text x="440" y="225" text-anchor="middle" fill="#dc2626" font-size="9">หัก: ตรวจสอบวงเงินที่เปลี่ยนแปลงได้</text>
+
+                    <!-- หมายเหตุ -->
+                    <text x="425" y="280" text-anchor="middle" font-size="11" fill="#64748b">ตำแหน่งโปรแกรม: WoUpdate.java → RegularESB.upModetail():1243-1472</text>
+                </svg>
+            </div>
+
+            <div class="info-box info">
+                <strong>ตำแหน่งโค้ด</strong>
+                <ul style="margin-top:10px; margin-left:20px;">
+                    <li>จุดเข้า API: <code>WoUpdate.java:59-100</code></li>
+                    <li>ตรวจสอบจำนวน: <code>RegularESB.java:1234-1319</code></li>
+                    <li>อัปเดต LOT: <code>RegularESB.java:1243-1472</code></li>
+                    <li>คำนวณกระบวนการใหม่: <code>SFT_OP_REALRUN.sqlUpdate_RecalculateAll()</code></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- ข้อกำหนด Request -->
+        <div class="card" id="request">
+            <h2>3. ข้อกำหนด Request</h2>
+
+            <div class="info-box success">
+                <strong>รูปแบบการส่ง: JSON</strong><br>
+                <code>Content-Type: application/json</code>
+            </div>
+
+            <h3>3.1 โครงสร้างชั้นนอก</h3>
+            <table>
+                <tr><th>ฟิลด์</th><th>ประเภท</th><th>จำเป็น</th><th>คำอธิบาย</th></tr>
+                <tr><td>CompanyID</td><td>string</td><td><span class="required">Y</span></td><td>รหัสบริษัท</td></tr>
+                <tr><td>OperationType</td><td>int</td><td><span class="required">Y</span></td><td>ประเภทการดำเนินการ (<strong>2=แก้ไข</strong>)</td></tr>
+                <tr><td>content</td><td>array</td><td><span class="required">Y</span></td><td>อาร์เรย์ข้อมูลใบสั่งผลิต</td></tr>
+            </table>
+
+            <h3>3.2 เนื้อหาอาร์เรย์ content</h3>
+            <table>
+                <tr><th>ฟิลด์</th><th>ประเภท</th><th>จำเป็น</th><th>คำอธิบาย</th><th>ฟิลด์ที่เปลี่ยนแปลง</th></tr>
+                <tr><td>wo_no</td><td>string</td><td><span class="required">Y</span></td><td>หมายเลขใบสั่งผลิต (ประเภท-เลขที่)</td><td>ฟิลด์เงื่อนไข</td></tr>
+                <tr><td>item_no</td><td>string</td><td><span class="required">Y</span></td><td>รหัสสินค้า</td><td>ITEMID</td></tr>
+                <tr><td>unit_no</td><td>string</td><td><span class="required">Y</span></td><td>รหัสหน่วย</td><td>UNIT</td></tr>
+                <tr><td>plan_date_s</td><td>string</td><td><span class="required">Y</span></td><td>วันเริ่มต้นตามแผน</td><td>PLANPROCESSST</td></tr>
+                <tr><td>plan_date_e</td><td>string</td><td><span class="required">Y</span></td><td>วันเสร็จสิ้นตามแผน</td><td>DUEDATETIME</td></tr>
+                <tr><td>wo_qty</td><td>decimal</td><td><span class="required">Y</span></td><td>จำนวนผลิตใหม่ตามแผน</td><td>QTY / PLANRELEASEQTY / LOT.LOTSIZE</td></tr>
+                <tr><td>so_no</td><td>string</td><td><span class="optional">N</span></td><td>หมายเลขใบสั่งซื้อ</td><td>DOID</td></tr>
+                <tr><td>so_seq</td><td>string</td><td><span class="optional">N</span></td><td>ลำดับใบสั่งซื้อ</td><td>SEQUENCE</td></tr>
+                <tr><td>factory_no</td><td>string</td><td><span class="required">Y</span></td><td>รหัสโรงงาน</td><td>FACTORYID</td></tr>
+                <tr><td>warehouse_no</td><td>string</td><td><span class="optional">N</span></td><td>รหัสคลังสินค้า</td><td>WAREHOUSEID</td></tr>
+                <tr><td>remark</td><td>string</td><td><span class="optional">N</span></td><td>หมายเหตุ</td><td>DESCRIPTION</td></tr>
+                <tr><td>priority</td><td>string</td><td><span class="optional">N</span></td><td>ลำดับความสำคัญ</td><td>MO032</td></tr>
+            </table>
+        </div>
+
+        <!-- Response -->
+        <div class="card" id="response">
+            <h2>4. ข้อกำหนด Response</h2>
+            <table>
+                <tr><th>ฟิลด์</th><th>ประเภท</th><th>คำอธิบาย</th></tr>
+                <tr><td>code</td><td>string</td><td>200=สำเร็จ, 500=ล้มเหลว</td></tr>
+                <tr><td>msg</td><td>string</td><td>ข้อความผลการประมวลผล</td></tr>
+                <tr><td>query</td><td>array</td><td>ผลการค้นหา</td></tr>
+            </table>
+
+            <h3>พฤติกรรมเมื่อสำเร็จ</h3>
+            <ul style="margin-left: 20px; margin-top: 10px;">
+                <li>UPDATE MODETAIL (ตารางหลักใบสั่งผลิต: QTY, DOID, วันที่ ฯลฯ)</li>
+                <li>UPDATE/INSERT/DELETE LOT (ปรับจำนวนแบตช์)</li>
+                <li>SFT_OP_REALRUN.sqlUpdate_RecalculateAll() (คำนวณกระบวนการใหม่)</li>
+            </ul>
+        </div>
+
+        <!-- ลอจิกตรวจสอบจำนวน -->
+        <div class="card" id="qty-logic">
+            <h2>5. ลอจิกตรวจสอบจำนวน</h2>
+
+            <div class="info-box warning">
+                <strong>คำจำกัดความตัวแปรหลัก</strong><br>
+                <ul style="margin-top:10px; margin-left:20px;">
+                    <li><strong>MOQTY</strong>: MODETAIL.PLANRELEASEQTY (จำนวนปล่อยตามแผนเดิม)</li>
+                    <li><strong>MOREQTY</strong>: MODETAIL.RELEASEDQTY (จำนวนที่ปล่อยแล้ว)</li>
+                    <li><strong>LOTQTY</strong>: LOT.LOTSIZE (จำนวนรอปล่อย)</li>
+                    <li><strong>newQTY</strong>: จำนวนผลิตใหม่ที่ ERP ส่งมา</li>
+                    <li><strong>MODIQTY</strong>: ยอดรวม SFT_MO_MODI (จำนวนปล่อยเพิ่มเติม)</li>
+                    <li><strong>BATQTY</strong>: ยอดรวม SFT_BATCH_REC (จำนวนแยกแบตช์)</li>
+                </ul>
+            </div>
+
+            <h3>5.1 กรณีเพิ่มจำนวน</h3>
+            <p><code>newQTY > (MOQTY - MODIQTY)</code></p>
+            <div class="code-block">
+<pre><span class="comment">// เพิ่มจำนวน - เพิ่มโดยตรง</span>
+จำนวนเพิ่ม = newQTY - (MOQTY - MODIQTY)
+
+<span class="key">IF</span> LOT มีอยู่ <span class="key">THEN</span>
+    <span class="key">UPDATE</span> LOT <span class="key">SET</span> LOTSIZE += จำนวนเพิ่ม
+<span class="key">ELSE</span>
+    <span class="key">INSERT</span> LOT (สร้างบันทึกแบตช์ใหม่)
+<span class="key">END IF</span>
+
+<span class="key">UPDATE</span> MODETAIL <span class="key">SET</span> PLANRELEASEQTY += จำนวนเพิ่ม</pre>
+            </div>
+
+            <h3>5.2 กรณีหักจำนวน</h3>
+            <p><code>newQTY < (MOQTY - MODIQTY)</code></p>
+            <div class="code-block">
+<pre><span class="comment">// หักจำนวน - ต้องตรวจสอบวงเงินที่เปลี่ยนแปลงได้</span>
+วงเงินเปลี่ยนแปลงสูงสุด = MOQTY - MOREQTY - BATQTY
+จำนวนเปลี่ยนแปลงครั้งนี้ = MOQTY - newQTY - MODIQTY
+
+<span class="key">IF</span> วงเงินเปลี่ยนแปลงสูงสุด >= จำนวนเปลี่ยนแปลงครั้งนี้ <span class="key">THEN</span>
+    <span class="comment">// สามารถหักได้</span>
+    <span class="key">IF</span> LOTQTY - จำนวนเปลี่ยนแปลงครั้งนี้ > 0 <span class="key">THEN</span>
+        <span class="key">UPDATE</span> LOT <span class="key">SET</span> LOTSIZE -= จำนวนเปลี่ยนแปลงครั้งนี้
+    <span class="key">ELSE</span>
+        <span class="key">DELETE FROM</span> LOT  <span class="comment">// จำนวนเป็นศูนย์หรือติดลบหลังหัก</span>
+    <span class="key">END IF</span>
+    <span class="key">UPDATE</span> MODETAIL <span class="key">SET</span> PLANRELEASEQTY -= จำนวนเปลี่ยนแปลงครั้งนี้
+<span class="key">ELSE</span>
+    <span class="comment">// ไม่สามารถหักได้ - ปล่อยแล้วหรือแยกแบตช์เกินวงเงินที่เปลี่ยนแปลงได้</span>
+    <span class="key">Throw</span> Exception(<span class="string">"JS_0126_00060"</span>)
+<span class="key">END IF</span></pre>
+            </div>
+
+            <div class="info-box danger">
+                <strong>ข้อจำกัดสำคัญ</strong><br>
+                ถ้าจำนวนที่ปล่อยแล้ว + จำนวนแยกแบตช์ฝั่ง MES > จำนวนผลิตใหม่ จะไม่สามารถหักได้ จะโยนข้อผิดพลาด <code>JS_0126_00060</code>
+            </div>
+
+            <h3>5.3 แผนภูมิกระบวนการ</h3>
+            <div class="flow-diagram">
+                <svg width="650" height="280" viewBox="0 0 650 280" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <marker id="arrow2" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#d97706"/>
+                        </marker>
+                    </defs>
+                    <!-- รูปสี่เหลี่ยมข้าวหลามตัดตัดสิน -->
+                    <polygon points="325,30 425,70 325,110 225,70" fill="#d97706" stroke="#b45309" stroke-width="2"/>
+                    <text x="325" y="65" text-anchor="middle" fill="white" font-size="10">newQTY vs</text>
+                    <text x="325" y="80" text-anchor="middle" fill="white" font-size="10">(MOQTY-MODIQTY)</text>
+
+                    <!-- สาขาเพิ่ม -->
+                    <rect x="480" y="45" width="150" height="50" rx="6" fill="#10b981"/>
+                    <text x="555" y="70" text-anchor="middle" fill="white" font-size="11">เพิ่มจำนวน</text>
+                    <text x="555" y="85" text-anchor="middle" fill="white" font-size="9">เพิ่ม LOTSIZE โดยตรง</text>
+                    <line x1="425" y1="70" x2="475" y2="70" stroke="#d97706" stroke-width="2" marker-end="url(#arrow2)"/>
+                    <text x="445" y="60" font-size="10" fill="#d97706">&gt;</text>
+
+                    <!-- สาขาหัก -->
+                    <polygon points="325,150 400,185 325,220 250,185" fill="#f97316" stroke="#ea580c" stroke-width="2"/>
+                    <text x="325" y="180" text-anchor="middle" fill="white" font-size="10">วงเงินเปลี่ยนแปลง</text>
+                    <text x="325" y="195" text-anchor="middle" fill="white" font-size="10">เพียงพอ?</text>
+                    <line x1="325" y1="110" x2="325" y2="145" stroke="#d97706" stroke-width="2" marker-end="url(#arrow2)"/>
+                    <text x="340" y="130" font-size="10" fill="#d97706">&lt;</text>
+
+                    <!-- หักได้ -->
+                    <rect x="450" y="160" width="150" height="50" rx="6" fill="#10b981"/>
+                    <text x="525" y="185" text-anchor="middle" fill="white" font-size="11">หักจำนวน</text>
+                    <text x="525" y="200" text-anchor="middle" fill="white" font-size="9">ลด LOTSIZE</text>
+                    <line x1="400" y1="185" x2="445" y2="185" stroke="#f97316" stroke-width="2" marker-end="url(#arrow2)"/>
+                    <text x="420" y="175" font-size="10" fill="#f97316">ใช่</text>
+
+                    <!-- หักไม่ได้ -->
+                    <rect x="50" y="160" width="150" height="50" rx="6" fill="#dc2626"/>
+                    <text x="125" y="185" text-anchor="middle" fill="white" font-size="11">โยนข้อผิดพลาด</text>
+                    <text x="125" y="200" text-anchor="middle" fill="white" font-size="9">JS_0126_00060</text>
+                    <line x1="250" y1="185" x2="205" y2="185" stroke="#f97316" stroke-width="2" marker-end="url(#arrow2)"/>
+                    <text x="230" y="175" font-size="10" fill="#f97316">ไม่</text>
+
+                    <!-- หมายเหตุ -->
+                    <text x="325" y="265" text-anchor="middle" font-size="10" fill="#64748b">ตำแหน่งโปรแกรม: RegularESB.java:1234-1319</text>
+                </svg>
+            </div>
+        </div>
+
+        <!-- รหัสข้อผิดพลาด -->
+        <div class="card" id="errors">
+            <h2>6. รหัสข้อผิดพลาด</h2>
+            <table>
+                <tr><th>รหัส</th><th>ข้อความ</th><th>คำอธิบาย</th></tr>
+                <tr><td>JS_0126_00060</td><td>จำนวนที่เปลี่ยนแปลงน้อยกว่าจำนวนรอปล่อย ไม่อนุญาตให้แก้ไข</td><td>จำนวนที่หักเกินวงเงินที่เปลี่ยนแปลงได้</td></tr>
+                <tr><td>JS_0096_00058</td><td>รหัสสินค้านี้ไม่มีอยู่</td><td>ไม่พบรหัสสินค้าในตาราง ITEM</td></tr>
+                <tr><td>JS_0016_00134</td><td>หน่วยไม่มีอยู่ กรุณาตรวจสอบ</td><td>ไม่พบหน่วยนี้ใน UnitBasis</td></tr>
+                <tr><td>JS_0016_00115</td><td>รหัสโรงงานไม่มีอยู่</td><td>ไม่พบโรงงานนี้ใน FACTORY</td></tr>
+                <tr><td>JS_0135_00036</td><td>รหัสคลังสินค้านี้ไม่มีอยู่</td><td>ไม่พบคลังสินค้านี้ใน WAREHOUSE</td></tr>
+                <tr><td>remind_002</td><td>ไม่มีข้อมูล</td><td>ไม่มีหมายเลขใบสั่งผลิต</td></tr>
+            </table>
+        </div>
+
+        <!-- ตัวอย่าง JSON -->
+        <div class="card" id="example">
+            <h2>7. ตัวอย่าง JSON</h2>
+
+            <h3>Request (เพิ่มจำนวน)</h3>
+            <div class="code-block">
+<pre>{
+  <span class="key">"CompanyID"</span>: <span class="string">"COMP01"</span>,
+  <span class="key">"OperationType"</span>: <span class="number">2</span>,  <span class="comment">// 2=แก้ไข</span>
+  <span class="key">"content"</span>: [{
+    <span class="key">"wo_no"</span>: <span class="string">"5101-20260319001"</span>,
+    <span class="key">"item_no"</span>: <span class="string">"FG-A001-001"</span>,
+    <span class="key">"unit_no"</span>: <span class="string">"PCS"</span>,
+    <span class="key">"plan_date_s"</span>: <span class="string">"2026-03-19 08:00:00"</span>,
+    <span class="key">"plan_date_e"</span>: <span class="string">"2026-03-21 17:00:00"</span>,
+    <span class="key">"wo_qty"</span>: <span class="number">1500</span>,  <span class="comment">// เดิม 1000 เพิ่ม 500</span>
+    <span class="key">"factory_no"</span>: <span class="string">"P001"</span>,
+    <span class="key">"remark"</span>: <span class="string">"เพิ่มคำสั่งซื้อ"</span>
+  }]
+}</pre>
+            </div>
+
+            <h3>Request (หักจำนวน)</h3>
+            <div class="code-block">
+<pre>{
+  <span class="key">"CompanyID"</span>: <span class="string">"COMP01"</span>,
+  <span class="key">"OperationType"</span>: <span class="number">2</span>,
+  <span class="key">"content"</span>: [{
+    <span class="key">"wo_no"</span>: <span class="string">"5101-20260319001"</span>,
+    <span class="key">"item_no"</span>: <span class="string">"FG-A001-001"</span>,
+    <span class="key">"unit_no"</span>: <span class="string">"PCS"</span>,
+    <span class="key">"plan_date_s"</span>: <span class="string">"2026-03-19 08:00:00"</span>,
+    <span class="key">"plan_date_e"</span>: <span class="string">"2026-03-20 17:00:00"</span>,
+    <span class="key">"wo_qty"</span>: <span class="number">800</span>,  <span class="comment">// เดิม 1000 หัก 200</span>
+    <span class="key">"factory_no"</span>: <span class="string">"P001"</span>,
+    <span class="key">"remark"</span>: <span class="string">"ลูกค้าลดคำสั่งซื้อ"</span>
+  }]
+}</pre>
+            </div>
+
+            <h3>Response (สำเร็จ)</h3>
+            <div class="code-block">
+<pre>{
+  <span class="key">"code"</span>: <span class="string">"200"</span>,
+  <span class="key">"msg"</span>: <span class="string">"success"</span>,
+  <span class="key">"query"</span>: []
+}</pre>
+            </div>
+
+            <h3>Response (ล้มเหลว - ไม่สามารถหัก)</h3>
+            <div class="code-block">
+<pre>{
+  <span class="key">"code"</span>: <span class="string">"500"</span>,
+  <span class="key">"msg"</span>: <span class="string">"JS_0126_00060"</span>,  <span class="comment">// จำนวนที่ปล่อยแล้วเกินจำนวนใหม่</span>
+  <span class="key">"query"</span>: []
+}</pre>
+            </div>
+        </div>
+
+        <!-- SQL อัปเดตฐานข้อมูล -->
+        <div class="card" id="sql">
+            <h2>8. SQL อัปเดตฐานข้อมูล</h2>
+
+            <h3>8.1 UPDATE MODETAIL (อัปเดตตารางหลักใบสั่งผลิต)</h3>
+            <div class="code-block">
+<pre><span class="key">UPDATE</span> MODETAIL <span class="key">SET</span>
+    PLANPROCESSST = :PLANPROCESSST,      <span class="comment">-- วันเริ่มต้นตามแผน</span>
+    DUEDATETIME = :DUEDATETIME,          <span class="comment">-- วันเสร็จสิ้นตามแผน</span>
+    DOID = :DOID,                        <span class="comment">-- หมายเลขใบสั่งซื้อ</span>
+    SEQUENCE = :SEQUENCE,                <span class="comment">-- ลำดับใบสั่งซื้อ</span>
+    FACTORYID = :FACTORYID,              <span class="comment">-- รหัสโรงงาน</span>
+    WAREHOUSEID = :WAREHOUSEID,          <span class="comment">-- รหัสคลังสินค้า</span>
+    DESCRIPTION = :DESCRIPTION,          <span class="comment">-- หมายเหตุ</span>
+    MO032 = :MO032,                      <span class="comment">-- ลำดับความสำคัญ</span>
+    LASTMAINTAINUSER = :userid,
+    LASTMAINTAINDATETIME = N'{เวลาปัจจุบัน}',
+    FLAG = (<span class="key">SELECT MAX</span>(FLAG)+1 <span class="key">FROM</span> MODETAIL <span class="key">WHERE</span> CMOID = :CMOID)
+<span class="key">WHERE</span> CMOID = :CMOID</pre>
+            </div>
+
+            <h3>8.2 เมื่อเพิ่มจำนวน (UPDATE LOT)</h3>
+            <div class="code-block">
+<pre><span class="comment">-- จำนวนเพิ่ม = newQTY - (MOQTY - MODIQTY)</span>
+<span class="key">UPDATE</span> LOT <span class="key">SET</span>
+    LOTSIZE = LOTSIZE + {จำนวนเพิ่ม}
+<span class="key">WHERE</span> MOID = :CMOID
+
+<span class="comment">-- อัปเดตจำนวนปล่อยตามแผน MODETAIL พร้อมกัน</span>
+<span class="key">UPDATE</span> MODETAIL <span class="key">SET</span>
+    PLANRELEASEQTY = PLANRELEASEQTY + {จำนวนเพิ่ม},
+    QTY = :newQTY
+<span class="key">WHERE</span> CMOID = :CMOID</pre>
+            </div>
+
+            <h3>8.3 เมื่อหักจำนวน (UPDATE/DELETE LOT)</h3>
+            <div class="code-block">
+<pre><span class="comment">-- จำนวนหัก = MOQTY - newQTY - MODIQTY</span>
+<span class="comment">-- ตรวจสอบวงเงินที่เปลี่ยนแปลงได้ก่อน</span>
+วงเงินเปลี่ยนแปลงสูงสุด = MOQTY - MOREQTY - BATQTY
+
+<span class="key">IF</span> LOTQTY - จำนวนหัก > 0 <span class="key">THEN</span>
+    <span class="comment">-- ยังมียอดคงเหลือหลังหัก</span>
+    <span class="key">UPDATE</span> LOT <span class="key">SET</span>
+        LOTSIZE = LOTSIZE - {จำนวนหัก}
+    <span class="key">WHERE</span> MOID = :CMOID
+<span class="key">ELSE</span>
+    <span class="comment">-- จำนวนเป็นศูนย์หรือติดลบหลังหัก ลบแบตช์</span>
+    <span class="key">DELETE FROM</span> LOT <span class="key">WHERE</span> MOID = :CMOID
+<span class="key">END IF</span>
+
+<span class="comment">-- อัปเดตจำนวนปล่อยตามแผน MODETAIL พร้อมกัน</span>
+<span class="key">UPDATE</span> MODETAIL <span class="key">SET</span>
+    PLANRELEASEQTY = PLANRELEASEQTY - {จำนวนหัก},
+    QTY = :newQTY
+<span class="key">WHERE</span> CMOID = :CMOID</pre>
+            </div>
+
+            <h3>8.4 คำนวณกระบวนการใหม่</h3>
+            <div class="code-block">
+<pre><span class="comment">-- คำนวณกระบวนการทั้งหมดใหม่หลังอัปเดตเสร็จ</span>
+SFT_OP_REALRUN.sqlUpdate_RecalculateAll("updateMODETAIL")</pre>
+            </div>
+
+            <div class="info-box warning">
+                <strong>ตารางข้อมูลที่เกี่ยวข้องกับการตรวจสอบจำนวน</strong>
+                <ul style="margin-top:10px; margin-left:20px;">
+                    <li><strong>MODETAIL.PLANRELEASEQTY</strong>: จำนวนปล่อยตามแผน (MOQTY)</li>
+                    <li><strong>MODETAIL.RELEASEDQTY</strong>: จำนวนที่ปล่อยแล้ว (MOREQTY)</li>
+                    <li><strong>LOT.LOTSIZE</strong>: จำนวนรอปล่อย (LOTQTY)</li>
+                    <li><strong>SFT_MO_MODI</strong>: จำนวนปล่อยเพิ่มเติม (MODIQTY)</li>
+                    <li><strong>SFT_BATCH_REC</strong>: จำนวนแยกแบตช์ (BATQTY)</li>
+                </ul>
+            </div>
+
+            <div class="info-box info">
+                <strong>ตำแหน่งโปรแกรม</strong><br>
+                ตรวจสอบจำนวน: <code>RegularESB.java:1234-1319</code><br>
+                อัปเดต LOT: <code>RegularESB.java:1243-1472</code>
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>
