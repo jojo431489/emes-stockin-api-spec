@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>eMES API 規格書</title>
+    <title>eMES API Specification</title>
     <style>
         :root {
             --primary-color: #2563eb;
@@ -283,13 +283,13 @@
     <div class="container">
         <!-- Header -->
         <div class="header">
-            <h1>eMES API 規格書</h1>
-            <p>MES - ERP 整合介面技術文件（CROSS API）</p>
+            <h1>eMES API Specification</h1>
+            <p>MES - ERP Integration Technical Document (CROSS API)</p>
             <div class="lang-switcher">
-                <a href="index.html" class="lang-btn active">繁體中文</a>
-                <a href="en/index.html" class="lang-btn">English</a>
-                <a href="vi/index.html" class="lang-btn">Tiếng Việt</a>
-                <a href="th/index.html" class="lang-btn">ภาษาไทย</a>
+                <a href="../index.html" class="lang-btn">繁體中文</a>
+                <a href="index.html" class="lang-btn active">English</a>
+                <a href="../vi/index.html" class="lang-btn">Tiếng Việt</a>
+                <a href="../th/index.html" class="lang-btn">ภาษาไทย</a>
             </div>
         </div>
 
@@ -298,40 +298,40 @@
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
-            <input type="text" id="searchInput" placeholder="搜尋 API..." onkeyup="filterAPIs()">
+            <input type="text" id="searchInput" placeholder="Search API..." onkeyup="filterAPIs()">
         </div>
 
-        <!-- 委外進貨單 Category -->
+        <!-- Outsourcing Purchase Stock-In Category -->
         <div class="category">
             <div class="category-header">
                 <div class="category-icon" style="background: linear-gradient(135deg, #f59e0b, #dc2626);">
                     📦
                 </div>
                 <div class="category-title">
-                    <h2>委外進貨單</h2>
-                    <p>Outsourcing Purchase Stock-In</p>
+                    <h2>Outsourcing Purchase Stock-In</h2>
+                    <p>Outsourcing Receipt Management</p>
                 </div>
             </div>
             <div class="api-grid">
-                <a href="outsourcing-purchase-stockin-create.html" class="api-card">
+                <a href="../outsourcing-purchase-stockin-create.html" class="api-card">
                     <div class="api-card-header">
-                        <h3>建立委外收貨單</h3>
+                        <h3>Create Outsourcing Receipt</h3>
                         <span class="method method-post">POST</span>
                     </div>
                     <div class="code">outsourcing.purchase.stockin.create</div>
-                    <p>委外站出站後，將委外進貨資料拋送至 ERP</p>
+                    <p>After outsourcing station checkout, send receipt data to ERP</p>
                     <div class="tags">
                         <span class="tag">TRANSTYPE=59</span>
                         <span class="tag">api-2062</span>
                     </div>
                 </a>
-                <a href="outsourcing-process.html" class="api-card">
+                <a href="../outsourcing-process.html" class="api-card">
                     <div class="api-card-header">
-                        <h3>取消委外進貨單</h3>
+                        <h3>Cancel Outsourcing Receipt</h3>
                         <span class="method method-delete">CANCEL</span>
                     </div>
                     <div class="code">outsourcing.process</div>
-                    <p>取消已產生的 ERP 委外進貨單，還原庫存</p>
+                    <p>Cancel generated ERP outsourcing receipt, restore inventory</p>
                     <div class="tags">
                         <span class="tag">TRANSORDERTYPE=59</span>
                         <span class="tag">api-2058</span>
@@ -340,37 +340,37 @@
             </div>
         </div>
 
-        <!-- 工單完工入庫 Category -->
+        <!-- Work Order Stock-In Category -->
         <div class="category">
             <div class="category-header">
                 <div class="category-icon" style="background: linear-gradient(135deg, #10b981, #059669);">
                     ✅
                 </div>
                 <div class="category-title">
-                    <h2>工單完工入庫</h2>
-                    <p>Work Order Stock-In</p>
+                    <h2>Work Order Stock-In</h2>
+                    <p>Production Completion Stock-In</p>
                 </div>
             </div>
             <div class="api-grid">
-                <a href="stockin-data-create.html" class="api-card">
+                <a href="../stockin-data-create.html" class="api-card">
                     <div class="api-card-header">
-                        <h3>建立入庫單</h3>
+                        <h3>Create Stock-In</h3>
                         <span class="method method-post">POST</span>
                     </div>
                     <div class="code">stockin.data.create</div>
-                    <p>工單完工後，將入庫資料拋送至 ERP</p>
+                    <p>After work order completion, send stock-in data to ERP</p>
                     <div class="tags">
                         <span class="tag">sendTransForm</span>
                         <span class="tag">TB001/TB002</span>
                     </div>
                 </a>
-                <a href="stockin-data-process.html" class="api-card">
+                <a href="../stockin-data-process.html" class="api-card">
                     <div class="api-card-header">
-                        <h3>取消入庫單</h3>
+                        <h3>Cancel Stock-In</h3>
                         <span class="method method-delete">CANCEL</span>
                     </div>
                     <div class="code">stockin.data.process</div>
-                    <p>取消已產生的 ERP 入庫單，還原庫存</p>
+                    <p>Cancel generated ERP stock-in order, restore inventory</p>
                     <div class="tags">
                         <span class="tag">cancelStockIn</span>
                         <span class="tag">TL011/TL012</span>
@@ -379,88 +379,88 @@
             </div>
         </div>
 
-        <!-- 工單流程 Category (ERP → MES) -->
+        <!-- Work Order Management Category (ERP → MES) -->
         <div class="category">
             <div class="category-header">
                 <div class="category-icon" style="background: linear-gradient(135deg, #7c3aed, #5b21b6);">
                     📋
                 </div>
                 <div class="category-title">
-                    <h2>工單流程 (ERP → MES)</h2>
-                    <p>Work Order Management - 0189142</p>
+                    <h2>Work Order Management (ERP → MES)</h2>
+                    <p>Work Order Lifecycle - 0189142</p>
                 </div>
             </div>
             <div class="api-grid">
-                <a href="wo-create.html" class="api-card">
+                <a href="../wo-create.html" class="api-card">
                     <div class="api-card-header">
-                        <h3>工單新增</h3>
+                        <h3>Create Work Order</h3>
                         <span class="method method-post">POST</span>
                     </div>
                     <div class="code">wo.create</div>
-                    <p>ERP 開立工單後，同步至 MES 建立製令</p>
+                    <p>After ERP creates work order, sync to MES production order</p>
                     <div class="tags">
                         <span class="tag">ERP→MES</span>
                         <span class="tag">MODETAIL</span>
                     </div>
                 </a>
-                <a href="wo-update.html" class="api-card">
+                <a href="../wo-update.html" class="api-card">
                     <div class="api-card-header">
-                        <h3>工單更新</h3>
+                        <h3>Update Work Order</h3>
                         <span class="method method-post">PUT</span>
                     </div>
                     <div class="code">wo.update</div>
-                    <p>ERP 修改工單數量或日期，同步至 MES</p>
+                    <p>When ERP modifies WO quantity or date, sync to MES</p>
                     <div class="tags">
                         <span class="tag">ERP→MES</span>
-                        <span class="tag">數量檢核</span>
+                        <span class="tag">Qty Validation</span>
                     </div>
                 </a>
-                <a href="wo-status-process.html" class="api-card">
+                <a href="../wo-status-process.html" class="api-card">
                     <div class="api-card-header">
-                        <h3>工單狀態變更</h3>
+                        <h3>Change WO Status</h3>
                         <span class="method method-delete">STATUS</span>
                     </div>
                     <div class="code">wo.status.process</div>
-                    <p>ERP 刪除/結案/取消結案工單</p>
+                    <p>ERP delete/close/reopen work order</p>
                     <div class="tags">
                         <span class="tag">ERP→MES</span>
-                        <span class="tag">刪除/結案</span>
+                        <span class="tag">Delete/Close</span>
                     </div>
                 </a>
             </div>
         </div>
 
-        <!-- 不良品入庫 Category -->
+        <!-- Scrap Stock-In Category -->
         <div class="category">
             <div class="category-header">
                 <div class="category-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
                     ⚠️
                 </div>
                 <div class="category-title">
-                    <h2>不良品入庫</h2>
-                    <p>Scrap Stock-In - 0189144</p>
+                    <h2>Scrap Stock-In</h2>
+                    <p>Defective Product Stock-In - 0189144</p>
                 </div>
             </div>
             <div class="api-grid">
-                <a href="wo-scrap-data-create.html" class="api-card">
+                <a href="../wo-scrap-data-create.html" class="api-card">
                     <div class="api-card-header">
-                        <h3>不良品入庫建立</h3>
+                        <h3>Create Scrap Stock-In</h3>
                         <span class="method method-post">POST</span>
                     </div>
                     <div class="code">wo.scrap.data.create</div>
-                    <p>出站時若有不良品，建立報廢入庫單</p>
+                    <p>When defects occur at checkout, create scrap stock-in order</p>
                     <div class="tags">
                         <span class="tag">TRANSORDERTYPE=58</span>
                         <span class="tag">api-2191</span>
                     </div>
                 </a>
-                <a href="wo-scrap-data-process.html" class="api-card">
+                <a href="../wo-scrap-data-process.html" class="api-card">
                     <div class="api-card-header">
-                        <h3>不良品入庫取消</h3>
+                        <h3>Cancel Scrap Stock-In</h3>
                         <span class="method method-delete">CANCEL</span>
                     </div>
                     <div class="code">wo.scrap.data.process</div>
-                    <p>取消出站時，還原不良品入庫單</p>
+                    <p>When checkout is cancelled, reverse scrap stock-in order</p>
                     <div class="tags">
                         <span class="tag">TRANSORDERTYPE=58</span>
                         <span class="tag">api-2192</span>
@@ -469,37 +469,37 @@
             </div>
         </div>
 
-        <!-- 報工單 Category -->
+        <!-- Work Report Category -->
         <div class="category">
             <div class="category-header">
                 <div class="category-icon" style="background: linear-gradient(135deg, #10b981, #047857);">
                     📝
                 </div>
                 <div class="category-title">
-                    <h2>報工單</h2>
-                    <p>Work Report - 0190760</p>
+                    <h2>Work Report</h2>
+                    <p>Production Reporting - 0190760</p>
                 </div>
             </div>
             <div class="api-grid">
-                <a href="wo-work-report-data-create.html" class="api-card">
+                <a href="../wo-work-report-data-create.html" class="api-card">
                     <div class="api-card-header">
-                        <h3>拋送報工單</h3>
+                        <h3>Submit Work Report</h3>
                         <span class="method method-post">POST</span>
                     </div>
                     <div class="code">wo.work.report.data.create</div>
-                    <p>工單出站後，將報工資料拋送至 ERP</p>
+                    <p>After work order checkout, send work report data to ERP</p>
                     <div class="tags">
                         <span class="tag">MES→ERP</span>
                         <span class="tag">api-2195</span>
                     </div>
                 </a>
-                <a href="wo-work-report-data-process.html" class="api-card">
+                <a href="../wo-work-report-data-process.html" class="api-card">
                     <div class="api-card-header">
-                        <h3>取消報工單</h3>
+                        <h3>Cancel Work Report</h3>
                         <span class="method method-delete">CANCEL</span>
                     </div>
                     <div class="code">wo.work.report.data.process</div>
-                    <p>取消出站後，通知 ERP 還原報工單</p>
+                    <p>After checkout cancellation, notify ERP to reverse work report</p>
                     <div class="tags">
                         <span class="tag">MES→ERP</span>
                         <span class="tag">api-2196</span>
@@ -508,179 +508,179 @@
             </div>
         </div>
 
-        <!-- 基本資料同步 Category -->
+        <!-- Master Data Sync Category -->
         <div class="category">
             <div class="category-header">
                 <div class="category-icon" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8);">
                     📊
                 </div>
                 <div class="category-title">
-                    <h2>基本資料同步 (ERP → MES)</h2>
-                    <p>Master Data Sync - CROSS API</p>
+                    <h2>Master Data Sync (ERP → MES)</h2>
+                    <p>Master Data Synchronization - CROSS API</p>
                 </div>
             </div>
             <div class="api-grid">
-                <a href="item-get.html" class="api-card">
+                <a href="../item-get.html" class="api-card">
                     <div class="api-card-header">
-                        <h3>品號基本資料</h3>
+                        <h3>Item Master</h3>
                         <span class="method method-get">GET</span>
                     </div>
                     <div class="code">item.get</div>
-                    <p>同步品號/物料資料至 ITEM 或 material_catalog</p>
+                    <p>Sync item/material data to ITEM or material_catalog</p>
                     <div class="tags">
                         <span class="tag">ERP→MES</span>
                     </div>
                 </a>
-                <a href="customer-get.html" class="api-card">
+                <a href="../customer-get.html" class="api-card">
                     <div class="api-card-header">
-                        <h3>客戶基本資料</h3>
+                        <h3>Customer Master</h3>
                         <span class="method method-get">GET</span>
                     </div>
                     <div class="code">customer.get</div>
-                    <p>同步客戶資料至 CUSTOMER 表</p>
+                    <p>Sync customer data to CUSTOMER table</p>
                     <div class="tags">
                         <span class="tag">ERP→MES</span>
                     </div>
                 </a>
-                <a href="supplier-get.html" class="api-card">
+                <a href="../supplier-get.html" class="api-card">
                     <div class="api-card-header">
-                        <h3>供應商基本資料</h3>
+                        <h3>Supplier Master</h3>
                         <span class="method method-get">GET</span>
                     </div>
                     <div class="code">supplier.get</div>
-                    <p>同步供應商資料至 WORKSTATION 表</p>
+                    <p>Sync supplier data to WORKSTATION table</p>
                     <div class="tags">
                         <span class="tag">ERP→MES</span>
                     </div>
                 </a>
-                <a href="warehouse-get.html" class="api-card">
+                <a href="../warehouse-get.html" class="api-card">
                     <div class="api-card-header">
-                        <h3>倉庫基本資料</h3>
+                        <h3>Warehouse Master</h3>
                         <span class="method method-get">GET</span>
                     </div>
                     <div class="code">warehouse.get</div>
-                    <p>同步倉庫資料至 WAREHOUSE 表</p>
+                    <p>Sync warehouse data to WAREHOUSE table</p>
                     <div class="tags">
                         <span class="tag">ERP→MES</span>
                     </div>
                 </a>
-                <a href="workstation-get.html" class="api-card">
+                <a href="../workstation-get.html" class="api-card">
                     <div class="api-card-header">
-                        <h3>生產線基本資料</h3>
+                        <h3>Workstation Master</h3>
                         <span class="method method-get">GET</span>
                     </div>
                     <div class="code">workstation.get</div>
-                    <p>同步工作站資料至 WORKSTATION 表</p>
+                    <p>Sync workstation data to WORKSTATION table</p>
                     <div class="tags">
                         <span class="tag">ERP→MES</span>
                     </div>
                 </a>
-                <a href="machine-get.html" class="api-card">
+                <a href="../machine-get.html" class="api-card">
                     <div class="api-card-header">
-                        <h3>設備基本資料</h3>
+                        <h3>Machine Master</h3>
                         <span class="method method-get">GET</span>
                     </div>
                     <div class="code">machine.get</div>
-                    <p>同步設備/機台資料至 EQUIPMENT 表</p>
+                    <p>Sync equipment/machine data to EQUIPMENT table</p>
                     <div class="tags">
                         <span class="tag">ERP→MES</span>
                     </div>
                 </a>
-                <a href="op-get.html" class="api-card">
+                <a href="../op-get.html" class="api-card">
                     <div class="api-card-header">
-                        <h3>製程基本資料</h3>
+                        <h3>Operation Master</h3>
                         <span class="method method-get">GET</span>
                     </div>
                     <div class="code">op.get</div>
-                    <p>同步製程資料至 OPERATION 表</p>
+                    <p>Sync operation data to OPERATION table</p>
                     <div class="tags">
                         <span class="tag">ERP→MES</span>
                     </div>
                 </a>
-                <a href="user-get.html" class="api-card">
+                <a href="../user-get.html" class="api-card">
                     <div class="api-card-header">
-                        <h3>使用者基本資料</h3>
+                        <h3>User Master</h3>
                         <span class="method method-get">GET</span>
                     </div>
                     <div class="code">user.get</div>
-                    <p>同步員工資料至 ERP_CMSMV 表</p>
+                    <p>Sync employee data to ERP_CMSMV table</p>
                     <div class="tags">
                         <span class="tag">ERP→MES</span>
                     </div>
                 </a>
-                <a href="storage-spaces-get.html" class="api-card">
+                <a href="../storage-spaces-get.html" class="api-card">
                     <div class="api-card-header">
-                        <h3>儲位基本資料</h3>
+                        <h3>Storage Location Master</h3>
                         <span class="method method-get">GET</span>
                     </div>
                     <div class="code">storage.spaces.get</div>
-                    <p>同步儲位資料至 CMSNL 表</p>
+                    <p>Sync storage location data to CMSNL table</p>
                     <div class="tags">
                         <span class="tag">ERP→MES</span>
                     </div>
                 </a>
-                <a href="mold-fixture-get.html" class="api-card">
+                <a href="../mold-fixture-get.html" class="api-card">
                     <div class="api-card-header">
-                        <h3>模具基本資料</h3>
+                        <h3>Mold/Fixture Master</h3>
                         <span class="method method-get">GET</span>
                     </div>
                     <div class="code">mold.fixture.get</div>
-                    <p>同步模具資料至 MoldInfo 表</p>
+                    <p>Sync mold/fixture data to MoldInfo table</p>
                     <div class="tags">
                         <span class="tag">ERP→MES</span>
                     </div>
                 </a>
-                <a href="item-supplier-get.html" class="api-card">
+                <a href="../item-supplier-get.html" class="api-card">
                     <div class="api-card-header">
-                        <h3>料件供應商資料</h3>
+                        <h3>Item Supplier</h3>
                         <span class="method method-get">GET</span>
                     </div>
                     <div class="code">item.supplier.get</div>
-                    <p>同步料件供應商至 material_catalog 表</p>
+                    <p>Sync item supplier data to material_catalog table</p>
                     <div class="tags">
                         <span class="tag">ERP→MES</span>
                     </div>
                 </a>
-                <a href="product-process-get.html" class="api-card">
+                <a href="../product-process-get.html" class="api-card">
                     <div class="api-card-header">
-                        <h3>產品途程資料</h3>
+                        <h3>Product Routing</h3>
                         <span class="method method-get">GET</span>
                     </div>
                     <div class="code">product.process.get</div>
-                    <p>同步途程 BOM 至 SFT_BOMME/MF 表</p>
+                    <p>Sync routing BOM to SFT_BOMME/MF tables</p>
                     <div class="tags">
                         <span class="tag">ERP→MES</span>
                     </div>
                 </a>
-                <a href="conversion-unit-get.html" class="api-card">
+                <a href="../conversion-unit-get.html" class="api-card">
                     <div class="api-card-header">
-                        <h3>品號換算單位</h3>
+                        <h3>Unit Conversion</h3>
                         <span class="method method-get">GET</span>
                     </div>
                     <div class="code">conversion.unit.get</div>
-                    <p>同步換算單位至 ITEM_CONVERSION_UNIT</p>
+                    <p>Sync unit conversion to ITEM_CONVERSION_UNIT</p>
                     <div class="tags">
                         <span class="tag">ERP→MES</span>
                     </div>
                 </a>
-                <a href="issue-wo-item-process.html" class="api-card">
+                <a href="../issue-wo-item-process.html" class="api-card">
                     <div class="api-card-header">
-                        <h3>工單備料狀態</h3>
+                        <h3>WO Material Status</h3>
                         <span class="method method-post">POST</span>
                     </div>
                     <div class="code">issue.wo.item.process</div>
-                    <p>ERP 通知 MES 工單備料狀態變更</p>
+                    <p>ERP notifies MES of WO material preparation status change</p>
                     <div class="tags">
                         <span class="tag">ERP→MES</span>
                     </div>
                 </a>
-                <a href="document-type-get.html" class="api-card">
+                <a href="../document-type-get.html" class="api-card">
                     <div class="api-card-header">
-                        <h3>單據別資料</h3>
+                        <h3>Document Type</h3>
                         <span class="method method-get">GET</span>
                     </div>
                     <div class="code">document.type.get</div>
-                    <p>同步單據別定義至 ERP_ORDERTYPEDEF</p>
+                    <p>Sync document type definitions to ERP_ORDERTYPEDEF</p>
                     <div class="tags">
                         <span class="tag">ERP→MES</span>
                     </div>
@@ -692,18 +692,18 @@
         <div class="stats">
             <div class="stat-item">
                 <div class="number">26</div>
-                <div class="label">已完成 API</div>
+                <div class="label">Completed APIs</div>
             </div>
             <div class="stat-item">
                 <div class="number">JSON</div>
-                <div class="label">傳輸格式</div>
+                <div class="label">Format</div>
             </div>
         </div>
 
         <!-- Footer -->
         <div class="footer">
-            <p>eMES API 規格書 v1.5 | 更新日期: 2026-03-19</p>
-            <p style="margin-top:5px;">傳輸格式: JSON (Content-Type: application/json)</p>
+            <p>eMES API Specification v1.5 | Updated: 2026-03-19</p>
+            <p style="margin-top:5px;">Format: JSON (Content-Type: application/json)</p>
         </div>
     </div>
 
