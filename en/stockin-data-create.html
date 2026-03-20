@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>stockin.data.create - eMES API</title>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #1e40af;
+            --success-color: #16a34a;
+            --error-color: #dc2626;
+            --warning-color: #d97706;
+            --bg-color: #f8fafc;
+            --border-color: #e2e8f0;
+            --text-color: #1e293b;
+            --text-muted: #64748b;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+        }
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .navbar a { color: white; text-decoration: none; }
+        .navbar .brand { font-size: 1.2em; font-weight: 600; }
+        .navbar .back { opacity: 0.9; }
+        .navbar .back:hover { opacity: 1; }
+        .lang-switcher {
+            display: flex;
+            gap: 10px;
+        }
+        .lang-switcher a {
+            color: rgba(255,255,255,0.7);
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.85em;
+        }
+        .lang-switcher a:hover {
+            color: white;
+            background: rgba(255,255,255,0.1);
+        }
+        .lang-switcher a.active {
+            color: white;
+            background: rgba(255,255,255,0.2);
+        }
+        .container { max-width: 1100px; margin: 0 auto; padding: 30px; }
+        .api-header {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .api-header h1 { color: var(--primary-color); font-size: 1.8em; margin-bottom: 10px; }
+        .api-code {
+            font-family: 'Consolas', monospace;
+            background: var(--bg-color);
+            padding: 8px 15px;
+            border-radius: 6px;
+            display: inline-block;
+            color: var(--primary-color);
+            font-size: 1.1em;
+        }
+        .badges { margin-top: 15px; display: flex; gap: 10px; flex-wrap: wrap; }
+        .badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+        .badge-post { background: #dcfce7; color: #16a34a; }
+        .badge-json { background: #dbeafe; color: #2563eb; }
+        .badge-sync { background: #fef3c7; color: #d97706; }
+        h2 {
+            color: var(--secondary-color);
+            font-size: 1.4em;
+            margin: 30px 0 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--border-color);
+        }
+        h3 { color: var(--text-color); font-size: 1.1em; margin: 20px 0 10px; }
+        h4 { color: var(--text-muted); font-size: 1em; margin: 15px 0 10px; }
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; font-size: 0.9em; }
+        th, td { border: 1px solid var(--border-color); padding: 10px 12px; text-align: left; }
+        th { background: var(--primary-color); color: white; font-weight: 600; }
+        tr:nth-child(even) { background: var(--bg-color); }
+        tr:hover { background: #e0e7ff; }
+        .required { background: var(--error-color); color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.75em; }
+        .optional { background: var(--text-muted); color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.75em; }
+        .code-block {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Consolas', monospace;
+            font-size: 0.85em;
+            line-height: 1.5;
+            margin: 15px 0;
+        }
+        .code-block .key { color: #7dd3fc; }
+        .code-block .string { color: #86efac; }
+        .code-block .number { color: #fbbf24; }
+        .code-block .comment { color: #64748b; font-style: italic; }
+        .info-box {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        .info-box.info { background: #dbeafe; border-left: 4px solid var(--primary-color); }
+        .info-box.warning { background: #fef3c7; border-left: 4px solid var(--warning-color); }
+        .info-box.success { background: #dcfce7; border-left: 4px solid var(--success-color); }
+        .flow-diagram { text-align: center; margin: 20px 0; padding: 20px; background: white; border-radius: 10px; }
+        .toc {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .toc ul { list-style: none; display: flex; flex-wrap: wrap; gap: 15px; }
+        .toc a { color: var(--primary-color); text-decoration: none; }
+        .toc a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="../index.html" class="back">← Back to API List</a>
+        <div class="lang-switcher">
+            <a href="../stockin-data-create.html">繁體中文</a>
+            <a href="stockin-data-create.html" class="active">English</a>
+            <a href="../vi/stockin-data-create.html">Tiếng Việt</a>
+            <a href="../th/stockin-data-create.html">ภาษาไทย</a>
+        </div>
+        <span class="brand">eMES API Specification</span>
+    </nav>
+
+    <div class="container">
+        <!-- API Header -->
+        <div class="api-header">
+            <h1>Work Order Stock-In Data Create</h1>
+            <div class="api-code">stockin.data.create</div>
+            <div class="badges">
+                <span class="badge badge-post">POST</span>
+                <span class="badge badge-json">JSON</span>
+                <span class="badge badge-sync">Sync</span>
+            </div>
+        </div>
+
+        <!-- TOC -->
+        <div class="toc">
+            <ul>
+                <li><a href="#basic">Basic Info</a></li>
+                <li><a href="#flow">Business Flow</a></li>
+                <li><a href="#request">Request</a></li>
+                <li><a href="#response">Response</a></li>
+                <li><a href="#rules">Validation Rules</a></li>
+                <li><a href="#errors">Error Codes</a></li>
+                <li><a href="#example">JSON Examples</a></li>
+            </ul>
+        </div>
+
+        <!-- Basic Information -->
+        <div class="card" id="basic">
+            <h2>1. Basic Information</h2>
+            <table>
+                <tr><th width="25%">Item</th><th>Description</th></tr>
+                <tr><td>API Name (Chinese)</td><td>Work Order Stock-In Data Create</td></tr>
+                <tr><td>API Name (English)</td><td>Work Order Stock-In Data Create</td></tr>
+                <tr><td>CROSS API Code</td><td><code>stockin.data.create</code></td></tr>
+                <tr><td>ESB Service</td><td><code>/sendTransForm</code> (General) or <code>/outsourcingPurchaseStockinCreate</code> (TRANSTYPE=59)</td></tr>
+                <tr><td>Call Direction</td><td>MES → ERP</td></tr>
+                <tr><td>Trigger Timing</td><td>1. When last station checkout completes<br>2. Batch stock-in operation<br>3. Manual stock-in trigger</td></tr>
+                <tr><td>Main Business Scenario</td><td>After manufacturing completion, stock finished goods into ERP designated warehouse, update ERP inventory quantity and work order status</td></tr>
+                <tr><td>Request Format</td><td><strong>JSON</strong> (Content-Type: application/json)</td></tr>
+                <tr><td>Sync/Async</td><td>Synchronous call</td></tr>
+                <tr><td>Transaction Control</td><td>Required (MES and ERP must ensure data consistency)</td></tr>
+                <tr><td>Remark</td><td>Return TB001/TB002 is the document type/number generated by ERP, needs to be written back to TL011/TL012</td></tr>
+            </table>
+        </div>
+
+        <!-- Business Flow -->
+        <div class="card" id="flow">
+            <h2>2. Business Flow</h2>
+            <div class="flow-diagram">
+                <svg width="850" height="280" viewBox="0 0 850 280" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <marker id="arrow" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#3b82f6"/>
+                        </marker>
+                    </defs>
+                    <!-- MES Area -->
+                    <rect x="20" y="30" width="380" height="200" rx="10" fill="#dbeafe" stroke="#3b82f6" stroke-width="2"/>
+                    <text x="210" y="55" text-anchor="middle" font-size="14" font-weight="bold" fill="#3b82f6">MES System</text>
+
+                    <!-- ERP Area -->
+                    <rect x="450" y="30" width="380" height="200" rx="10" fill="#dcfce7" stroke="#10b981" stroke-width="2"/>
+                    <text x="640" y="55" text-anchor="middle" font-size="14" font-weight="bold" fill="#10b981">ERP System</text>
+
+                    <!-- MES Nodes -->
+                    <rect x="40" y="80" width="120" height="45" rx="6" fill="#3b82f6"/>
+                    <text x="100" y="107" text-anchor="middle" fill="white" font-size="11">1. Last Station Checkout</text>
+
+                    <rect x="180" y="80" width="120" height="45" rx="6" fill="#6366f1"/>
+                    <text x="240" y="100" text-anchor="middle" fill="white" font-size="10">2. Assemble Data</text>
+                    <text x="240" y="115" text-anchor="middle" fill="white" font-size="9">(TransOrderDataToJson)</text>
+
+                    <rect x="40" y="150" width="120" height="45" rx="6" fill="#3b82f6"/>
+                    <text x="100" y="170" text-anchor="middle" fill="white" font-size="10">4. Write Back</text>
+                    <text x="100" y="185" text-anchor="middle" fill="white" font-size="9">TL011/TL012</text>
+
+                    <!-- ERP Nodes -->
+                    <rect x="480" y="80" width="130" height="45" rx="6" fill="#10b981"/>
+                    <text x="545" y="100" text-anchor="middle" fill="white" font-size="10">3a. Validate WO</text>
+                    <text x="545" y="115" text-anchor="middle" fill="white" font-size="9">(Qty/Status)</text>
+
+                    <rect x="630" y="80" width="130" height="45" rx="6" fill="#10b981"/>
+                    <text x="695" y="100" text-anchor="middle" fill="white" font-size="10">3b. Create Stock-In</text>
+                    <text x="695" y="115" text-anchor="middle" fill="white" font-size="9">(TB001/TB002)</text>
+
+                    <rect x="550" y="150" width="130" height="45" rx="6" fill="#059669"/>
+                    <text x="615" y="170" text-anchor="middle" fill="white" font-size="10">3c. Update Inventory</text>
+                    <text x="615" y="185" text-anchor="middle" fill="white" font-size="9">(Add FG)</text>
+
+                    <!-- Connection Lines -->
+                    <line x1="160" y1="102" x2="175" y2="102" stroke="#3b82f6" stroke-width="2" marker-end="url(#arrow)"/>
+                    <line x1="300" y1="102" x2="475" y2="102" stroke="#6366f1" stroke-width="2" stroke-dasharray="5,5" marker-end="url(#arrow)"/>
+                    <line x1="610" y1="102" x2="625" y2="102" stroke="#10b981" stroke-width="2" marker-end="url(#arrow)"/>
+                    <line x1="695" y1="125" x2="695" y2="145" stroke="#10b981" stroke-width="2" marker-end="url(#arrow)"/>
+                    <line x1="550" y1="172" x2="165" y2="172" stroke="#6366f1" stroke-width="2" stroke-dasharray="5,5" marker-end="url(#arrow)"/>
+
+                    <!-- Legend -->
+                    <text x="425" y="260" text-anchor="middle" font-size="11" fill="#64748b">Code Location: TransOrderDataToJson.java:648 → SendFormSbyJson → XmlToERP_handler</text>
+                </svg>
+            </div>
+
+            <div class="info-box info">
+                <strong>Code Reference</strong>
+                <ul style="margin-top:10px; margin-left:20px;">
+                    <li>Route Decision: <code>TransOrderDataToJson.java:648</code></li>
+                    <li>JSON Assembly: <code>SendFormSbyJson.transferFormToJson()</code></li>
+                    <li>Field Mapping: <code>SendFormElementbyJson.getTransferFormHead/Body()</code></li>
+                    <li>HTTP Send: <code>XmlToERP_handler.sendToErpByESB()</code></li>
+                </ul>
+            </div>
+
+            <h3>Stock-In Type Decision Logic</h3>
+            <div class="flow-diagram">
+                <svg width="650" height="180" viewBox="0 0 650 180" xmlns="http://www.w3.org/2000/svg">
+                    <polygon points="200,20 280,60 200,100 120,60" fill="#f59e0b" stroke="#d97706" stroke-width="2"/>
+                    <text x="200" y="55" text-anchor="middle" fill="white" font-size="11">TRANSTYPE</text>
+                    <text x="200" y="70" text-anchor="middle" fill="white" font-size="11">= 59 ?</text>
+
+                    <rect x="350" y="35" width="200" height="50" rx="6" fill="#dc2626"/>
+                    <text x="450" y="60" text-anchor="middle" fill="white" font-size="11">Outsourcing Receipt</text>
+                    <text x="450" y="75" text-anchor="middle" fill="white" font-size="9">outsourcingPurchaseStockinCreate</text>
+                    <line x1="280" y1="60" x2="345" y2="60" stroke="#d97706" stroke-width="2" marker-end="url(#arrow)"/>
+                    <text x="310" y="50" font-size="10" fill="#d97706">Yes</text>
+
+                    <rect x="350" y="110" width="200" height="50" rx="6" fill="#3b82f6"/>
+                    <text x="450" y="135" text-anchor="middle" fill="white" font-size="11">General Transfer/Stock-In</text>
+                    <text x="450" y="150" text-anchor="middle" fill="white" font-size="9">generateTransferForm / sendTransForm</text>
+                    <line x1="200" y1="100" x2="200" y2="135" stroke="#d97706" stroke-width="2"/>
+                    <line x1="200" y1="135" x2="345" y2="135" stroke="#d97706" stroke-width="2" marker-end="url(#arrow)"/>
+                    <text x="215" y="120" font-size="10" fill="#d97706">No</text>
+                </svg>
+            </div>
+        </div>
+
+        <!-- Request Spec -->
+        <div class="card" id="request">
+            <h2>3. Request Specification</h2>
+
+            <div class="info-box success">
+                <strong>Transport Format: JSON</strong><br>
+                <code>Content-Type: application/json</code> (HttpClient.java:25)
+            </div>
+
+            <h3>3.1 Outer Structure</h3>
+            <table>
+                <tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th><th>MES Source</th></tr>
+                <tr><td>companyID</td><td>string</td><td><span class="required">Y</span></td><td>Company ID</td><td>COMPANYID</td></tr>
+                <tr><td>userId</td><td>string</td><td><span class="required">Y</span></td><td>Operator</td><td>CONFIRMER</td></tr>
+                <tr><td>doAction</td><td>string</td><td><span class="required">Y</span></td><td>2=Transfer</td><td>DOACTION</td></tr>
+                <tr><td>docase</td><td>string</td><td><span class="required">Y</span></td><td>1=Add, 2=Modify, 3=Delete</td><td>DOCASE</td></tr>
+                <tr><td>head</td><td>object</td><td><span class="required">Y</span></td><td>Header data</td><td>-</td></tr>
+                <tr><td>line</td><td>array</td><td><span class="required">Y</span></td><td>Line items</td><td>-</td></tr>
+            </table>
+
+            <h3>3.2 Header (head) - getTransferFormHead()</h3>
+            <table>
+                <tr><th>Field</th><th>Type</th><th>Length</th><th>Required</th><th>Description</th><th>MES Source</th></tr>
+                <tr><td>transferType</td><td>string</td><td>10</td><td><span class="required">Y</span></td><td>Transfer type</td><td>TRANSTYPE</td></tr>
+                <tr><td>transferCode</td><td>string</td><td>30</td><td><span class="optional">N</span></td><td>Transfer number (required for modify)</td><td>TO008</td></tr>
+                <tr><td>date</td><td>string</td><td>10</td><td><span class="required">Y</span></td><td>Document date YYYY-MM-DD</td><td>TRANSDATE</td></tr>
+                <tr><td>moveOutType</td><td>string</td><td>2</td><td><span class="required">Y</span></td><td>Move out type (1=WS, 2=WH, 3=Dept)</td><td>OUTTYPE</td></tr>
+                <tr><td>moveOutCode</td><td>string</td><td>20</td><td><span class="required">Y</span></td><td>Move out code</td><td>OUTDEPID</td></tr>
+                <tr><td>moveOutName</td><td>string</td><td>50</td><td><span class="optional">N</span></td><td>Move out name</td><td>OUTDEPNAME</td></tr>
+                <tr><td>moveInType</td><td>string</td><td>2</td><td><span class="required">Y</span></td><td>Move in type</td><td>INTYPE</td></tr>
+                <tr><td>moveInCode</td><td>string</td><td>20</td><td><span class="required">Y</span></td><td>Move in code (warehouse)</td><td>INDEPID</td></tr>
+                <tr><td>moveInName</td><td>string</td><td>50</td><td><span class="optional">N</span></td><td>Move in name</td><td>INDEPNAME</td></tr>
+                <tr><td>factoryCode</td><td>string</td><td>10</td><td><span class="required">Y</span></td><td>Factory code</td><td>FACTORYID</td></tr>
+                <tr><td>confirmationCode</td><td>string</td><td>20</td><td><span class="optional">N</span></td><td>Confirmation code</td><td>CONFIRMCODE</td></tr>
+                <tr><td>remark</td><td>string</td><td>255</td><td><span class="optional">N</span></td><td>Remark</td><td>COMMENT</td></tr>
+                <tr><td>orderDate</td><td>string</td><td>10</td><td><span class="optional">N</span></td><td>Order date</td><td>DOCUMENTDATE</td></tr>
+                <tr><td>eMESTransferType</td><td>string</td><td>10</td><td><span class="required">Y</span></td><td>MES doc type</td><td>TRANSTYPE</td></tr>
+                <tr><td>eMESTransferCode</td><td>string</td><td>30</td><td><span class="required">Y</span></td><td>MES doc number</td><td>TRANSNO</td></tr>
+                <tr><td>source_no</td><td>string</td><td>50</td><td><span class="required">Y</span></td><td>Source number (MES type-number)</td><td>eMESTransferType + "-" + eMESTransferCode</td></tr>
+                <tr><td>operator_no</td><td>string</td><td>20</td><td><span class="optional">N</span></td><td>Operator</td><td>create (CONFIRMER)</td></tr>
+            </table>
+
+            <h3>3.3 Line Items (line) - getTransferFormBody() - Array</h3>
+            <table>
+                <tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th><th>MES Source</th></tr>
+                <tr><td>moType</td><td>string</td><td><span class="required">Y</span></td><td>Work order type</td><td>MOTYPE</td></tr>
+                <tr><td>moCode</td><td>string</td><td><span class="required">Y</span></td><td>Work order number</td><td>MONO</td></tr>
+                <tr><td>moveOutOpSeq</td><td>string</td><td><span class="required">Y</span></td><td>Move out op sequence</td><td>OUTOPSEQ</td></tr>
+                <tr><td>moveOutOpId</td><td>string</td><td><span class="required">Y</span></td><td>Move out operation</td><td>OUTOP</td></tr>
+                <tr><td>moveInOpSeq</td><td>string</td><td><span class="optional">N</span></td><td>Move in op sequence</td><td>INOPSEQ</td></tr>
+                <tr><td>moveInOpId</td><td>string</td><td><span class="optional">N</span></td><td>Move in operation</td><td>INOP</td></tr>
+                <tr><td>qty</td><td>decimal</td><td><span class="required">Y</span></td><td>Quantity</td><td>TRANSQTY</td></tr>
+                <tr><td>unit</td><td>string</td><td><span class="required">Y</span></td><td>Unit</td><td>UNIT</td></tr>
+                <tr><td>batchCode</td><td>string</td><td><span class="required">Y</span></td><td>Batch/Lot number</td><td>LOTNO</td></tr>
+                <tr><td>state</td><td>string</td><td><span class="required">Y</span></td><td>State (PATTERN)</td><td>PATTERN</td></tr>
+                <tr><td>prodCode</td><td>string</td><td><span class="required">Y</span></td><td>Item code</td><td>ITEMID</td></tr>
+                <tr><td>prodName</td><td>string</td><td><span class="optional">N</span></td><td>Item name</td><td>ITEMNAME</td></tr>
+                <tr><td>prodSpec</td><td>string</td><td><span class="optional">N</span></td><td>Item spec</td><td>ITEMDESCRIPTION</td></tr>
+                <tr><td>acceptanceQty</td><td>decimal</td><td><span class="optional">N</span></td><td>Acceptance qty</td><td>TL002</td></tr>
+                <tr><td>scrapQty</td><td>decimal</td><td><span class="optional">N</span></td><td>Scrap qty</td><td>SCRAPQTY</td></tr>
+                <tr><td>inspectionReturnQty</td><td>decimal</td><td><span class="optional">N</span></td><td>Rejection qty</td><td>TL003</td></tr>
+                <tr><td>moveInCode</td><td>string</td><td><span class="optional">N</span></td><td>Move in dept</td><td>INDEP</td></tr>
+                <tr><td>moveInLocation</td><td>string</td><td><span class="optional">N</span></td><td>Move in location</td><td>INSTORAGESPACE</td></tr>
+                <tr><td>useTime</td><td>decimal</td><td><span class="optional">N</span></td><td>Labor hours</td><td>LABORHOUR</td></tr>
+                <tr><td>useMachineTime</td><td>decimal</td><td><span class="optional">N</span></td><td>Machine hours</td><td>MACHINEHOUR</td></tr>
+                <tr><td>remark</td><td>string</td><td><span class="optional">N</span></td><td>Remark</td><td>NOTE</td></tr>
+                <tr><td>manufactureDualUnit</td><td>string</td><td><span class="optional">N</span></td><td>Dual unit</td><td>TWINUNIT</td></tr>
+                <tr><td>hasQty</td><td>string</td><td><span class="optional">N</span></td><td>Stock-in status</td><td>HASQTY</td></tr>
+            </table>
+        </div>
+
+        <!-- Response -->
+        <div class="card" id="response">
+            <h2>4. Response Specification</h2>
+            <table>
+                <tr><th>Field</th><th>Type</th><th>Description</th></tr>
+                <tr><td>code</td><td>int</td><td>200=Success, others=Failure</td></tr>
+                <tr><td>msg</td><td>string</td><td>Processing result message</td></tr>
+                <tr><td>TB001</td><td>string</td><td>ERP doc type → Write to TL011</td></tr>
+                <tr><td>TB002</td><td>string</td><td>ERP doc number → Write to TL012</td></tr>
+            </table>
+
+            <h3>MES Internal Processing Result</h3>
+            <table>
+                <tr><th>Field</th><th>Description</th></tr>
+                <tr><td>ISOK</td><td>true=Success, false=Failure</td></tr>
+                <tr><td>Msg</td><td>Processing message</td></tr>
+                <tr><td>TB001</td><td>Write to TL011</td></tr>
+                <tr><td>TB002</td><td>Write to TL012</td></tr>
+            </table>
+        </div>
+
+        <!-- Validation Rules -->
+        <div class="card" id="rules">
+            <h2>5. Validation Rules</h2>
+            <table>
+                <tr><th>#</th><th>Check Item</th><th>Rule</th><th>Code Location</th></tr>
+                <tr><td>1</td><td>Line data exists</td><td>SFT_TRANSORDER_LINE_GRID cannot be empty</td><td>TransOrderDataToJson.java:609</td></tr>
+                <tr><td>2</td><td>TO013 check</td><td>= 1 to send generateTransferForm</td><td>TransOrderDataToJson.java:612</td></tr>
+                <tr><td>3</td><td>ERP connection</td><td>SFTConfig.isHasERP() = true</td><td>TransOrderDataToJson.java:646</td></tr>
+                <tr><td>4</td><td>TRANSTYPE decision</td><td>59=Outsourcing, others=General transfer</td><td>TransOrderDataToJson.java:648</td></tr>
+                <tr><td>5</td><td>WO completion check</td><td>canUpdateERP_TA_OP_Status100() = true</td><td>TransOrderDataToJson.java:637</td></tr>
+            </table>
+        </div>
+
+        <!-- Error Codes -->
+        <div class="card" id="errors">
+            <h2>6. Error Codes</h2>
+            <table>
+                <tr><th>Code</th><th>Message</th><th>Description</th></tr>
+                <tr><td>E001</td><td>Required field missing</td><td>Request missing required fields</td></tr>
+                <tr><td>E002</td><td>Work order not found</td><td>MOTYPE-MONO error</td></tr>
+                <tr><td>E003</td><td>Work order status not allowed</td><td>Work order closed or cancelled</td></tr>
+                <tr><td>E004</td><td>Quantity must be greater than zero</td><td>qty ≤ 0</td></tr>
+                <tr><td>E005</td><td>Quantity exceeds remaining</td><td>Exceeds available stock-in quantity</td></tr>
+                <tr><td>E006</td><td>Warehouse not found</td><td>moveInCode invalid</td></tr>
+                <tr><td>E999</td><td>System error</td><td>Timeout, connection exception</td></tr>
+                <tr><td>Return result parsing error!</td><td>Response parsing failed</td><td>XmlToERP_handler.java:117</td></tr>
+            </table>
+        </div>
+
+        <!-- JSON Examples -->
+        <div class="card" id="example">
+            <h2>7. JSON Examples</h2>
+
+            <h3>Request (MES JSON)</h3>
+            <div class="code-block">
+<pre>{
+  <span class="key">"companyID"</span>: <span class="string">"COMP01"</span>,
+  <span class="key">"userId"</span>: <span class="string">"EMP001"</span>,
+  <span class="key">"doAction"</span>: <span class="string">"2"</span>,           <span class="comment">// 2=Transfer</span>
+  <span class="key">"docase"</span>: <span class="string">"1"</span>,              <span class="comment">// 1=Add</span>
+  <span class="key">"head"</span>: {
+    <span class="key">"transferType"</span>: <span class="string">"51"</span>,
+    <span class="key">"date"</span>: <span class="string">"2026-03-19"</span>,
+    <span class="key">"moveOutType"</span>: <span class="string">"1"</span>,
+    <span class="key">"moveOutCode"</span>: <span class="string">"WS001"</span>,
+    <span class="key">"moveOutName"</span>: <span class="string">"Assembly Station"</span>,
+    <span class="key">"moveInType"</span>: <span class="string">"2"</span>,
+    <span class="key">"moveInCode"</span>: <span class="string">"FG01"</span>,
+    <span class="key">"moveInName"</span>: <span class="string">"Finished Goods WH"</span>,
+    <span class="key">"factoryCode"</span>: <span class="string">"P001"</span>,
+    <span class="key">"remark"</span>: <span class="string">"Normal completion stock-in"</span>,
+    <span class="key">"create"</span>: <span class="string">"EMP001"</span>,       <span class="comment">// → ERP: operator_no</span>
+    <span class="key">"eMESTransferType"</span>: <span class="string">"51"</span>,
+    <span class="key">"eMESTransferCode"</span>: <span class="string">"T20260319001"</span>
+  },
+  <span class="key">"line"</span>: [{
+    <span class="key">"moType"</span>: <span class="string">"5101"</span>,
+    <span class="key">"moCode"</span>: <span class="string">"20260319001"</span>,
+    <span class="key">"moveOutOpSeq"</span>: <span class="string">"0030"</span>,
+    <span class="key">"moveOutOpId"</span>: <span class="string">"OP030"</span>,
+    <span class="key">"qty"</span>: <span class="number">100</span>,
+    <span class="key">"unit"</span>: <span class="string">"PCS"</span>,
+    <span class="key">"batchCode"</span>: <span class="string">"LOT20260319001"</span>,
+    <span class="key">"state"</span>: <span class="string">"1"</span>,
+    <span class="key">"prodCode"</span>: <span class="string">"FG-A001-001"</span>,
+    <span class="key">"prodName"</span>: <span class="string">"Finished Product A"</span>,
+    <span class="key">"moveInCode"</span>: <span class="string">"FG01"</span>,
+    <span class="key">"moveInLocation"</span>: <span class="string">"A-01-01"</span>,
+    <span class="key">"hasQty"</span>: <span class="string">"1"</span>,           <span class="comment">// → ERP: stock_in_status</span>
+    <span class="key">"remark"</span>: <span class="string">""</span>
+  }]
+}</pre>
+            </div>
+
+            <h3>Response (Success)</h3>
+            <div class="code-block">
+<pre>{
+  <span class="key">"code"</span>: <span class="number">200</span>,
+  <span class="key">"msg"</span>: <span class="string">"Stock-in order created successfully"</span>,
+  <span class="key">"TB001"</span>: <span class="string">"5101"</span>,
+  <span class="key">"TB002"</span>: <span class="string">"20260319001"</span>
+}</pre>
+            </div>
+
+            <h3>Response (Failure)</h3>
+            <div class="code-block">
+<pre>{
+  <span class="key">"code"</span>: <span class="number">500</span>,
+  <span class="key">"msg"</span>: <span class="string">"Work order not found 5101-20260319999"</span>
+}</pre>
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>

@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="th">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>wo.scrap.data.create - 不良品入庫建立 | eMES API 規格書</title>
+    <title>wo.scrap.data.create - สร้างใบรับสินค้าเสีย | eMES API เอกสารข้อกำหนด</title>
     <style>
         :root {
             --primary-color: #2563eb;
@@ -24,7 +24,7 @@
         }
 
         body {
-            font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif;
+            font-family: 'Segoe UI', 'Tahoma', sans-serif;
             line-height: 1.6;
             color: var(--text-color);
             background: var(--bg-color);
@@ -311,106 +311,106 @@
     <div class="header">
         <div class="header-content">
             <div class="lang-switcher">
-                <a href="wo-scrap-data-create.html" class="active">繁體中文</a>
-                <a href="en/wo-scrap-data-create.html">English</a>
-                <a href="vi/wo-scrap-data-create.html">Tiếng Việt</a>
-                <a href="th/wo-scrap-data-create.html">ภาษาไทย</a>
+                <a href="../wo-scrap-data-create.html">繁體中文</a>
+                <a href="../en/wo-scrap-data-create.html">English</a>
+                <a href="../vi/wo-scrap-data-create.html">Tiếng Việt</a>
+                <a href="wo-scrap-data-create.html" class="active">ภาษาไทย</a>
             </div>
-            <a href="index.html" class="back-link">← 返回 API 列表</a>
+            <a href="index.html" class="back-link">← กลับไปรายการ API</a>
             <div class="api-title">
-                <h1>不良品入庫建立</h1>
+                <h1>สร้างใบรับสินค้าเสีย</h1>
                 <span class="method-badge">POST</span>
                 <span class="method-badge">MES → ERP</span>
             </div>
             <div class="api-code">wo.scrap.data.create</div>
             <p class="api-desc">
-                工單出站時若有不良品數量，將不良品入庫資料拋送至 ERP 系統建立報廢入庫單。
-                ERP 回傳入庫單號後，MES 將單號回寫至 SFT_TRANSORDER_LINE。
+                เมื่อ CheckOut ใบสั่งผลิตมีจำนวนสินค้าเสีย ระบบจะส่งข้อมูลรับสินค้าเสียไป ERP เพื่อสร้างใบรับสินค้าเสียเข้าคลัง
+                หลังจาก ERP ส่งหมายเลขใบรับเข้ากลับมา MES จะบันทึกหมายเลขลงใน SFT_TRANSORDER_LINE
             </p>
         </div>
     </div>
 
     <div class="container">
-        <!-- 基本資訊 -->
+        <!-- ข้อมูลพื้นฐาน -->
         <div class="section">
-            <h2>基本資訊</h2>
+            <h2>ข้อมูลพื้นฐาน</h2>
             <div class="info-grid">
                 <div class="info-item">
-                    <div class="label">API 名稱</div>
+                    <div class="label">ชื่อ API</div>
                     <div class="value">wo.scrap.data.create</div>
                 </div>
                 <div class="info-item">
-                    <div class="label">內部任務名稱</div>
+                    <div class="label">ชื่องานภายใน</div>
                     <div class="value">woScrapDataCreate</div>
                 </div>
                 <div class="info-item">
-                    <div class="label">傳輸格式</div>
+                    <div class="label">รูปแบบการส่งข้อมูล</div>
                     <div class="value">JSON (Content-Type: application/json)</div>
                 </div>
                 <div class="info-item">
-                    <div class="label">案號</div>
+                    <div class="label">หมายเลขโครงการ</div>
                     <div class="value">0189144</div>
                 </div>
                 <div class="info-item">
-                    <div class="label">API 編號</div>
+                    <div class="label">รหัส API</div>
                     <div class="value">api-2191</div>
                 </div>
                 <div class="info-item">
                     <div class="label">TRANSORDERTYPE</div>
-                    <div class="value">58 (報廢入庫)</div>
+                    <div class="value">58 (รับสินค้าเสียเข้าคลัง)</div>
                 </div>
             </div>
         </div>
 
-        <!-- 觸發時機 -->
+        <!-- เวลาที่ทริกเกอร์ -->
         <div class="section">
-            <h2>觸發時機</h2>
+            <h2>เวลาที่ทริกเกอร์</h2>
             <div class="flow-diagram">
                 <svg viewBox="0 0 950 200" style="max-width: 950px; width: 100%;">
-                    <!-- 步驟 1: 出站作業 -->
+                    <!-- ขั้นตอนที่ 1: การ CheckOut -->
                     <rect x="20" y="60" width="140" height="80" rx="8" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
-                    <text x="90" y="90" text-anchor="middle" font-size="14" font-weight="600" fill="#1e40af">出站作業</text>
-                    <text x="90" y="110" text-anchor="middle" font-size="11" fill="#3b82f6">CheckOut</text>
-                    <text x="90" y="125" text-anchor="middle" font-size="10" fill="#3b82f6">填寫不良品數量</text>
+                    <text x="90" y="90" text-anchor="middle" font-size="14" font-weight="600" fill="#1e40af">CheckOut</text>
+                    <text x="90" y="110" text-anchor="middle" font-size="11" fill="#3b82f6">การ CheckOut</text>
+                    <text x="90" y="125" text-anchor="middle" font-size="10" fill="#3b82f6">กรอกจำนวนสินค้าเสีย</text>
 
-                    <!-- 箭頭 1 -->
+                    <!-- ลูกศร 1 -->
                     <path d="M160 100 L195 100" stroke="#64748b" stroke-width="2" marker-end="url(#arrowhead)"/>
 
-                    <!-- 步驟 2: 判斷 SCRAPQTY -->
+                    <!-- ขั้นตอนที่ 2: ตรวจสอบ SCRAPQTY -->
                     <polygon points="270,60 340,100 270,140 200,100" fill="#fef3c7" stroke="#f59e0b" stroke-width="2"/>
                     <text x="270" y="95" text-anchor="middle" font-size="11" font-weight="600" fill="#92400e">SCRAPQTY</text>
                     <text x="270" y="110" text-anchor="middle" font-size="11" fill="#d97706">&gt; 0 ?</text>
 
-                    <!-- 箭頭 2 (是) -->
+                    <!-- ลูกศร 2 (ใช่) -->
                     <path d="M340 100 L380 100" stroke="#64748b" stroke-width="2" marker-end="url(#arrowhead)"/>
-                    <text x="360" y="90" font-size="10" fill="#16a34a">是</text>
+                    <text x="360" y="90" font-size="10" fill="#16a34a">ใช่</text>
 
-                    <!-- 步驟 3: 建立移轉單 -->
+                    <!-- ขั้นตอนที่ 3: สร้างใบโอน -->
                     <rect x="390" y="60" width="150" height="80" rx="8" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
-                    <text x="465" y="85" text-anchor="middle" font-size="13" font-weight="600" fill="#166534">建立報廢移轉單</text>
+                    <text x="465" y="85" text-anchor="middle" font-size="13" font-weight="600" fill="#166534">สร้างใบโอนสินค้าเสีย</text>
                     <text x="465" y="105" text-anchor="middle" font-size="10" fill="#22c55e">TRANSORDERTYPE=58</text>
                     <text x="465" y="120" text-anchor="middle" font-size="10" fill="#22c55e">SftTransorderLine</text>
 
-                    <!-- 箭頭 3 -->
+                    <!-- ลูกศร 3 -->
                     <path d="M540 100 L580 100" stroke="#64748b" stroke-width="2" marker-end="url(#arrowhead)"/>
 
-                    <!-- 步驟 4: 送 ERP -->
+                    <!-- ขั้นตอนที่ 4: ส่ง ERP -->
                     <rect x="590" y="60" width="150" height="80" rx="8" fill="#fef3c7" stroke="#f59e0b" stroke-width="2"/>
-                    <text x="665" y="85" text-anchor="middle" font-size="13" font-weight="600" fill="#92400e">送出至 ERP</text>
+                    <text x="665" y="85" text-anchor="middle" font-size="13" font-weight="600" fill="#92400e">ส่งไปยัง ERP</text>
                     <text x="665" y="105" text-anchor="middle" font-size="10" fill="#d97706">wo.scrap.data</text>
                     <text x="665" y="120" text-anchor="middle" font-size="10" fill="#d97706">.create</text>
 
-                    <!-- 箭頭 4 -->
+                    <!-- ลูกศร 4 -->
                     <path d="M740 100 L780 100" stroke="#64748b" stroke-width="2" marker-end="url(#arrowhead)"/>
 
-                    <!-- 步驟 5: 回寫 -->
+                    <!-- ขั้นตอนที่ 5: บันทึกกลับ -->
                     <rect x="790" y="60" width="130" height="80" rx="8" fill="#f3e8ff" stroke="#9333ea" stroke-width="2"/>
-                    <text x="855" y="90" text-anchor="middle" font-size="13" font-weight="600" fill="#7e22ce">回寫單號</text>
+                    <text x="855" y="90" text-anchor="middle" font-size="13" font-weight="600" fill="#7e22ce">บันทึกหมายเลข</text>
                     <text x="855" y="110" text-anchor="middle" font-size="10" fill="#a855f7">TL011/TL012</text>
 
-                    <!-- 否的路徑 -->
+                    <!-- เส้นทางไม่ใช่ -->
                     <path d="M270 140 L270 170 L665 170 L665 150" stroke="#64748b" stroke-width="2" stroke-dasharray="5,5"/>
-                    <text x="400" y="165" font-size="10" fill="#dc2626">否 → 跳過不良品入庫</text>
+                    <text x="400" y="165" font-size="10" fill="#dc2626">ไม่ใช่ → ข้ามการรับสินค้าเสีย</text>
 
                     <defs>
                         <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
@@ -421,181 +421,181 @@
             </div>
 
             <div class="highlight-box">
-                <strong>關鍵判斷條件：</strong>
-                只有當出站時 <code class="code-inline">SCRAPQTY > 0</code>（不良品數量大於零）時，
-                系統才會建立 TRANSORDERTYPE=58 的移轉單，並呼叫 ERP 不良品入庫 API。
+                <strong>เงื่อนไขการตัดสินใจสำคัญ:</strong>
+                เฉพาะเมื่อ CheckOut มี <code class="code-inline">SCRAPQTY > 0</code> (จำนวนสินค้าเสียมากกว่าศูนย์)
+                ระบบจึงจะสร้างใบโอน TRANSORDERTYPE=58 และเรียก ERP API รับสินค้าเสียเข้าคลัง
             </div>
 
             <div class="note">
-                <div class="note-title">觸發位置</div>
+                <div class="note-title">ตำแหน่งทริกเกอร์</div>
                 <div class="note-content">
-                    出站作業完成後，由 <code class="code-inline">TransOrderDataToJson.sentTransOrderDataAgain()</code> 方法
-                    判斷移轉單類型，若為報廢入庫則呼叫 <code class="code-inline">woScrapDataCreate</code>。
+                    หลังจาก CheckOut เสร็จสิ้น เมธอด <code class="code-inline">TransOrderDataToJson.sentTransOrderDataAgain()</code>
+                    จะตรวจสอบประเภทใบโอน ถ้าเป็นรับสินค้าเสียจะเรียก <code class="code-inline">woScrapDataCreate</code>
                 </div>
             </div>
         </div>
 
-        <!-- 請求參數 - HEAD -->
+        <!-- พารามิเตอร์คำขอ - HEAD -->
         <div class="section">
-            <h2>請求參數</h2>
+            <h2>พารามิเตอร์คำขอ</h2>
 
-            <h3><span class="tag tag-head">HEAD</span> 單頭資料</h3>
+            <h3><span class="tag tag-head">HEAD</span> ข้อมูลส่วนหัว</h3>
             <table>
                 <thead>
                     <tr>
-                        <th>欄位</th>
-                        <th>MES 來源</th>
-                        <th>ERP 欄位</th>
-                        <th>類型</th>
-                        <th>必填</th>
-                        <th>說明</th>
+                        <th>ฟิลด์</th>
+                        <th>แหล่ง MES</th>
+                        <th>ฟิลด์ ERP</th>
+                        <th>ประเภท</th>
+                        <th>จำเป็น</th>
+                        <th>คำอธิบาย</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <td>單別編號</td>
+                        <td>หมายเลขประเภทใบ</td>
                         <td><code class="code-inline">transferType</code></td>
                         <td><code class="code-inline">doc_type_no</code></td>
                         <td>String</td>
-                        <td><span class="tag tag-required">必填</span></td>
-                        <td>不良品入庫單類別</td>
+                        <td><span class="tag tag-required">จำเป็น</span></td>
+                        <td>ประเภทใบรับสินค้าเสีย</td>
                     </tr>
                     <tr>
-                        <td>移轉單號</td>
+                        <td>หมายเลขใบโอน</td>
                         <td><code class="code-inline">eMESTransferType-eMESTransferCode</code></td>
                         <td><code class="code-inline">source_no</code></td>
                         <td>String</td>
-                        <td><span class="tag tag-required">必填</span></td>
-                        <td>MES 移轉單號（類別-號碼）</td>
+                        <td><span class="tag tag-required">จำเป็น</span></td>
+                        <td>หมายเลขใบโอน MES (ประเภท-หมายเลข)</td>
                     </tr>
                     <tr>
-                        <td>建立日期</td>
+                        <td>วันที่สร้าง</td>
                         <td><code class="code-inline">date</code></td>
                         <td><code class="code-inline">create_date</code></td>
                         <td>Date</td>
-                        <td><span class="tag tag-required">必填</span></td>
-                        <td>入庫日期 (yyyy-MM-dd)</td>
+                        <td><span class="tag tag-required">จำเป็น</span></td>
+                        <td>วันที่รับเข้าคลัง (yyyy-MM-dd)</td>
                     </tr>
                     <tr>
-                        <td>出站工作站</td>
+                        <td>สถานีงาน CheckOut</td>
                         <td><code class="code-inline">moveOutCode</code></td>
                         <td><code class="code-inline">workstation_no</code></td>
                         <td>String</td>
-                        <td><span class="tag tag-required">必填</span></td>
-                        <td>出站工作站代號</td>
+                        <td><span class="tag tag-required">จำเป็น</span></td>
+                        <td>รหัสสถานีงาน CheckOut</td>
                     </tr>
                     <tr>
-                        <td>工廠編號</td>
+                        <td>รหัสโรงงาน</td>
                         <td><code class="code-inline">factoryCode</code></td>
                         <td><code class="code-inline">factory_no</code></td>
                         <td>String</td>
-                        <td><span class="tag tag-required">必填</span></td>
-                        <td>工廠代號</td>
+                        <td><span class="tag tag-required">จำเป็น</span></td>
+                        <td>รหัสโรงงาน</td>
                     </tr>
                     <tr>
-                        <td>操作員</td>
+                        <td>พนักงาน</td>
                         <td><code class="code-inline">create</code></td>
                         <td><code class="code-inline">operator_no</code></td>
                         <td>String</td>
-                        <td><span class="tag tag-optional">選填</span></td>
-                        <td>操作人員</td>
+                        <td><span class="tag tag-optional">ไม่จำเป็น</span></td>
+                        <td>พนักงานผู้ดำเนินการ</td>
                     </tr>
                     <tr>
-                        <td>備註</td>
+                        <td>หมายเหตุ</td>
                         <td><code class="code-inline">remark</code></td>
                         <td><code class="code-inline">remark</code></td>
                         <td>String</td>
-                        <td><span class="tag tag-optional">選填</span></td>
-                        <td>單頭備註</td>
+                        <td><span class="tag tag-optional">ไม่จำเป็น</span></td>
+                        <td>หมายเหตุส่วนหัว</td>
                     </tr>
                 </tbody>
             </table>
 
-            <h3><span class="tag tag-line">LINE</span> 單身明細</h3>
+            <h3><span class="tag tag-line">LINE</span> รายละเอียด</h3>
             <table>
                 <thead>
                     <tr>
-                        <th>欄位</th>
-                        <th>MES 來源</th>
-                        <th>ERP 欄位</th>
-                        <th>類型</th>
-                        <th>必填</th>
-                        <th>說明</th>
+                        <th>ฟิลด์</th>
+                        <th>แหล่ง MES</th>
+                        <th>ฟิลด์ ERP</th>
+                        <th>ประเภท</th>
+                        <th>จำเป็น</th>
+                        <th>คำอธิบาย</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <td>工單號</td>
+                        <td>หมายเลขใบสั่งผลิต</td>
                         <td><code class="code-inline">moType-moCode</code></td>
                         <td><code class="code-inline">wo_no</code></td>
                         <td>String</td>
-                        <td><span class="tag tag-required">必填</span></td>
-                        <td>工單類別-工單號碼</td>
+                        <td><span class="tag tag-required">จำเป็น</span></td>
+                        <td>ประเภทใบสั่งผลิต-หมายเลขใบสั่งผลิต</td>
                     </tr>
                     <tr>
-                        <td>品號</td>
+                        <td>รหัสสินค้า</td>
                         <td><code class="code-inline">prodCode</code></td>
                         <td><code class="code-inline">item_no</code></td>
                         <td>String</td>
-                        <td><span class="tag tag-required">必填</span></td>
-                        <td>產品品號</td>
+                        <td><span class="tag tag-required">จำเป็น</span></td>
+                        <td>รหัสสินค้า</td>
                     </tr>
                     <tr>
-                        <td>不良品數量</td>
+                        <td>จำนวนสินค้าเสีย</td>
                         <td><code class="code-inline">SCRAPQTY</code></td>
                         <td><code class="code-inline">scrap_qty</code></td>
                         <td>Numeric</td>
-                        <td><span class="tag tag-required">必填</span></td>
-                        <td>報廢數量</td>
+                        <td><span class="tag tag-required">จำเป็น</span></td>
+                        <td>จำนวนเสีย</td>
                     </tr>
                     <tr>
-                        <td>單位</td>
+                        <td>หน่วย</td>
                         <td><code class="code-inline">unit</code></td>
                         <td><code class="code-inline">unit_no</code></td>
                         <td>String</td>
-                        <td><span class="tag tag-required">必填</span></td>
-                        <td>數量單位</td>
+                        <td><span class="tag tag-required">จำเป็น</span></td>
+                        <td>หน่วยจำนวน</td>
                     </tr>
                     <tr>
-                        <td>進站倉庫</td>
+                        <td>คลังสินค้าย้ายเข้า</td>
                         <td><code class="code-inline">moveInCode</code></td>
                         <td><code class="code-inline">warehouse_no</code></td>
                         <td>String</td>
-                        <td><span class="tag tag-required">必填</span></td>
-                        <td>入庫倉庫代號</td>
+                        <td><span class="tag tag-required">จำเป็น</span></td>
+                        <td>รหัสคลังสินค้ารับเข้า</td>
                     </tr>
                     <tr>
-                        <td>儲位</td>
+                        <td>ตำแหน่งจัดเก็บ</td>
                         <td><code class="code-inline">moveInLocation</code></td>
                         <td><code class="code-inline">location_no</code></td>
                         <td>String</td>
-                        <td><span class="tag tag-optional">選填</span></td>
-                        <td>入庫儲位</td>
+                        <td><span class="tag tag-optional">ไม่จำเป็น</span></td>
+                        <td>ตำแหน่งจัดเก็บ</td>
                     </tr>
                     <tr>
-                        <td>批號</td>
+                        <td>หมายเลขล็อต</td>
                         <td><code class="code-inline">batchCode</code></td>
                         <td><code class="code-inline">lot_no</code></td>
                         <td>String</td>
-                        <td><span class="tag tag-optional">選填</span></td>
-                        <td>批號</td>
+                        <td><span class="tag tag-optional">ไม่จำเป็น</span></td>
+                        <td>หมายเลขล็อต</td>
                     </tr>
                     <tr>
-                        <td>備註</td>
+                        <td>หมายเหตุ</td>
                         <td><code class="code-inline">remark</code></td>
                         <td><code class="code-inline">remark</code></td>
                         <td>String</td>
-                        <td><span class="tag tag-optional">選填</span></td>
-                        <td>明細備註</td>
+                        <td><span class="tag tag-optional">ไม่จำเป็น</span></td>
+                        <td>หมายเหตุรายละเอียด</td>
                     </tr>
                 </tbody>
             </table>
         </div>
 
-        <!-- 請求範例 -->
+        <!-- ตัวอย่างคำขอ -->
         <div class="section">
-            <h2>請求範例</h2>
-            <h3>MES 內部 JSON 格式</h3>
+            <h2>ตัวอย่างคำขอ</h2>
+            <h3>รูปแบบ JSON ภายใน MES</h3>
             <pre>{
   "head": {
     "transferType": "58",
@@ -605,7 +605,7 @@
     "moveOutCode": "WS001",
     "factoryCode": "FACTORY01",
     "create": "USER001",
-    "remark": "不良品入庫"
+    "remark": "รับสินค้าเสียเข้าคลัง"
   },
   "line": [
     {
@@ -617,15 +617,15 @@
       "moveInCode": "WH-SCRAP",
       "moveInLocation": "A01",
       "batchCode": "BAT001",
-      "remark": "表面瑕疵"
+      "remark": "ข้อบกพร่องผิวหน้า"
     }
   ]
 }</pre>
 
-            <h3>ERP XML 格式 (WFERP) - SendFormS.java:1773-1804</h3>
+            <h3>รูปแบบ ERP XML (WFERP) - SendFormS.java:1773-1804</h3>
             <pre>&lt;parameters&gt;
-  &lt;parameter key="enterprise_no" type="string"&gt;公司代碼&lt;/parameter&gt;
-  &lt;parameter key="site_no" type="string"&gt;工廠代碼&lt;/parameter&gt;
+  &lt;parameter key="enterprise_no" type="string"&gt;รหัสบริษัท&lt;/parameter&gt;
+  &lt;parameter key="site_no" type="string"&gt;รหัสโรงงาน&lt;/parameter&gt;
 
   &lt;parameter key="wo_scrap_data" type="data"&gt;
     &lt;data name="wo_scrap"&gt;
@@ -634,7 +634,7 @@
         &lt;field name="doc_type_no" type="string"&gt;58&lt;/field&gt;
         &lt;field name="source_no" type="string"&gt;SC-20260319001&lt;/field&gt;
         &lt;field name="create_date" type="date"&gt;2026-03-19&lt;/field&gt;
-        &lt;field name="remark" type="string"&gt;不良品入庫&lt;/field&gt;
+        &lt;field name="remark" type="string"&gt;รับสินค้าเสียเข้าคลัง&lt;/field&gt;
         &lt;field name="workstation_no" type="string"&gt;WS001&lt;/field&gt;
         &lt;field name="factory_no" type="string"&gt;FACTORY01&lt;/field&gt;
         &lt;field name="shift_no" type="string"&gt;&lt;/field&gt;
@@ -648,7 +648,7 @@
             &lt;field name="item_no" type="string"&gt;ITEM-001&lt;/field&gt;
             &lt;field name="scrap_qty" type="numeric"&gt;5&lt;/field&gt;
             &lt;field name="unit_no" type="string"&gt;PCS&lt;/field&gt;
-            &lt;field name="remark" type="string"&gt;表面瑕疵&lt;/field&gt;
+            &lt;field name="remark" type="string"&gt;ข้อบกพร่องผิวหน้า&lt;/field&gt;
             &lt;field name="machine_no" type="string"&gt;&lt;/field&gt;
             &lt;field name="warehouse_no" type="string"&gt;WH-SCRAP&lt;/field&gt;
             &lt;field name="location_no" type="string"&gt;A01&lt;/field&gt;
@@ -663,90 +663,90 @@
 &lt;/parameters&gt;</pre>
         </div>
 
-        <!-- 回應格式 -->
+        <!-- รูปแบบการตอบกลับ -->
         <div class="section">
-            <h2>回應格式</h2>
+            <h2>รูปแบบการตอบกลับ</h2>
 
             <div class="two-column">
                 <div>
-                    <h3>成功回應 (code=200)</h3>
+                    <h3>การตอบกลับสำเร็จ (code=200)</h3>
                     <div class="success-box">
                         <pre style="background: transparent; padding: 0; margin: 0;">{
   "code": 200,
-  "msg": "不良品入庫單建立成功",
+  "msg": "สร้างใบรับสินค้าเสียสำเร็จ",
   "ERPMessage": {
-    "description": "處理成功",
+    "description": "ประมวลผลสำเร็จ",
     "doc_no": "58-20260319001"
   }
 }</pre>
                     </div>
                 </div>
                 <div>
-                    <h3>失敗回應 (code=500)</h3>
+                    <h3>การตอบกลับล้มเหลว (code=500)</h3>
                     <div class="error-box">
                         <pre style="background: transparent; padding: 0; margin: 0;">{
   "code": 500,
-  "msg": "不良品入庫單建立失敗",
+  "msg": "สร้างใบรับสินค้าเสียล้มเหลว",
   "ERPMessage": {
-    "description": "倉庫代號不存在"
+    "description": "ไม่พบรหัสคลังสินค้า"
   }
 }</pre>
                     </div>
                 </div>
             </div>
 
-            <h3>回應欄位說明</h3>
+            <h3>คำอธิบายฟิลด์การตอบกลับ</h3>
             <table>
                 <thead>
                     <tr>
-                        <th>欄位</th>
-                        <th>類型</th>
-                        <th>說明</th>
+                        <th>ฟิลด์</th>
+                        <th>ประเภท</th>
+                        <th>คำอธิบาย</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td><code class="code-inline">code</code></td>
                         <td>Integer</td>
-                        <td>200=成功, 500=失敗</td>
+                        <td>200=สำเร็จ, 500=ล้มเหลว</td>
                     </tr>
                     <tr>
                         <td><code class="code-inline">msg</code></td>
                         <td>String</td>
-                        <td>處理訊息</td>
+                        <td>ข้อความประมวลผล</td>
                     </tr>
                     <tr>
                         <td><code class="code-inline">ERPMessage.doc_no</code></td>
                         <td>String</td>
-                        <td>ERP 回傳的不良品入庫單號（單別-單號）</td>
+                        <td>หมายเลขใบรับสินค้าเสียจาก ERP (ประเภท-หมายเลข)</td>
                     </tr>
                 </tbody>
             </table>
         </div>
 
-        <!-- 回寫邏輯 -->
+        <!-- ตรรกะการบันทึกกลับ -->
         <div class="section">
-            <h2>ERP 回寫邏輯</h2>
-            <p>ERP 回傳不良品入庫單號後，MES 會將單號回寫至移轉單明細：</p>
+            <h2>ตรรกะการบันทึกกลับ ERP</h2>
+            <p>หลังจาก ERP ส่งหมายเลขใบรับสินค้าเสียกลับมา MES จะบันทึกหมายเลขลงในรายละเอียดใบโอน:</p>
 
             <div class="flow-diagram">
                 <svg viewBox="0 0 700 160" style="max-width: 700px; width: 100%;">
-                    <!-- ERP 回傳 -->
+                    <!-- ERP ส่งกลับ -->
                     <rect x="20" y="40" width="150" height="80" rx="8" fill="#fef3c7" stroke="#f59e0b" stroke-width="2"/>
-                    <text x="95" y="70" text-anchor="middle" font-size="13" font-weight="600" fill="#92400e">ERP 回傳</text>
+                    <text x="95" y="70" text-anchor="middle" font-size="13" font-weight="600" fill="#92400e">ERP ส่งกลับ</text>
                     <text x="95" y="90" text-anchor="middle" font-size="11" fill="#d97706">doc_no</text>
                     <text x="95" y="105" text-anchor="middle" font-size="10" fill="#d97706">58-20260319001</text>
 
-                    <!-- 箭頭 -->
+                    <!-- ลูกศร -->
                     <path d="M170 80 L230 80" stroke="#64748b" stroke-width="2" marker-end="url(#arrowhead2)"/>
 
-                    <!-- 解析 -->
+                    <!-- แยกวิเคราะห์ -->
                     <rect x="240" y="40" width="120" height="80" rx="8" fill="#e0e7ff" stroke="#6366f1" stroke-width="2"/>
-                    <text x="300" y="70" text-anchor="middle" font-size="13" font-weight="600" fill="#4338ca">解析單號</text>
+                    <text x="300" y="70" text-anchor="middle" font-size="13" font-weight="600" fill="#4338ca">แยกหมายเลข</text>
                     <text x="300" y="90" text-anchor="middle" font-size="10" fill="#6366f1">TL011=58</text>
                     <text x="300" y="105" text-anchor="middle" font-size="10" fill="#6366f1">TL012=20260319001</text>
 
-                    <!-- 箭頭 -->
+                    <!-- ลูกศร -->
                     <path d="M360 80 L420 80" stroke="#64748b" stroke-width="2" marker-end="url(#arrowhead2)"/>
 
                     <!-- SFT_TRANSORDER_LINE -->
@@ -764,8 +764,8 @@
                 </svg>
             </div>
 
-            <h3>回寫 SQL</h3>
-            <pre>-- 更新 SFT_TRANSORDER_LINE
+            <h3>SQL สำหรับบันทึกกลับ</h3>
+            <pre>-- อัปเดต SFT_TRANSORDER_LINE
 UPDATE SFT_TRANSORDER_LINE
 SET TL011 = '58',
     TL012 = '20260319001'
@@ -774,77 +774,77 @@ WHERE TRANSORDERTYPE = '58'
   AND SN = :SN</pre>
         </div>
 
-        <!-- 相關資料表 -->
+        <!-- ตารางข้อมูลที่เกี่ยวข้อง -->
         <div class="section">
-            <h2>相關資料表</h2>
+            <h2>ตารางข้อมูลที่เกี่ยวข้อง</h2>
             <table>
                 <thead>
                     <tr>
-                        <th>資料表</th>
-                        <th>說明</th>
-                        <th>關鍵欄位</th>
+                        <th>ตารางข้อมูล</th>
+                        <th>คำอธิบาย</th>
+                        <th>ฟิลด์สำคัญ</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td><code class="code-inline">SftTransorder</code></td>
-                        <td>移轉單頭檔</td>
+                        <td>ส่วนหัวใบโอน</td>
                         <td>TRANSTYPE, TRANSNO, TO007, TO008, TO013</td>
                     </tr>
                     <tr>
                         <td><code class="code-inline">SftTransorderLine</code></td>
-                        <td>移轉單明細</td>
+                        <td>รายละเอียดใบโอน</td>
                         <td>TRANSORDERTYPE(=58), SCRAPQTY, TL011, TL012</td>
                     </tr>
                     <tr>
                         <td><code class="code-inline">SFT_WS_RUN</code></td>
-                        <td>工作站執行記錄</td>
-                        <td>出站記錄、不良品數量來源</td>
+                        <td>บันทึกการดำเนินการสถานีงาน</td>
+                        <td>บันทึก CheckOut แหล่งจำนวนสินค้าเสีย</td>
                     </tr>
                 </tbody>
             </table>
 
             <div class="note">
-                <div class="note-title">TRANSORDERTYPE 類型對照</div>
+                <div class="note-title">ตารางอ้างอิงประเภท TRANSORDERTYPE</div>
                 <div class="note-content">
                     <table style="margin-top: 10px;">
-                        <tr><td><code>58</code></td><td>報廢入庫（不良品入庫）</td></tr>
-                        <tr><td><code>59</code></td><td>委外入庫</td></tr>
-                        <tr><td>其他</td><td>一般移轉單</td></tr>
+                        <tr><td><code>58</code></td><td>รับสินค้าเสียเข้าคลัง</td></tr>
+                        <tr><td><code>59</code></td><td>รับสินค้าจ้างผลิตเข้าคลัง</td></tr>
+                        <tr><td>อื่นๆ</td><td>ใบโอนทั่วไป</td></tr>
                     </table>
                 </div>
             </div>
         </div>
 
-        <!-- 程式碼位置 -->
+        <!-- ตำแหน่งโค้ด -->
         <div class="section">
-            <h2>程式碼位置</h2>
+            <h2>ตำแหน่งโค้ด</h2>
             <table>
                 <thead>
                     <tr>
-                        <th>功能</th>
-                        <th>檔案路徑</th>
-                        <th>行號/方法</th>
+                        <th>ฟังก์ชัน</th>
+                        <th>เส้นทางไฟล์</th>
+                        <th>หมายเลขบรรทัด/เมธอด</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <td>出站計算不良品</td>
+                        <td>คำนวณสินค้าเสียขณะ CheckOut</td>
                         <td>SFT_core/src/com/dci/sft/update/CheckOut.java</td>
                         <td>doCheckOut()</td>
                     </tr>
                     <tr>
-                        <td>移轉單建立</td>
+                        <td>สร้างใบโอน</td>
                         <td>SFT_core/src/com/dci/sft/jsonMappingHibernate/TransOrderDataToJson.java</td>
                         <td>595-900</td>
                     </tr>
                     <tr>
-                        <td>API 路由判斷</td>
+                        <td>การตัดสินใจเส้นทาง API</td>
                         <td>SFT_ERPIntegrate/src/com/dci/sft/erp/XmlToERP_handler.java</td>
                         <td>94-98</td>
                     </tr>
                     <tr>
-                        <td>XML 參數組裝</td>
+                        <td>ประกอบพารามิเตอร์ XML</td>
                         <td>SFT_ERPIntegrate/src/com/dci/sft/erp/webservice/SendFormS.java</td>
                         <td>1752-1810</td>
                     </tr>
@@ -852,46 +852,46 @@ WHERE TRANSORDERTYPE = '58'
             </table>
         </div>
 
-        <!-- 錯誤處理 -->
+        <!-- การจัดการข้อผิดพลาด -->
         <div class="section">
-            <h2>錯誤處理</h2>
+            <h2>การจัดการข้อผิดพลาด</h2>
             <table>
                 <thead>
                     <tr>
-                        <th>錯誤情境</th>
-                        <th>原因</th>
-                        <th>處理方式</th>
+                        <th>สถานการณ์ข้อผิดพลาด</th>
+                        <th>สาเหตุ</th>
+                        <th>วิธีจัดการ</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <td>倉庫代號不存在</td>
-                        <td>ERP 端無此倉庫</td>
-                        <td>確認不良品倉庫已在 ERP 建立</td>
+                        <td>ไม่พบรหัสคลังสินค้า</td>
+                        <td>ไม่มีคลังสินค้านี้ในระบบ ERP</td>
+                        <td>ตรวจสอบว่าคลังสินค้าเสียได้สร้างใน ERP แล้ว</td>
                     </tr>
                     <tr>
-                        <td>品號不存在</td>
-                        <td>ERP 端無此品號</td>
-                        <td>確認品號已同步至 ERP</td>
+                        <td>ไม่พบรหัสสินค้า</td>
+                        <td>ไม่มีรหัสสินค้านี้ในระบบ ERP</td>
+                        <td>ตรวจสอบว่ารหัสสินค้าได้ซิงค์กับ ERP แล้ว</td>
                     </tr>
                     <tr>
-                        <td>連線超時</td>
+                        <td>การเชื่อมต่อหมดเวลา</td>
                         <td>SocketTimeoutException</td>
-                        <td>檢查 ERP 伺服器狀態，需手動補送</td>
+                        <td>ตรวจสอบสถานะเซิร์ฟเวอร์ ERP ต้องส่งใหม่ด้วยตนเอง</td>
                     </tr>
                 </tbody>
             </table>
 
-            <h3>LOG 記錄</h3>
-            <pre>// 日誌檔案：logs/ERPReturnErrorRec.log
+            <h3>บันทึก LOG</h3>
+            <pre>// ไฟล์ log: logs/ERPReturnErrorRec.log
 
 [ERP_SEND_ERROR] taskName=woScrapDataCreate, errorType=SocketTimeoutException, errorMsg=Read timed out
-[ERP_SEND_ERROR] 送出内容={...JSON...}</pre>
+[ERP_SEND_ERROR] เนื้อหาที่ส่ง={...JSON...}</pre>
         </div>
     </div>
 
     <div class="footer">
-        <p>eMES API 規格書 | 案號: 0189144 | 更新日期: 2026-03-19</p>
+        <p>เอกสารข้อกำหนด eMES API | หมายเลขโครงการ: 0189144 | วันที่อัปเดต: 2026-03-19</p>
     </div>
 </body>
 </html>

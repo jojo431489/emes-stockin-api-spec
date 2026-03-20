@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>stockin.data.create - eMES API</title>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #1e40af;
+            --success-color: #16a34a;
+            --error-color: #dc2626;
+            --warning-color: #d97706;
+            --bg-color: #f8fafc;
+            --border-color: #e2e8f0;
+            --text-color: #1e293b;
+            --text-muted: #64748b;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', 'Tahoma', sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+        }
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .navbar a { color: white; text-decoration: none; }
+        .navbar .brand { font-size: 1.2em; font-weight: 600; }
+        .navbar .back { opacity: 0.9; }
+        .navbar .back:hover { opacity: 1; }
+        .lang-switcher {
+            display: flex;
+            gap: 10px;
+        }
+        .lang-switcher a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.85em;
+        }
+        .lang-switcher a:hover {
+            color: white;
+            background: rgba(255,255,255,0.1);
+        }
+        .lang-switcher a.active {
+            color: white;
+            background: rgba(255,255,255,0.2);
+        }
+        .container { max-width: 1100px; margin: 0 auto; padding: 30px; }
+        .api-header {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .api-header h1 { color: var(--primary-color); font-size: 1.8em; margin-bottom: 10px; }
+        .api-code {
+            font-family: 'Consolas', monospace;
+            background: var(--bg-color);
+            padding: 8px 15px;
+            border-radius: 6px;
+            display: inline-block;
+            color: var(--primary-color);
+            font-size: 1.1em;
+        }
+        .badges { margin-top: 15px; display: flex; gap: 10px; flex-wrap: wrap; }
+        .badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+        .badge-post { background: #dcfce7; color: #16a34a; }
+        .badge-json { background: #dbeafe; color: #2563eb; }
+        .badge-sync { background: #fef3c7; color: #d97706; }
+        h2 {
+            color: var(--secondary-color);
+            font-size: 1.4em;
+            margin: 30px 0 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--border-color);
+        }
+        h3 { color: var(--text-color); font-size: 1.1em; margin: 20px 0 10px; }
+        h4 { color: var(--text-muted); font-size: 1em; margin: 15px 0 10px; }
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; font-size: 0.9em; }
+        th, td { border: 1px solid var(--border-color); padding: 10px 12px; text-align: left; }
+        th { background: var(--primary-color); color: white; font-weight: 600; }
+        tr:nth-child(even) { background: var(--bg-color); }
+        tr:hover { background: #e0e7ff; }
+        .required { background: var(--error-color); color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.75em; }
+        .optional { background: var(--text-muted); color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.75em; }
+        .code-block {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Consolas', monospace;
+            font-size: 0.85em;
+            line-height: 1.5;
+            margin: 15px 0;
+        }
+        .code-block .key { color: #7dd3fc; }
+        .code-block .string { color: #86efac; }
+        .code-block .number { color: #fbbf24; }
+        .code-block .comment { color: #64748b; font-style: italic; }
+        .info-box {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        .info-box.info { background: #dbeafe; border-left: 4px solid var(--primary-color); }
+        .info-box.warning { background: #fef3c7; border-left: 4px solid var(--warning-color); }
+        .info-box.success { background: #dcfce7; border-left: 4px solid var(--success-color); }
+        .flow-diagram { text-align: center; margin: 20px 0; padding: 20px; background: white; border-radius: 10px; }
+        .toc {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .toc ul { list-style: none; display: flex; flex-wrap: wrap; gap: 15px; }
+        .toc a { color: var(--primary-color); text-decoration: none; }
+        .toc a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="index.html" class="back">← กลับไปรายการ API</a>
+        <div class="lang-switcher">
+            <a href="../stockin-data-create.html">繁體中文</a>
+            <a href="../en/stockin-data-create.html">English</a>
+            <a href="../vi/stockin-data-create.html">Tiếng Việt</a>
+            <a href="stockin-data-create.html" class="active">ภาษาไทย</a>
+        </div>
+        <span class="brand">เอกสารข้อกำหนด eMES API</span>
+    </nav>
+
+    <div class="container">
+        <!-- API Header -->
+        <div class="api-header">
+            <h1>สร้างข้อมูลใบรับเข้าคลังสินค้าสำเร็จ</h1>
+            <div class="api-code">stockin.data.create</div>
+            <div class="badges">
+                <span class="badge badge-post">POST</span>
+                <span class="badge badge-json">JSON</span>
+                <span class="badge badge-sync">ซิงโครนัส</span>
+            </div>
+        </div>
+
+        <!-- TOC -->
+        <div class="toc">
+            <ul>
+                <li><a href="#basic">ข้อมูลพื้นฐาน</a></li>
+                <li><a href="#flow">กระบวนการทางธุรกิจ</a></li>
+                <li><a href="#request">Request</a></li>
+                <li><a href="#response">Response</a></li>
+                <li><a href="#rules">กฎการตรวจสอบ</a></li>
+                <li><a href="#errors">รหัสข้อผิดพลาด</a></li>
+                <li><a href="#example">ตัวอย่าง JSON</a></li>
+            </ul>
+        </div>
+
+        <!-- ข้อมูลพื้นฐาน -->
+        <div class="card" id="basic">
+            <h2>1. ข้อมูลพื้นฐาน</h2>
+            <table>
+                <tr><th width="25%">รายการ</th><th>คำอธิบาย</th></tr>
+                <tr><td>ชื่อ API ภาษาไทย</td><td>สร้างข้อมูลใบรับเข้าคลังสินค้าสำเร็จ</td></tr>
+                <tr><td>ชื่อ API ภาษาอังกฤษ</td><td>Work Order Stock-In Data Create</td></tr>
+                <tr><td>รหัส CROSS API</td><td><code>stockin.data.create</code></td></tr>
+                <tr><td>บริการ ESB ที่เกี่ยวข้อง</td><td><code>/sendTransForm</code> (ทั่วไป) หรือ <code>/outsourcingPurchaseStockinCreate</code> (TRANSTYPE=59)</td></tr>
+                <tr><td>ทิศทางการเรียก</td><td>MES → ERP</td></tr>
+                <tr><td>เวลาที่เรียก</td><td>1. เมื่อ CheckOut สถานีสุดท้ายของใบสั่งผลิตเสร็จสิ้น<br>2. เมื่อดำเนินการรับเข้าคลังแบบชุด<br>3. เมื่อทริกเกอร์รับเข้าคลังด้วยตนเอง</td></tr>
+                <tr><td>สถานการณ์ธุรกิจหลัก</td><td>หลังการผลิตเสร็จสิ้น รับสินค้าสำเร็จเข้าคลังสินค้าที่กำหนดใน ERP อัปเดตจำนวนสต็อกและสถานะใบสั่งผลิตใน ERP</td></tr>
+                <tr><td>รูปแบบ Request</td><td><strong>JSON</strong> (Content-Type: application/json)</td></tr>
+                <tr><td>ซิงโครนัส/อะซิงโครนัส</td><td>เรียกแบบซิงโครนัส</td></tr>
+                <tr><td>การควบคุมธุรกรรม</td><td>จำเป็น (MES และ ERP ต้องรักษาความสอดคล้องของข้อมูล)</td></tr>
+                <tr><td>หมายเหตุ</td><td>TB001/TB002 ที่ส่งกลับคือประเภท/หมายเลขเอกสารที่ ERP สร้าง ต้องบันทึกลงใน TL011/TL012</td></tr>
+            </table>
+        </div>
+
+        <!-- กระบวนการทางธุรกิจ -->
+        <div class="card" id="flow">
+            <h2>2. กระบวนการทางธุรกิจ</h2>
+            <div class="flow-diagram">
+                <svg width="850" height="280" viewBox="0 0 850 280" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <marker id="arrow" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#3b82f6"/>
+                        </marker>
+                    </defs>
+                    <!-- พื้นที่ MES -->
+                    <rect x="20" y="30" width="380" height="200" rx="10" fill="#dbeafe" stroke="#3b82f6" stroke-width="2"/>
+                    <text x="210" y="55" text-anchor="middle" font-size="14" font-weight="bold" fill="#3b82f6">ระบบ MES</text>
+
+                    <!-- พื้นที่ ERP -->
+                    <rect x="450" y="30" width="380" height="200" rx="10" fill="#dcfce7" stroke="#10b981" stroke-width="2"/>
+                    <text x="640" y="55" text-anchor="middle" font-size="14" font-weight="bold" fill="#10b981">ระบบ ERP</text>
+
+                    <!-- โหนด MES -->
+                    <rect x="40" y="80" width="120" height="45" rx="6" fill="#3b82f6"/>
+                    <text x="100" y="107" text-anchor="middle" fill="white" font-size="11">1. CheckOut สุดท้าย</text>
+
+                    <rect x="180" y="80" width="120" height="45" rx="6" fill="#6366f1"/>
+                    <text x="240" y="100" text-anchor="middle" fill="white" font-size="10">2. ประกอบข้อมูล</text>
+                    <text x="240" y="115" text-anchor="middle" fill="white" font-size="9">(TransOrderDataToJson)</text>
+
+                    <rect x="40" y="150" width="120" height="45" rx="6" fill="#3b82f6"/>
+                    <text x="100" y="170" text-anchor="middle" fill="white" font-size="10">4. บันทึกกลับ</text>
+                    <text x="100" y="185" text-anchor="middle" fill="white" font-size="9">TL011/TL012</text>
+
+                    <!-- โหนด ERP -->
+                    <rect x="480" y="80" width="130" height="45" rx="6" fill="#10b981"/>
+                    <text x="545" y="100" text-anchor="middle" fill="white" font-size="10">3a. ตรวจสอบใบสั่งผลิต</text>
+                    <text x="545" y="115" text-anchor="middle" fill="white" font-size="9">(จำนวน/สถานะ)</text>
+
+                    <rect x="630" y="80" width="130" height="45" rx="6" fill="#10b981"/>
+                    <text x="695" y="100" text-anchor="middle" fill="white" font-size="10">3b. สร้างใบรับเข้า</text>
+                    <text x="695" y="115" text-anchor="middle" fill="white" font-size="9">(TB001/TB002)</text>
+
+                    <rect x="550" y="150" width="130" height="45" rx="6" fill="#059669"/>
+                    <text x="615" y="170" text-anchor="middle" fill="white" font-size="10">3c. อัปเดตสต็อก</text>
+                    <text x="615" y="185" text-anchor="middle" fill="white" font-size="9">(เพิ่มสินค้าสำเร็จ)</text>
+
+                    <!-- เส้นเชื่อม -->
+                    <line x1="160" y1="102" x2="175" y2="102" stroke="#3b82f6" stroke-width="2" marker-end="url(#arrow)"/>
+                    <line x1="300" y1="102" x2="475" y2="102" stroke="#6366f1" stroke-width="2" stroke-dasharray="5,5" marker-end="url(#arrow)"/>
+                    <line x1="610" y1="102" x2="625" y2="102" stroke="#10b981" stroke-width="2" marker-end="url(#arrow)"/>
+                    <line x1="695" y1="125" x2="695" y2="145" stroke="#10b981" stroke-width="2" marker-end="url(#arrow)"/>
+                    <line x1="550" y1="172" x2="165" y2="172" stroke="#6366f1" stroke-width="2" stroke-dasharray="5,5" marker-end="url(#arrow)"/>
+
+                    <!-- คำอธิบาย -->
+                    <text x="425" y="260" text-anchor="middle" font-size="11" fill="#64748b">ตำแหน่งโปรแกรม: TransOrderDataToJson.java:648 → SendFormSbyJson → XmlToERP_handler</text>
+                </svg>
+            </div>
+
+            <div class="info-box info">
+                <strong>การเชื่อมโยงโค้ด</strong>
+                <ul style="margin-top:10px; margin-left:20px;">
+                    <li>การตัดสินใจเส้นทาง: <code>TransOrderDataToJson.java:648</code></li>
+                    <li>การประกอบ JSON: <code>SendFormSbyJson.transferFormToJson()</code></li>
+                    <li>การแมปฟิลด์: <code>SendFormElementbyJson.getTransferFormHead/Body()</code></li>
+                    <li>การส่ง HTTP: <code>XmlToERP_handler.sendToErpByESB()</code></li>
+                </ul>
+            </div>
+
+            <h3>ตรรกะการตัดสินใจประเภทการรับเข้า</h3>
+            <div class="flow-diagram">
+                <svg width="650" height="180" viewBox="0 0 650 180" xmlns="http://www.w3.org/2000/svg">
+                    <polygon points="200,20 280,60 200,100 120,60" fill="#f59e0b" stroke="#d97706" stroke-width="2"/>
+                    <text x="200" y="55" text-anchor="middle" fill="white" font-size="11">TRANSTYPE</text>
+                    <text x="200" y="70" text-anchor="middle" fill="white" font-size="11">= 59 ?</text>
+
+                    <rect x="350" y="35" width="200" height="50" rx="6" fill="#dc2626"/>
+                    <text x="450" y="60" text-anchor="middle" fill="white" font-size="11">ใบรับสินค้าจ้างผลิต</text>
+                    <text x="450" y="75" text-anchor="middle" fill="white" font-size="9">outsourcingPurchaseStockinCreate</text>
+                    <line x1="280" y1="60" x2="345" y2="60" stroke="#d97706" stroke-width="2" marker-end="url(#arrow)"/>
+                    <text x="310" y="50" font-size="10" fill="#d97706">ใช่</text>
+
+                    <rect x="350" y="110" width="200" height="50" rx="6" fill="#3b82f6"/>
+                    <text x="450" y="135" text-anchor="middle" fill="white" font-size="11">ใบโอน/ใบรับเข้าทั่วไป</text>
+                    <text x="450" y="150" text-anchor="middle" fill="white" font-size="9">generateTransferForm / sendTransForm</text>
+                    <line x1="200" y1="100" x2="200" y2="135" stroke="#d97706" stroke-width="2"/>
+                    <line x1="200" y1="135" x2="345" y2="135" stroke="#d97706" stroke-width="2" marker-end="url(#arrow)"/>
+                    <text x="215" y="120" font-size="10" fill="#d97706">ไม่ใช่</text>
+                </svg>
+            </div>
+        </div>
+
+        <!-- ข้อกำหนด Request -->
+        <div class="card" id="request">
+            <h2>3. ข้อกำหนด Request</h2>
+
+            <div class="info-box success">
+                <strong>รูปแบบการส่ง: JSON</strong><br>
+                <code>Content-Type: application/json</code> (HttpClient.java:25)
+            </div>
+
+            <h3>3.1 โครงสร้างชั้นนอก</h3>
+            <table>
+                <tr><th>ฟิลด์</th><th>ประเภท</th><th>จำเป็น</th><th>คำอธิบาย</th><th>แหล่ง MES</th></tr>
+                <tr><td>companyID</td><td>string</td><td><span class="required">Y</span></td><td>รหัสบริษัท</td><td>COMPANYID</td></tr>
+                <tr><td>userId</td><td>string</td><td><span class="required">Y</span></td><td>พนักงานผู้ดำเนินการ</td><td>CONFIRMER</td></tr>
+                <tr><td>doAction</td><td>string</td><td><span class="required">Y</span></td><td>2=ใบโอน</td><td>DOACTION</td></tr>
+                <tr><td>docase</td><td>string</td><td><span class="required">Y</span></td><td>1=เพิ่ม, 2=แก้ไข, 3=ลบ</td><td>DOCASE</td></tr>
+                <tr><td>head</td><td>object</td><td><span class="required">Y</span></td><td>ข้อมูลส่วนหัว</td><td>-</td></tr>
+                <tr><td>line</td><td>array</td><td><span class="required">Y</span></td><td>รายละเอียดรายการ</td><td>-</td></tr>
+            </table>
+
+            <h3>3.2 ส่วนหัว (head) - getTransferFormHead()</h3>
+            <table>
+                <tr><th>ฟิลด์</th><th>ประเภท</th><th>ความยาว</th><th>จำเป็น</th><th>คำอธิบาย</th><th>แหล่ง MES</th></tr>
+                <tr><td>transferType</td><td>string</td><td>10</td><td><span class="required">Y</span></td><td>ประเภทใบโอน</td><td>TRANSTYPE</td></tr>
+                <tr><td>transferCode</td><td>string</td><td>30</td><td><span class="optional">N</span></td><td>หมายเลขใบโอน (ต้องระบุเมื่อแก้ไข)</td><td>TO008</td></tr>
+                <tr><td>date</td><td>string</td><td>10</td><td><span class="required">Y</span></td><td>วันที่เอกสาร YYYY-MM-DD</td><td>TRANSDATE</td></tr>
+                <tr><td>moveOutType</td><td>string</td><td>2</td><td><span class="required">Y</span></td><td>ประเภทการย้ายออก (1=สถานีงาน, 2=คลังสินค้า, 3=แผนก)</td><td>OUTTYPE</td></tr>
+                <tr><td>moveOutCode</td><td>string</td><td>20</td><td><span class="required">Y</span></td><td>รหัสย้ายออก</td><td>OUTDEPID</td></tr>
+                <tr><td>moveOutName</td><td>string</td><td>50</td><td><span class="optional">N</span></td><td>ชื่อย้ายออก</td><td>OUTDEPNAME</td></tr>
+                <tr><td>moveInType</td><td>string</td><td>2</td><td><span class="required">Y</span></td><td>ประเภทการย้ายเข้า</td><td>INTYPE</td></tr>
+                <tr><td>moveInCode</td><td>string</td><td>20</td><td><span class="required">Y</span></td><td>รหัสย้ายเข้า (คลังสินค้า)</td><td>INDEPID</td></tr>
+                <tr><td>moveInName</td><td>string</td><td>50</td><td><span class="optional">N</span></td><td>ชื่อย้ายเข้า</td><td>INDEPNAME</td></tr>
+                <tr><td>factoryCode</td><td>string</td><td>10</td><td><span class="required">Y</span></td><td>รหัสโรงงาน</td><td>FACTORYID</td></tr>
+                <tr><td>confirmationCode</td><td>string</td><td>20</td><td><span class="optional">N</span></td><td>รหัสยืนยัน</td><td>CONFIRMCODE</td></tr>
+                <tr><td>remark</td><td>string</td><td>255</td><td><span class="optional">N</span></td><td>หมายเหตุ</td><td>COMMENT</td></tr>
+                <tr><td>orderDate</td><td>string</td><td>10</td><td><span class="optional">N</span></td><td>วันที่สั่งซื้อ</td><td>DOCUMENTDATE</td></tr>
+                <tr><td>eMESTransferType</td><td>string</td><td>10</td><td><span class="required">Y</span></td><td>ประเภทใบ MES</td><td>TRANSTYPE</td></tr>
+                <tr><td>eMESTransferCode</td><td>string</td><td>30</td><td><span class="required">Y</span></td><td>หมายเลขใบ MES</td><td>TRANSNO</td></tr>
+                <tr><td>source_no</td><td>string</td><td>50</td><td><span class="required">Y</span></td><td>หมายเลขต้นทาง (ประเภท MES-หมายเลข)</td><td>eMESTransferType + "-" + eMESTransferCode</td></tr>
+                <tr><td>operator_no</td><td>string</td><td>20</td><td><span class="optional">N</span></td><td>พนักงานผู้ดำเนินการ</td><td>create (CONFIRMER)</td></tr>
+            </table>
+
+            <h3>3.3 รายละเอียด (line) - getTransferFormBody() - อาร์เรย์</h3>
+            <table>
+                <tr><th>ฟิลด์</th><th>ประเภท</th><th>จำเป็น</th><th>คำอธิบาย</th><th>แหล่ง MES</th></tr>
+                <tr><td>moType</td><td>string</td><td><span class="required">Y</span></td><td>ประเภทใบสั่งผลิต</td><td>MOTYPE</td></tr>
+                <tr><td>moCode</td><td>string</td><td><span class="required">Y</span></td><td>หมายเลขใบสั่งผลิต</td><td>MONO</td></tr>
+                <tr><td>moveOutOpSeq</td><td>string</td><td><span class="required">Y</span></td><td>ลำดับขั้นตอนย้ายออก</td><td>OUTOPSEQ</td></tr>
+                <tr><td>moveOutOpId</td><td>string</td><td><span class="required">Y</span></td><td>ขั้นตอนย้ายออก</td><td>OUTOP</td></tr>
+                <tr><td>moveInOpSeq</td><td>string</td><td><span class="optional">N</span></td><td>ลำดับขั้นตอนย้ายเข้า</td><td>INOPSEQ</td></tr>
+                <tr><td>moveInOpId</td><td>string</td><td><span class="optional">N</span></td><td>ขั้นตอนย้ายเข้า</td><td>INOP</td></tr>
+                <tr><td>qty</td><td>decimal</td><td><span class="required">Y</span></td><td>จำนวน</td><td>TRANSQTY</td></tr>
+                <tr><td>unit</td><td>string</td><td><span class="required">Y</span></td><td>หน่วย</td><td>UNIT</td></tr>
+                <tr><td>batchCode</td><td>string</td><td><span class="required">Y</span></td><td>หมายเลขล็อต</td><td>LOTNO</td></tr>
+                <tr><td>state</td><td>string</td><td><span class="required">Y</span></td><td>สถานะ (PATTERN)</td><td>PATTERN</td></tr>
+                <tr><td>prodCode</td><td>string</td><td><span class="required">Y</span></td><td>รหัสสินค้า</td><td>ITEMID</td></tr>
+                <tr><td>prodName</td><td>string</td><td><span class="optional">N</span></td><td>ชื่อสินค้า</td><td>ITEMNAME</td></tr>
+                <tr><td>prodSpec</td><td>string</td><td><span class="optional">N</span></td><td>ข้อกำหนดสินค้า</td><td>ITEMDESCRIPTION</td></tr>
+                <tr><td>acceptanceQty</td><td>decimal</td><td><span class="optional">N</span></td><td>จำนวนที่รับ</td><td>TL002</td></tr>
+                <tr><td>scrapQty</td><td>decimal</td><td><span class="optional">N</span></td><td>จำนวนเสีย</td><td>SCRAPQTY</td></tr>
+                <tr><td>inspectionReturnQty</td><td>decimal</td><td><span class="optional">N</span></td><td>จำนวนคืนตรวจสอบ</td><td>TL003</td></tr>
+                <tr><td>moveInCode</td><td>string</td><td><span class="optional">N</span></td><td>แผนกย้ายเข้า</td><td>INDEP</td></tr>
+                <tr><td>moveInLocation</td><td>string</td><td><span class="optional">N</span></td><td>ตำแหน่งจัดเก็บ</td><td>INSTORAGESPACE</td></tr>
+                <tr><td>useTime</td><td>decimal</td><td><span class="optional">N</span></td><td>เวลาแรงงาน</td><td>LABORHOUR</td></tr>
+                <tr><td>useMachineTime</td><td>decimal</td><td><span class="optional">N</span></td><td>เวลาเครื่องจักร</td><td>MACHINEHOUR</td></tr>
+                <tr><td>remark</td><td>string</td><td><span class="optional">N</span></td><td>หมายเหตุ</td><td>NOTE</td></tr>
+                <tr><td>manufactureDualUnit</td><td>string</td><td><span class="optional">N</span></td><td>หน่วยคู่การผลิต</td><td>TWINUNIT</td></tr>
+                <tr><td>hasQty</td><td>string</td><td><span class="optional">N</span></td><td>สถานะการรับเข้า (stock_in_status)</td><td>HASQTY</td></tr>
+            </table>
+        </div>
+
+        <!-- Response -->
+        <div class="card" id="response">
+            <h2>4. ข้อกำหนด Response</h2>
+            <table>
+                <tr><th>ฟิลด์</th><th>ประเภท</th><th>คำอธิบาย</th></tr>
+                <tr><td>code</td><td>int</td><td>200=สำเร็จ, อื่นๆ=ล้มเหลว</td></tr>
+                <tr><td>msg</td><td>string</td><td>ข้อความผลลัพธ์</td></tr>
+                <tr><td>TB001</td><td>string</td><td>ประเภทใบ ERP → บันทึกลง TL011</td></tr>
+                <tr><td>TB002</td><td>string</td><td>หมายเลขใบ ERP → บันทึกลง TL012</td></tr>
+            </table>
+
+            <h3>ผลลัพธ์การประมวลผลภายใน MES</h3>
+            <table>
+                <tr><th>ฟิลด์</th><th>คำอธิบาย</th></tr>
+                <tr><td>ISOK</td><td>true=สำเร็จ, false=ล้มเหลว</td></tr>
+                <tr><td>Msg</td><td>ข้อความประมวลผล</td></tr>
+                <tr><td>TB001</td><td>บันทึกลง TL011</td></tr>
+                <tr><td>TB002</td><td>บันทึกลง TL012</td></tr>
+            </table>
+        </div>
+
+        <!-- กฎการตรวจสอบ -->
+        <div class="card" id="rules">
+            <h2>5. กฎการตรวจสอบ</h2>
+            <table>
+                <tr><th>#</th><th>รายการตรวจสอบ</th><th>กฎ</th><th>ตำแหน่งโปรแกรม</th></tr>
+                <tr><td>1</td><td>มีข้อมูลรายละเอียด</td><td>SFT_TRANSORDER_LINE_GRID ต้องไม่ว่าง</td><td>TransOrderDataToJson.java:609</td></tr>
+                <tr><td>2</td><td>ตรวจสอบ TO013</td><td>= 1 ถึงจะส่ง generateTransferForm</td><td>TransOrderDataToJson.java:612</td></tr>
+                <tr><td>3</td><td>การเชื่อมต่อ ERP</td><td>SFTConfig.isHasERP() = true</td><td>TransOrderDataToJson.java:646</td></tr>
+                <tr><td>4</td><td>ตรวจสอบ TRANSTYPE</td><td>59=รับสินค้าจ้างผลิต, อื่นๆ=ใบโอนทั่วไป</td><td>TransOrderDataToJson.java:648</td></tr>
+                <tr><td>5</td><td>ตรวจสอบการเสร็จสิ้นใบสั่งผลิต</td><td>canUpdateERP_TA_OP_Status100() = true</td><td>TransOrderDataToJson.java:637</td></tr>
+            </table>
+        </div>
+
+        <!-- รหัสข้อผิดพลาด -->
+        <div class="card" id="errors">
+            <h2>6. รหัสข้อผิดพลาด</h2>
+            <table>
+                <tr><th>รหัส</th><th>ข้อความ</th><th>คำอธิบาย</th></tr>
+                <tr><td>E001</td><td>ขาดฟิลด์ที่จำเป็น</td><td>Request ขาดฟิลด์ที่จำเป็น</td></tr>
+                <tr><td>E002</td><td>ไม่พบใบสั่งผลิต</td><td>MOTYPE-MONO ไม่ถูกต้อง</td></tr>
+                <tr><td>E003</td><td>สถานะใบสั่งผลิตไม่อนุญาต</td><td>ใบสั่งผลิตถูกปิดหรือยกเลิกแล้ว</td></tr>
+                <tr><td>E004</td><td>จำนวนต้องมากกว่าศูนย์</td><td>qty ≤ 0</td></tr>
+                <tr><td>E005</td><td>จำนวนเกินยอดคงเหลือ</td><td>เกินจำนวนที่สามารถรับเข้าได้</td></tr>
+                <tr><td>E006</td><td>ไม่พบคลังสินค้า</td><td>moveInCode ไม่ถูกต้อง</td></tr>
+                <tr><td>E999</td><td>ข้อผิดพลาดระบบ</td><td>Timeout, ข้อผิดพลาดการเชื่อมต่อ</td></tr>
+                <tr><td>Return result parsing error!</td><td>แยกวิเคราะห์ผลลัพธ์ล้มเหลว</td><td>XmlToERP_handler.java:117</td></tr>
+            </table>
+        </div>
+
+        <!-- ตัวอย่าง JSON -->
+        <div class="card" id="example">
+            <h2>7. ตัวอย่าง JSON</h2>
+
+            <h3>Request (MES JSON)</h3>
+            <div class="code-block">
+<pre>{
+  <span class="key">"companyID"</span>: <span class="string">"COMP01"</span>,
+  <span class="key">"userId"</span>: <span class="string">"EMP001"</span>,
+  <span class="key">"doAction"</span>: <span class="string">"2"</span>,           <span class="comment">// 2=ใบโอน</span>
+  <span class="key">"docase"</span>: <span class="string">"1"</span>,              <span class="comment">// 1=เพิ่ม</span>
+  <span class="key">"head"</span>: {
+    <span class="key">"transferType"</span>: <span class="string">"51"</span>,
+    <span class="key">"date"</span>: <span class="string">"2026-03-19"</span>,
+    <span class="key">"moveOutType"</span>: <span class="string">"1"</span>,
+    <span class="key">"moveOutCode"</span>: <span class="string">"WS001"</span>,
+    <span class="key">"moveOutName"</span>: <span class="string">"สถานีประกอบ"</span>,
+    <span class="key">"moveInType"</span>: <span class="string">"2"</span>,
+    <span class="key">"moveInCode"</span>: <span class="string">"FG01"</span>,
+    <span class="key">"moveInName"</span>: <span class="string">"คลังสินค้าสำเร็จรูป"</span>,
+    <span class="key">"factoryCode"</span>: <span class="string">"P001"</span>,
+    <span class="key">"remark"</span>: <span class="string">"รับเข้าคลังปกติ"</span>,
+    <span class="key">"create"</span>: <span class="string">"EMP001"</span>,       <span class="comment">// → ERP: operator_no</span>
+    <span class="key">"eMESTransferType"</span>: <span class="string">"51"</span>,
+    <span class="key">"eMESTransferCode"</span>: <span class="string">"T20260319001"</span>
+  },
+  <span class="key">"line"</span>: [{
+    <span class="key">"moType"</span>: <span class="string">"5101"</span>,
+    <span class="key">"moCode"</span>: <span class="string">"20260319001"</span>,
+    <span class="key">"moveOutOpSeq"</span>: <span class="string">"0030"</span>,
+    <span class="key">"moveOutOpId"</span>: <span class="string">"OP030"</span>,
+    <span class="key">"qty"</span>: <span class="number">100</span>,
+    <span class="key">"unit"</span>: <span class="string">"PCS"</span>,
+    <span class="key">"batchCode"</span>: <span class="string">"LOT20260319001"</span>,
+    <span class="key">"state"</span>: <span class="string">"1"</span>,
+    <span class="key">"prodCode"</span>: <span class="string">"FG-A001-001"</span>,
+    <span class="key">"prodName"</span>: <span class="string">"สินค้าสำเร็จรูป A"</span>,
+    <span class="key">"moveInCode"</span>: <span class="string">"FG01"</span>,
+    <span class="key">"moveInLocation"</span>: <span class="string">"A-01-01"</span>,
+    <span class="key">"hasQty"</span>: <span class="string">"1"</span>,           <span class="comment">// → ERP: stock_in_status</span>
+    <span class="key">"remark"</span>: <span class="string">""</span>
+  }]
+}</pre>
+            </div>
+
+            <h3>Response (สำเร็จ)</h3>
+            <div class="code-block">
+<pre>{
+  <span class="key">"code"</span>: <span class="number">200</span>,
+  <span class="key">"msg"</span>: <span class="string">"สร้างใบรับเข้าคลังสำเร็จ"</span>,
+  <span class="key">"TB001"</span>: <span class="string">"5101"</span>,
+  <span class="key">"TB002"</span>: <span class="string">"20260319001"</span>
+}</pre>
+            </div>
+
+            <h3>Response (ล้มเหลว)</h3>
+            <div class="code-block">
+<pre>{
+  <span class="key">"code"</span>: <span class="number">500</span>,
+  <span class="key">"msg"</span>: <span class="string">"ไม่พบใบสั่งผลิต 5101-20260319999"</span>
+}</pre>
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>

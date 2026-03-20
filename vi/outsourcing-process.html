@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>outsourcing.process - eMES API</title>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #1e40af;
+            --success-color: #16a34a;
+            --error-color: #dc2626;
+            --warning-color: #d97706;
+            --bg-color: #f8fafc;
+            --border-color: #e2e8f0;
+            --text-color: #1e293b;
+            --text-muted: #64748b;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+        }
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .navbar a { color: white; text-decoration: none; }
+        .navbar .brand { font-size: 1.2em; font-weight: 600; }
+        .navbar .back { opacity: 0.9; }
+        .navbar .back:hover { opacity: 1; }
+        .container { max-width: 1100px; margin: 0 auto; padding: 30px; }
+        .api-header {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .api-header h1 { color: var(--error-color); font-size: 1.8em; margin-bottom: 10px; }
+        .api-code {
+            font-family: 'Consolas', monospace;
+            background: var(--bg-color);
+            padding: 8px 15px;
+            border-radius: 6px;
+            display: inline-block;
+            color: var(--error-color);
+            font-size: 1.1em;
+        }
+        .badges { margin-top: 15px; display: flex; gap: 10px; flex-wrap: wrap; }
+        .badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+        .badge-delete { background: #fee2e2; color: #dc2626; }
+        .badge-json { background: #dbeafe; color: #2563eb; }
+        .badge-sync { background: #fef3c7; color: #d97706; }
+        h2 {
+            color: var(--secondary-color);
+            font-size: 1.4em;
+            margin: 30px 0 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--border-color);
+        }
+        h3 { color: var(--text-color); font-size: 1.1em; margin: 20px 0 10px; }
+        h4 { color: var(--text-muted); font-size: 1em; margin: 15px 0 10px; }
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; font-size: 0.9em; }
+        th, td { border: 1px solid var(--border-color); padding: 10px 12px; text-align: left; }
+        th { background: var(--error-color); color: white; font-weight: 600; }
+        tr:nth-child(even) { background: var(--bg-color); }
+        tr:hover { background: #fee2e2; }
+        .required { background: var(--error-color); color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.75em; }
+        .optional { background: var(--text-muted); color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.75em; }
+        .code-block {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Consolas', monospace;
+            font-size: 0.85em;
+            line-height: 1.5;
+            margin: 15px 0;
+        }
+        .code-block .key { color: #7dd3fc; }
+        .code-block .string { color: #86efac; }
+        .code-block .number { color: #fbbf24; }
+        .code-block .comment { color: #64748b; font-style: italic; }
+        .info-box {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        .info-box.info { background: #dbeafe; border-left: 4px solid var(--primary-color); }
+        .info-box.warning { background: #fef3c7; border-left: 4px solid var(--warning-color); }
+        .info-box.danger { background: #fee2e2; border-left: 4px solid var(--error-color); }
+        .info-box.success { background: #dcfce7; border-left: 4px solid var(--success-color); }
+        .flow-diagram { text-align: center; margin: 20px 0; padding: 20px; background: white; border-radius: 10px; }
+        .toc {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .toc ul { list-style: none; display: flex; flex-wrap: wrap; gap: 15px; }
+        .toc a { color: var(--primary-color); text-decoration: none; }
+        .toc a:hover { text-decoration: underline; }
+        .lang-switcher {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 10px;
+            z-index: 1000;
+        }
+        .lang-switcher a {
+            display: block;
+            padding: 5px 15px;
+            color: var(--text-color);
+            text-decoration: none;
+            border-radius: 4px;
+        }
+        .lang-switcher a:hover { background: var(--bg-color); }
+        .lang-switcher a.active { background: var(--primary-color); color: white; }
+    </style>
+</head>
+<body>
+    <div class="lang-switcher">
+        <a href="../outsourcing-process.html">繁體中文</a>
+        <a href="../en/outsourcing-process.html">English</a>
+        <a href="outsourcing-process.html" class="active">Tiếng Việt</a>
+        <a href="../th/outsourcing-process.html">ภาษาไทย</a>
+    </div>
+
+    <nav class="navbar">
+        <a href="index.html" class="back">← Quay lại danh sách API</a>
+        <span class="brand">eMES API Tài liệu kỹ thuật</span>
+    </nav>
+
+    <div class="container">
+        <!-- API Header -->
+        <div class="api-header">
+            <h1>Hủy phiếu nhập hàng gia công</h1>
+            <div class="api-code">outsourcing.process</div>
+            <div class="badges">
+                <span class="badge badge-delete">HỦY</span>
+                <span class="badge badge-json">JSON</span>
+                <span class="badge badge-sync">Đồng bộ</span>
+            </div>
+        </div>
+
+        <!-- TOC -->
+        <div class="toc">
+            <ul>
+                <li><a href="#basic">Thông tin cơ bản</a></li>
+                <li><a href="#flow">Quy trình nghiệp vụ</a></li>
+                <li><a href="#request">Request</a></li>
+                <li><a href="#response">Response</a></li>
+                <li><a href="#rules">Quy tắc kiểm tra</a></li>
+                <li><a href="#errors">Mã lỗi</a></li>
+                <li><a href="#example">Ví dụ JSON</a></li>
+                <li><a href="#race">Race Condition</a></li>
+            </ul>
+        </div>
+
+        <!-- Thông tin cơ bản -->
+        <div class="card" id="basic">
+            <h2>1. Thông tin cơ bản</h2>
+            <table>
+                <tr><th width="25%">Mục</th><th>Mô tả</th></tr>
+                <tr><td>Tên API tiếng Trung</td><td>Hủy phiếu nhập hàng gia công (Hoàn nguyên nhập hàng mua ngoài)</td></tr>
+                <tr><td>CROSS API Code</td><td><code>outsourcing.process</code></td></tr>
+                <tr><td>MES taskName</td><td><code>outsourcingProcess</code></td></tr>
+                <tr><td>Đường dẫn ESB</td><td><code>/outsourcingProcess</code></td></tr>
+                <tr><td>Tham khảo DSMS</td><td>api-2058</td></tr>
+                <tr><td>Hướng gọi</td><td>MES → ERP</td></tr>
+                <tr><td>Điều kiện kích hoạt</td><td><code>TRANSORDERTYPE = "59"</code> + TL011/TL012 không rỗng</td></tr>
+                <tr><td>Định dạng Request</td><td><strong>JSON</strong> (Content-Type: application/json)</td></tr>
+                <tr><td>Phương thức truyền</td><td>HTTP POST qua ESB</td></tr>
+                <tr><td>Đồng bộ/Bất đồng bộ</td><td>Gọi đồng bộ</td></tr>
+            </table>
+
+            <h3>Đối chiếu tham số source_type</h3>
+            <table>
+                <tr><th>source_type</th><th>Mô tả</th><th>Trường hợp sử dụng</th></tr>
+                <tr><td>0</td><td>Hoàn nguyên xuất hàng</td><td>Hủy xuất trạm (gửi gia công)</td></tr>
+                <tr><td>1</td><td>Hoàn nguyên nhận hàng</td><td>Hủy vào trạm (nhận gia công)</td></tr>
+                <tr><td>2</td><td>Hoàn nguyên trả hàng</td><td>Hủy trả hàng</td></tr>
+            </table>
+        </div>
+
+        <!-- Quy trình nghiệp vụ -->
+        <div class="card" id="flow">
+            <h2>2. Quy trình nghiệp vụ</h2>
+            <div class="flow-diagram">
+                <svg width="850" height="250" viewBox="0 0 850 250" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <marker id="arrow" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#dc2626"/>
+                        </marker>
+                    </defs>
+                    <!-- Các bước -->
+                    <rect x="20" y="60" width="120" height="60" rx="8" fill="#dc2626"/>
+                    <text x="80" y="95" text-anchor="middle" fill="white" font-size="12">Hủy xuất trạm</text>
+
+                    <rect x="170" y="60" width="130" height="60" rx="8" fill="#f97316"/>
+                    <text x="235" y="85" text-anchor="middle" fill="white" font-size="11">Kiểm tra TL011/TL012</text>
+                    <text x="235" y="105" text-anchor="middle" fill="white" font-size="10">Có giá trị không</text>
+
+                    <rect x="330" y="60" width="130" height="60" rx="8" fill="#8b5cf6"/>
+                    <text x="395" y="85" text-anchor="middle" fill="white" font-size="11">Phán đoán</text>
+                    <text x="395" y="105" text-anchor="middle" fill="white" font-size="10">TRANSORDERTYPE</text>
+
+                    <rect x="490" y="60" width="120" height="60" rx="8" fill="#6366f1"/>
+                    <text x="550" y="85" text-anchor="middle" fill="white" font-size="11">= "59"</text>
+                    <text x="550" y="105" text-anchor="middle" fill="white" font-size="10">outsourcingProcess</text>
+
+                    <rect x="640" y="60" width="100" height="60" rx="8" fill="#10b981"/>
+                    <text x="690" y="85" text-anchor="middle" fill="white" font-size="11">Gọi ERP</text>
+                    <text x="690" y="105" text-anchor="middle" fill="white" font-size="9">Hoàn nguyên nhập kho</text>
+
+                    <rect x="770" y="60" width="60" height="60" rx="8" fill="#059669"/>
+                    <text x="800" y="95" text-anchor="middle" fill="white" font-size="10">Hoàn thành</text>
+
+                    <!-- Đường thay thế -->
+                    <rect x="490" y="160" width="120" height="50" rx="8" fill="#64748b"/>
+                    <text x="550" y="190" text-anchor="middle" fill="white" font-size="10">Khác: cancelStockIn</text>
+
+                    <!-- Mũi tên -->
+                    <line x1="140" y1="90" x2="165" y2="90" stroke="#dc2626" stroke-width="2" marker-end="url(#arrow)"/>
+                    <line x1="300" y1="90" x2="325" y2="90" stroke="#dc2626" stroke-width="2" marker-end="url(#arrow)"/>
+                    <line x1="460" y1="90" x2="485" y2="90" stroke="#dc2626" stroke-width="2" marker-end="url(#arrow)"/>
+                    <line x1="610" y1="90" x2="635" y2="90" stroke="#dc2626" stroke-width="2" marker-end="url(#arrow)"/>
+                    <line x1="740" y1="90" x2="765" y2="90" stroke="#dc2626" stroke-width="2" marker-end="url(#arrow)"/>
+
+                    <!-- Mũi tên thay thế -->
+                    <line x1="395" y1="120" x2="395" y2="155" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+                    <text x="420" y="145" font-size="10" fill="#64748b">!= "59"</text>
+
+                    <!-- Nhãn -->
+                    <text x="425" y="230" text-anchor="middle" font-size="11" fill="#64748b">Vị trí chương trình: GeneralUpdater.java:1571-1605</text>
+                </svg>
+            </div>
+
+            <div class="info-box info">
+                <strong>Tương ứng mã nguồn</strong>
+                <ul style="margin-top:10px; margin-left:20px;">
+                    <li>Phán đoán hủy: <code>GeneralUpdater.java:1571-1605</code></li>
+                    <li>Kiểm tra TL011/TL012: <code>GeneralUpdater.java:1571</code></li>
+                    <li>Phán đoán TRANSORDERTYPE: <code>GeneralUpdater.java:1577</code></li>
+                    <li>Tổ hợp JSON: <code>transOrder.put("outsource_no", stock_in_no)</code></li>
+                </ul>
+            </div>
+
+            <div class="info-box warning">
+                <strong>API liên quan</strong><br>
+                Hủy phiếu nhập hàng gia công (outsourcingProcess) và tạo phiếu nhập hàng gia công (outsourcingPurchaseStockinCreate) được sử dụng đi kèm nhau.<br>
+                Khi hủy cần sử dụng TB001/TB002 mà ERP trả về sau khi tạo thành công (lưu trong TL011/TL012).
+            </div>
+        </div>
+
+        <!-- Quy cách Request -->
+        <div class="card" id="request">
+            <h2>3. Quy cách Request</h2>
+
+            <div class="info-box success">
+                <strong>Định dạng truyền tải: JSON</strong><br>
+                <code>Content-Type: application/json</code> (HttpClient.java:25)
+            </div>
+
+            <h3>Trường Request (Parameter)</h3>
+            <table>
+                <tr><th>Trường</th><th>Loại</th><th>Bắt buộc</th><th>Mô tả</th><th>Nguồn MES</th></tr>
+                <tr><td>enterprise_no</td><td>string</td><td><span class="required">Y</span></td><td>Mã công ty</td><td>COMPANYID (sftcompany)</td></tr>
+                <tr><td>site_no</td><td>string</td><td><span class="required">Y</span></td><td>Mã chi nhánh</td><td>COMPANYID (sftcompany)</td></tr>
+                <tr><td>source_no</td><td>string</td><td><span class="required">Y</span></td><td>Số nguồn (số phiếu nhập hàng gia công)</td><td>outsource_no (TL011 + "-" + TL012)</td></tr>
+                <tr><td>source_type</td><td>string</td><td><span class="required">Y</span></td><td>Loại hoàn nguyên (0/1/2)</td><td>"0" (Hoàn nguyên xuất hàng)</td></tr>
+                <tr><td>objective_doc_no</td><td>string</td><td><span class="required">Y</span></td><td>Số chứng từ mục tiêu (giống source_no)</td><td>outsource_no</td></tr>
+            </table>
+
+            <h3>Cấu trúc outsourcing_info_data</h3>
+            <table>
+                <tr><th>Trường</th><th>Loại</th><th>Bắt buộc</th><th>Mô tả</th><th>Nguồn MES</th></tr>
+                <tr><td>source_no</td><td>string</td><td><span class="optional">N</span></td><td>Số nguồn</td><td>Chuỗi rỗng</td></tr>
+                <tr><td>plot_no</td><td>string</td><td><span class="optional">N</span></td><td>Số lô</td><td>Chuỗi rỗng</td></tr>
+                <tr><td>purchase_seq</td><td>numeric</td><td><span class="optional">N</span></td><td>Số thứ tự mua hàng</td><td>Chuỗi rỗng</td></tr>
+            </table>
+
+            <h3>Giải thích nguồn trường</h3>
+            <div class="info-box info">
+                <code>outsource_no</code> = <code>SFT_TRANSORDER_LINE.TL011</code> + "-" + <code>SFT_TRANSORDER_LINE.TL012</code><br><br>
+                TL011/TL012 được ghi vào từ TB001/TB002 mà ERP trả về sau khi <code>outsourcingPurchaseStockinCreate</code> thành công.
+            </div>
+        </div>
+
+        <!-- Response -->
+        <div class="card" id="response">
+            <h2>4. Quy cách Response</h2>
+            <table>
+                <tr><th>Trường</th><th>Loại</th><th>Mô tả</th></tr>
+                <tr><td>code</td><td>int</td><td>200=Thành công, khác=Thất bại</td></tr>
+                <tr><td>msg</td><td>string</td><td>Thông báo kết quả xử lý</td></tr>
+            </table>
+
+            <h3>Hành vi khi thành công</h3>
+            <ul style="margin-left: 20px; margin-top: 10px;">
+                <li>Phiếu nhập hàng gia công ERP bị vô hiệu/hoàn nguyên</li>
+                <li>Hoàn nguyên số lượng tồn kho</li>
+                <li>Hủy bản ghi xuất trạm MES</li>
+            </ul>
+        </div>
+
+        <!-- Quy tắc kiểm tra -->
+        <div class="card" id="rules">
+            <h2>5. Quy tắc kiểm tra</h2>
+            <table>
+                <tr><th>#</th><th>Mục kiểm tra</th><th>Quy tắc</th><th>Vị trí chương trình</th></tr>
+                <tr><td>1</td><td>TL011 không rỗng</td><td>Phải có loại ERP</td><td>GeneralUpdater.java:1571</td></tr>
+                <tr><td>2</td><td>TL012 không rỗng</td><td>Phải có số ERP</td><td>GeneralUpdater.java:1571</td></tr>
+                <tr><td>3</td><td>TRANSORDERTYPE = "59"</td><td>Phán đoán loại đơn gia công</td><td>GeneralUpdater.java:1577</td></tr>
+                <tr><td>4</td><td>Chứng từ gốc tồn tại</td><td>Chứng từ phía ERP phải tồn tại</td><td>Kiểm tra phía ERP</td></tr>
+                <tr><td>5</td><td>Trạng thái chứng từ cho phép hủy</td><td>Chưa hạch toán mới có thể hoàn nguyên</td><td>Kiểm tra phía ERP</td></tr>
+            </table>
+
+            <div class="info-box danger">
+                <strong>Quan trọng: Khi TL011/TL012 rỗng sẽ không gọi ERP</strong><br>
+                Trong logic chương trình, chỉ khi cả <code>TL011</code> và <code>TL012</code> đều không rỗng mới gọi <code>outsourcingProcess</code>.<br>
+                Nếu rỗng, hành động hủy xuất trạm chỉ thực hiện ở phía MES, phía ERP không bị ảnh hưởng.
+            </div>
+        </div>
+
+        <!-- Mã lỗi -->
+        <div class="card" id="errors">
+            <h2>6. Mã lỗi</h2>
+            <table>
+                <tr><th>Mã</th><th>Thông báo</th><th>Mô tả</th></tr>
+                <tr><td>E001</td><td>Thiếu trường bắt buộc</td><td>outsource_no hoặc source_type rỗng</td></tr>
+                <tr><td>E002</td><td>Phiếu nhập hàng gia công không tồn tại</td><td>Chứng từ tương ứng outsource_no không tồn tại</td></tr>
+                <tr><td>E003</td><td>Chứng từ đã hạch toán không thể hủy</td><td>Chứng từ ERP đã hạch toán, không thể hoàn nguyên</td></tr>
+                <tr><td>E004</td><td>Chứng từ đã bị hủy</td><td>Hủy trùng lặp</td></tr>
+                <tr><td>E005</td><td>source_type không chính xác</td><td>Giá trị không nằm trong phạm vi 0/1/2</td></tr>
+                <tr><td>E999</td><td>Lỗi hệ thống</td><td>Timeout, lỗi kết nối</td></tr>
+            </table>
+        </div>
+
+        <!-- Ví dụ JSON -->
+        <div class="card" id="example">
+            <h2>7. Ví dụ JSON</h2>
+
+            <h3>Request (JSON nội bộ MES)</h3>
+            <div class="code-block">
+<pre>{
+  <span class="key">"companyID"</span>: <span class="string">"COMP01"</span>,
+  <span class="key">"userId"</span>: <span class="string">"EMP001"</span>,
+  <span class="key">"outsource_no"</span>: <span class="string">"5902-20260319001"</span>,
+  <span class="key">"source_type"</span>: <span class="string">"0"</span>
+}</pre>
+            </div>
+
+            <h3>Định dạng XML ERP (Truyền thực tế)</h3>
+            <div class="code-block">
+<pre><span class="comment">&lt;!-- SendFormS.java:1727-1752 --&gt;</span>
+&lt;parameters&gt;
+  &lt;parameter key="enterprise_no" type="string"&gt;COMP01&lt;/parameter&gt;
+  &lt;parameter key="site_no" type="string"&gt;COMP01&lt;/parameter&gt;
+  &lt;parameter key="source_no" type="string"&gt;5902-20260319001&lt;/parameter&gt;
+  &lt;parameter key="source_type" type="numeric"&gt;0&lt;/parameter&gt;
+  &lt;parameter key="objective_doc_no" type="string"&gt;5902-20260319001&lt;/parameter&gt;
+
+  &lt;parameter key="outsourcing_info_data" type="data"&gt;
+    &lt;data name="outsourcing_info"&gt;
+      &lt;row seq="1"&gt;
+        &lt;field name="source_no" type="string"&gt;&lt;/field&gt;
+        &lt;field name="plot_no" type="string"&gt;&lt;/field&gt;
+        &lt;field name="purchase_seq" type="numeric"&gt;&lt;/field&gt;
+      &lt;/row&gt;
+    &lt;/data&gt;
+  &lt;/parameter&gt;
+&lt;/parameters&gt;</pre>
+            </div>
+
+            <h3>Response (Thành công)</h3>
+            <div class="code-block">
+<pre>{
+  <span class="key">"code"</span>: <span class="number">200</span>,
+  <span class="key">"msg"</span>: <span class="string">"Hoàn nguyên phiếu nhập hàng gia công thành công"</span>
+}</pre>
+            </div>
+
+            <h3>Response (Thất bại)</h3>
+            <div class="code-block">
+<pre>{
+  <span class="key">"code"</span>: <span class="number">500</span>,
+  <span class="key">"msg"</span>: <span class="string">"Chứng từ đã hạch toán không thể hủy 5902-20260319001"</span>
+}</pre>
+            </div>
+        </div>
+
+        <!-- Race Condition -->
+        <div class="card" id="race">
+            <h2>8. Giải thích rủi ro Race Condition</h2>
+
+            <div class="info-box danger">
+                <strong>Vấn đề đã biết: TL011/TL012 rỗng khi hủy xuất trạm</strong><br><br>
+                Khi người dùng hủy xuất trạm trước khi ERP trả về, do TL011/TL012 chưa được ghi lại, <code>outsourcingProcess</code> sẽ không được gọi.<br>
+                Điều này dẫn đến dữ liệu MES và ERP không nhất quán.
+            </div>
+
+            <h3>Ví dụ dòng thời gian</h3>
+            <div class="flow-diagram">
+                <svg width="750" height="200" viewBox="0 0 750 200" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Dòng thời gian -->
+                    <line x1="50" y1="100" x2="700" y2="100" stroke="#e2e8f0" stroke-width="3"/>
+
+                    <!-- Sự kiện -->
+                    <circle cx="100" cy="100" r="8" fill="#3b82f6"/>
+                    <text x="100" y="70" text-anchor="middle" font-size="11" fill="#1e293b">16:29:46</text>
+                    <text x="100" y="130" text-anchor="middle" font-size="10" fill="#64748b">MES xuất trạm</text>
+                    <text x="100" y="145" text-anchor="middle" font-size="9" fill="#64748b">Gửi ERP</text>
+
+                    <circle cx="300" cy="100" r="8" fill="#dc2626"/>
+                    <text x="300" y="70" text-anchor="middle" font-size="11" fill="#1e293b">16:31:08</text>
+                    <text x="300" y="130" text-anchor="middle" font-size="10" fill="#dc2626" font-weight="bold">Hủy xuất trạm</text>
+                    <text x="300" y="145" text-anchor="middle" font-size="9" fill="#dc2626">TL011/TL012 rỗng!</text>
+
+                    <circle cx="500" cy="100" r="8" fill="#10b981"/>
+                    <text x="500" y="70" text-anchor="middle" font-size="11" fill="#1e293b">16:31:49</text>
+                    <text x="500" y="130" text-anchor="middle" font-size="10" fill="#64748b">ERP trả về</text>
+                    <text x="500" y="145" text-anchor="middle" font-size="9" fill="#64748b">5902-20260310069</text>
+
+                    <!-- Kết quả -->
+                    <rect x="550" y="140" width="150" height="40" rx="5" fill="#fee2e2" stroke="#dc2626"/>
+                    <text x="625" y="165" text-anchor="middle" font-size="10" fill="#dc2626">Chứng từ ERP chưa bị hủy</text>
+                </svg>
+            </div>
+
+            <h3>Nguyên nhân vấn đề</h3>
+            <div class="code-block">
+<pre><span class="comment">// GeneralUpdater.java:1571</span>
+<span class="key">if</span>(!SftTransorderLine.getTl011().equals("") && !SftTransorderLine.getTl012().equals("")){
+    <span class="comment">// Chỉ khi TL011/TL012 không rỗng mới gọi outsourcingProcess</span>
+    <span class="comment">// Nếu hủy trước khi ERP trả về, if này là false, bỏ qua gọi ERP</span>
+}</pre>
+            </div>
+
+            <h3>Đề xuất xử lý</h3>
+            <table>
+                <tr><th>Phương án</th><th>Mô tả</th><th>Ảnh hưởng</th></tr>
+                <tr><td><strong>Xử lý ngay</strong></td><td>Vô hiệu phiếu nhập hàng gia công đó trên ERP thủ công</td><td>Cần can thiệp thủ công</td></tr>
+                <tr><td>Cơ chế chờ</td><td>Chờ ERP trả về hoàn thành khi hủy xuất trạm</td><td>Cần sửa chương trình</td></tr>
+                <tr><td>Cơ chế khóa</td><td>Cấm thao tác hủy khi đang xuất trạm</td><td>Cần sửa chương trình</td></tr>
+                <tr><td>So sánh định kỳ</td><td>Lên lịch so sánh trạng thái chứng từ MES và ERP</td><td>Cần thêm chức năng mới</td></tr>
+            </table>
+        </div>
+
+    </div>
+</body>
+</html>

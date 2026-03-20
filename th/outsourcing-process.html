@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>outsourcing.process - eMES API</title>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #1e40af;
+            --success-color: #16a34a;
+            --error-color: #dc2626;
+            --warning-color: #d97706;
+            --bg-color: #f8fafc;
+            --border-color: #e2e8f0;
+            --text-color: #1e293b;
+            --text-muted: #64748b;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', 'Tahoma', sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+        }
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .navbar a { color: white; text-decoration: none; }
+        .navbar .brand { font-size: 1.2em; font-weight: 600; }
+        .navbar .back { opacity: 0.9; }
+        .navbar .back:hover { opacity: 1; }
+        .lang-switcher {
+            display: flex;
+            gap: 10px;
+        }
+        .lang-switcher a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.85em;
+        }
+        .lang-switcher a:hover {
+            color: white;
+            background: rgba(255,255,255,0.1);
+        }
+        .lang-switcher a.active {
+            color: white;
+            background: rgba(255,255,255,0.2);
+        }
+        .container { max-width: 1100px; margin: 0 auto; padding: 30px; }
+        .api-header {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .api-header h1 { color: var(--error-color); font-size: 1.8em; margin-bottom: 10px; }
+        .api-code {
+            font-family: 'Consolas', monospace;
+            background: var(--bg-color);
+            padding: 8px 15px;
+            border-radius: 6px;
+            display: inline-block;
+            color: var(--error-color);
+            font-size: 1.1em;
+        }
+        .badges { margin-top: 15px; display: flex; gap: 10px; flex-wrap: wrap; }
+        .badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+        .badge-delete { background: #fee2e2; color: #dc2626; }
+        .badge-json { background: #dbeafe; color: #2563eb; }
+        .badge-sync { background: #fef3c7; color: #d97706; }
+        h2 {
+            color: var(--secondary-color);
+            font-size: 1.4em;
+            margin: 30px 0 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--border-color);
+        }
+        h3 { color: var(--text-color); font-size: 1.1em; margin: 20px 0 10px; }
+        h4 { color: var(--text-muted); font-size: 1em; margin: 15px 0 10px; }
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; font-size: 0.9em; }
+        th, td { border: 1px solid var(--border-color); padding: 10px 12px; text-align: left; }
+        th { background: var(--error-color); color: white; font-weight: 600; }
+        tr:nth-child(even) { background: var(--bg-color); }
+        tr:hover { background: #fee2e2; }
+        .required { background: var(--error-color); color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.75em; }
+        .optional { background: var(--text-muted); color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.75em; }
+        .code-block {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Consolas', monospace;
+            font-size: 0.85em;
+            line-height: 1.5;
+            margin: 15px 0;
+        }
+        .code-block .key { color: #7dd3fc; }
+        .code-block .string { color: #86efac; }
+        .code-block .number { color: #fbbf24; }
+        .code-block .comment { color: #64748b; font-style: italic; }
+        .info-box {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        .info-box.info { background: #dbeafe; border-left: 4px solid var(--primary-color); }
+        .info-box.warning { background: #fef3c7; border-left: 4px solid var(--warning-color); }
+        .info-box.danger { background: #fee2e2; border-left: 4px solid var(--error-color); }
+        .info-box.success { background: #dcfce7; border-left: 4px solid var(--success-color); }
+        .flow-diagram { text-align: center; margin: 20px 0; padding: 20px; background: white; border-radius: 10px; }
+        .toc {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .toc ul { list-style: none; display: flex; flex-wrap: wrap; gap: 15px; }
+        .toc a { color: var(--primary-color); text-decoration: none; }
+        .toc a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="index.html" class="back">← กลับไปรายการ API</a>
+        <div class="lang-switcher">
+            <a href="../outsourcing-process.html">繁體中文</a>
+            <a href="../en/outsourcing-process.html">English</a>
+            <a href="../vi/outsourcing-process.html">Tiếng Việt</a>
+            <a href="outsourcing-process.html" class="active">ภาษาไทย</a>
+        </div>
+        <span class="brand">เอกสารข้อกำหนด eMES API</span>
+    </nav>
+
+    <div class="container">
+        <!-- API Header -->
+        <div class="api-header">
+            <h1>ยกเลิกใบรับสินค้าจ้างผลิต</h1>
+            <div class="api-code">outsourcing.process</div>
+            <div class="badges">
+                <span class="badge badge-delete">ยกเลิก</span>
+                <span class="badge badge-json">JSON</span>
+                <span class="badge badge-sync">ซิงโครนัส</span>
+            </div>
+        </div>
+
+        <!-- TOC -->
+        <div class="toc">
+            <ul>
+                <li><a href="#basic">ข้อมูลพื้นฐาน</a></li>
+                <li><a href="#flow">กระบวนการทางธุรกิจ</a></li>
+                <li><a href="#request">Request</a></li>
+                <li><a href="#response">Response</a></li>
+                <li><a href="#rules">กฎการตรวจสอบ</a></li>
+                <li><a href="#errors">รหัสข้อผิดพลาด</a></li>
+                <li><a href="#example">ตัวอย่าง JSON</a></li>
+                <li><a href="#race">Race Condition</a></li>
+            </ul>
+        </div>
+
+        <!-- ข้อมูลพื้นฐาน -->
+        <div class="card" id="basic">
+            <h2>1. ข้อมูลพื้นฐาน</h2>
+            <table>
+                <tr><th width="25%">รายการ</th><th>คำอธิบาย</th></tr>
+                <tr><td>ชื่อ API ภาษาไทย</td><td>ยกเลิกใบรับสินค้าจ้างผลิต (คืนค่าการรับสินค้าจ้างผลิต)</td></tr>
+                <tr><td>รหัส CROSS API</td><td><code>outsourcing.process</code></td></tr>
+                <tr><td>ชื่องาน MES</td><td><code>outsourcingProcess</code></td></tr>
+                <tr><td>เส้นทาง ESB</td><td><code>/outsourcingProcess</code></td></tr>
+                <tr><td>อ้างอิง DSMS</td><td>api-2058</td></tr>
+                <tr><td>ทิศทางการเรียก</td><td>MES → ERP</td></tr>
+                <tr><td>เงื่อนไขทริกเกอร์</td><td><code>TRANSORDERTYPE = "59"</code> + TL011/TL012 ไม่ว่าง</td></tr>
+                <tr><td>รูปแบบ Request</td><td><strong>JSON</strong> (Content-Type: application/json)</td></tr>
+                <tr><td>วิธีการส่ง</td><td>HTTP POST ผ่าน ESB</td></tr>
+                <tr><td>ซิงโครนัส/อะซิงโครนัส</td><td>เรียกแบบซิงโครนัส</td></tr>
+            </table>
+
+            <h3>ตารางอ้างอิงพารามิเตอร์ source_type</h3>
+            <table>
+                <tr><th>source_type</th><th>คำอธิบาย</th><th>สถานการณ์ใช้งาน</th></tr>
+                <tr><td>0</td><td>คืนค่าการจัดส่ง</td><td>ยกเลิก CheckOut (ส่งจ้างผลิตออก)</td></tr>
+                <tr><td>1</td><td>คืนค่าการรับสินค้า</td><td>ยกเลิก CheckIn (รับสินค้าจ้างผลิต)</td></tr>
+                <tr><td>2</td><td>คืนค่าการคืนสินค้า</td><td>ยกเลิกการคืนสินค้า</td></tr>
+            </table>
+        </div>
+
+        <!-- กระบวนการทางธุรกิจ -->
+        <div class="card" id="flow">
+            <h2>2. กระบวนการทางธุรกิจ</h2>
+            <div class="flow-diagram">
+                <svg width="850" height="250" viewBox="0 0 850 250" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <marker id="arrow" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#dc2626"/>
+                        </marker>
+                    </defs>
+                    <!-- ขั้นตอน -->
+                    <rect x="20" y="60" width="120" height="60" rx="8" fill="#dc2626"/>
+                    <text x="80" y="95" text-anchor="middle" fill="white" font-size="12">ยกเลิก CheckOut</text>
+
+                    <rect x="170" y="60" width="130" height="60" rx="8" fill="#f97316"/>
+                    <text x="235" y="85" text-anchor="middle" fill="white" font-size="11">ตรวจสอบ TL011/TL012</text>
+                    <text x="235" y="105" text-anchor="middle" fill="white" font-size="10">มีค่าหรือไม่</text>
+
+                    <rect x="330" y="60" width="130" height="60" rx="8" fill="#8b5cf6"/>
+                    <text x="395" y="85" text-anchor="middle" fill="white" font-size="11">ตรวจสอบ</text>
+                    <text x="395" y="105" text-anchor="middle" fill="white" font-size="10">TRANSORDERTYPE</text>
+
+                    <rect x="490" y="60" width="120" height="60" rx="8" fill="#6366f1"/>
+                    <text x="550" y="85" text-anchor="middle" fill="white" font-size="11">= "59"</text>
+                    <text x="550" y="105" text-anchor="middle" fill="white" font-size="10">outsourcingProcess</text>
+
+                    <rect x="640" y="60" width="100" height="60" rx="8" fill="#10b981"/>
+                    <text x="690" y="85" text-anchor="middle" fill="white" font-size="11">เรียก ERP</text>
+                    <text x="690" y="105" text-anchor="middle" fill="white" font-size="9">คืนค่าการรับเข้า</text>
+
+                    <rect x="770" y="60" width="60" height="60" rx="8" fill="#059669"/>
+                    <text x="800" y="95" text-anchor="middle" fill="white" font-size="10">เสร็จสิ้น</text>
+
+                    <!-- เส้นทางทางเลือก -->
+                    <rect x="490" y="160" width="120" height="50" rx="8" fill="#64748b"/>
+                    <text x="550" y="190" text-anchor="middle" fill="white" font-size="10">อื่นๆ: cancelStockIn</text>
+
+                    <!-- ลูกศร -->
+                    <line x1="140" y1="90" x2="165" y2="90" stroke="#dc2626" stroke-width="2" marker-end="url(#arrow)"/>
+                    <line x1="300" y1="90" x2="325" y2="90" stroke="#dc2626" stroke-width="2" marker-end="url(#arrow)"/>
+                    <line x1="460" y1="90" x2="485" y2="90" stroke="#dc2626" stroke-width="2" marker-end="url(#arrow)"/>
+                    <line x1="610" y1="90" x2="635" y2="90" stroke="#dc2626" stroke-width="2" marker-end="url(#arrow)"/>
+                    <line x1="740" y1="90" x2="765" y2="90" stroke="#dc2626" stroke-width="2" marker-end="url(#arrow)"/>
+
+                    <!-- ลูกศรทางเลือก -->
+                    <line x1="395" y1="120" x2="395" y2="155" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+                    <text x="420" y="145" font-size="10" fill="#64748b">!= "59"</text>
+
+                    <!-- คำอธิบาย -->
+                    <text x="425" y="230" text-anchor="middle" font-size="11" fill="#64748b">ตำแหน่งโปรแกรม: GeneralUpdater.java:1571-1605</text>
+                </svg>
+            </div>
+
+            <div class="info-box info">
+                <strong>การเชื่อมโยงโค้ด</strong>
+                <ul style="margin-top:10px; margin-left:20px;">
+                    <li>การตัดสินใจยกเลิก: <code>GeneralUpdater.java:1571-1605</code></li>
+                    <li>ตรวจสอบ TL011/TL012: <code>GeneralUpdater.java:1571</code></li>
+                    <li>ตรวจสอบ TRANSORDERTYPE: <code>GeneralUpdater.java:1577</code></li>
+                    <li>ประกอบ JSON: <code>transOrder.put("outsource_no", stock_in_no)</code></li>
+                </ul>
+            </div>
+
+            <div class="info-box warning">
+                <strong>API ที่เกี่ยวข้อง</strong><br>
+                ยกเลิกใบรับสินค้าจ้างผลิต (outsourcingProcess) ใช้คู่กับสร้างใบรับสินค้าจ้างผลิต (outsourcingPurchaseStockinCreate)<br>
+                เมื่อยกเลิกต้องใช้ TB001/TB002 ที่ ERP ส่งกลับมาหลังสร้างสำเร็จ (เก็บใน TL011/TL012)
+            </div>
+        </div>
+
+        <!-- ข้อกำหนด Request -->
+        <div class="card" id="request">
+            <h2>3. ข้อกำหนด Request</h2>
+
+            <div class="info-box success">
+                <strong>รูปแบบการส่ง: JSON</strong><br>
+                <code>Content-Type: application/json</code> (HttpClient.java:25)
+            </div>
+
+            <h3>ฟิลด์ Request (Parameter)</h3>
+            <table>
+                <tr><th>ฟิลด์</th><th>ประเภท</th><th>จำเป็น</th><th>คำอธิบาย</th><th>แหล่ง MES</th></tr>
+                <tr><td>enterprise_no</td><td>string</td><td><span class="required">Y</span></td><td>รหัสบริษัท</td><td>COMPANYID (sftcompany)</td></tr>
+                <tr><td>site_no</td><td>string</td><td><span class="required">Y</span></td><td>ไซต์</td><td>COMPANYID (sftcompany)</td></tr>
+                <tr><td>source_no</td><td>string</td><td><span class="required">Y</span></td><td>หมายเลขต้นทาง (หมายเลขใบรับสินค้าจ้างผลิต)</td><td>outsource_no (TL011 + "-" + TL012)</td></tr>
+                <tr><td>source_type</td><td>string</td><td><span class="required">Y</span></td><td>ประเภทการคืนค่า (0/1/2)</td><td>"0" (คืนค่าการจัดส่ง)</td></tr>
+                <tr><td>objective_doc_no</td><td>string</td><td><span class="required">Y</span></td><td>หมายเลขเอกสารเป้าหมาย (เหมือน source_no)</td><td>outsource_no</td></tr>
+            </table>
+
+            <h3>โครงสร้าง outsourcing_info_data</h3>
+            <table>
+                <tr><th>ฟิลด์</th><th>ประเภท</th><th>จำเป็น</th><th>คำอธิบาย</th><th>แหล่ง MES</th></tr>
+                <tr><td>source_no</td><td>string</td><td><span class="optional">N</span></td><td>หมายเลขต้นทาง</td><td>สตริงว่าง</td></tr>
+                <tr><td>plot_no</td><td>string</td><td><span class="optional">N</span></td><td>หมายเลขล็อต</td><td>สตริงว่าง</td></tr>
+                <tr><td>purchase_seq</td><td>numeric</td><td><span class="optional">N</span></td><td>ลำดับการจัดซื้อ</td><td>สตริงว่าง</td></tr>
+            </table>
+
+            <h3>คำอธิบายแหล่งข้อมูลฟิลด์</h3>
+            <div class="info-box info">
+                <code>outsource_no</code> = <code>SFT_TRANSORDER_LINE.TL011</code> + "-" + <code>SFT_TRANSORDER_LINE.TL012</code><br><br>
+                TL011/TL012 ถูกเขียนจาก TB001/TB002 ที่ ERP ส่งกลับมาหลังจาก <code>outsourcingPurchaseStockinCreate</code> สำเร็จ
+            </div>
+        </div>
+
+        <!-- Response -->
+        <div class="card" id="response">
+            <h2>4. ข้อกำหนด Response</h2>
+            <table>
+                <tr><th>ฟิลด์</th><th>ประเภท</th><th>คำอธิบาย</th></tr>
+                <tr><td>code</td><td>int</td><td>200=สำเร็จ, อื่นๆ=ล้มเหลว</td></tr>
+                <tr><td>msg</td><td>string</td><td>ข้อความผลลัพธ์</td></tr>
+            </table>
+
+            <h3>พฤติกรรมเมื่อสำเร็จ</h3>
+            <ul style="margin-left: 20px; margin-top: 10px;">
+                <li>ใบรับสินค้าจ้างผลิตใน ERP ถูกยกเลิก/คืนค่า</li>
+                <li>คืนค่าจำนวนสต็อก</li>
+                <li>ยกเลิกบันทึก CheckOut ใน MES</li>
+            </ul>
+        </div>
+
+        <!-- กฎการตรวจสอบ -->
+        <div class="card" id="rules">
+            <h2>5. กฎการตรวจสอบ</h2>
+            <table>
+                <tr><th>#</th><th>รายการตรวจสอบ</th><th>กฎ</th><th>ตำแหน่งโปรแกรม</th></tr>
+                <tr><td>1</td><td>TL011 ต้องไม่ว่าง</td><td>ต้องมีประเภทใบ ERP</td><td>GeneralUpdater.java:1571</td></tr>
+                <tr><td>2</td><td>TL012 ต้องไม่ว่าง</td><td>ต้องมีหมายเลขใบ ERP</td><td>GeneralUpdater.java:1571</td></tr>
+                <tr><td>3</td><td>TRANSORDERTYPE = "59"</td><td>ตรวจสอบประเภทใบจ้างผลิต</td><td>GeneralUpdater.java:1577</td></tr>
+                <tr><td>4</td><td>เอกสารต้นฉบับต้องมีอยู่</td><td>เอกสารในระบบ ERP ต้องมีอยู่</td><td>ตรวจสอบฝั่ง ERP</td></tr>
+                <tr><td>5</td><td>สถานะเอกสารอนุญาตให้ยกเลิก</td><td>ยังไม่ผ่านบัญชีถึงจะคืนค่าได้</td><td>ตรวจสอบฝั่ง ERP</td></tr>
+            </table>
+
+            <div class="info-box danger">
+                <strong>สำคัญ: เมื่อ TL011/TL012 ว่างจะไม่เรียก ERP</strong><br>
+                ในตรรกะโปรแกรม เฉพาะเมื่อ <code>TL011</code> และ <code>TL012</code> ไม่ว่างเท่านั้นถึงจะเรียก <code>outsourcingProcess</code><br>
+                ถ้าว่าง การยกเลิก CheckOut จะดำเนินการเฉพาะฝั่ง MES ฝั่ง ERP ไม่ได้รับผลกระทบ
+            </div>
+        </div>
+
+        <!-- รหัสข้อผิดพลาด -->
+        <div class="card" id="errors">
+            <h2>6. รหัสข้อผิดพลาด</h2>
+            <table>
+                <tr><th>รหัส</th><th>ข้อความ</th><th>คำอธิบาย</th></tr>
+                <tr><td>E001</td><td>ขาดฟิลด์ที่จำเป็น</td><td>outsource_no หรือ source_type ว่าง</td></tr>
+                <tr><td>E002</td><td>ไม่พบใบรับสินค้าจ้างผลิต</td><td>ไม่พบเอกสารที่ตรงกับ outsource_no</td></tr>
+                <tr><td>E003</td><td>เอกสารผ่านบัญชีแล้วยกเลิกไม่ได้</td><td>เอกสาร ERP ผ่านบัญชีแล้ว ไม่สามารถคืนค่าได้</td></tr>
+                <tr><td>E004</td><td>เอกสารถูกยกเลิกแล้ว</td><td>ยกเลิกซ้ำ</td></tr>
+                <tr><td>E005</td><td>source_type ไม่ถูกต้อง</td><td>ค่าไม่อยู่ในช่วง 0/1/2</td></tr>
+                <tr><td>E999</td><td>ข้อผิดพลาดระบบ</td><td>Timeout, ข้อผิดพลาดการเชื่อมต่อ</td></tr>
+            </table>
+        </div>
+
+        <!-- ตัวอย่าง JSON -->
+        <div class="card" id="example">
+            <h2>7. ตัวอย่าง JSON</h2>
+
+            <h3>Request (MES JSON ภายใน)</h3>
+            <div class="code-block">
+<pre>{
+  <span class="key">"companyID"</span>: <span class="string">"COMP01"</span>,
+  <span class="key">"userId"</span>: <span class="string">"EMP001"</span>,
+  <span class="key">"outsource_no"</span>: <span class="string">"5902-20260319001"</span>,
+  <span class="key">"source_type"</span>: <span class="string">"0"</span>
+}</pre>
+            </div>
+
+            <h3>รูปแบบ ERP XML (ส่งจริง)</h3>
+            <div class="code-block">
+<pre><span class="comment">&lt;!-- SendFormS.java:1727-1752 --&gt;</span>
+&lt;parameters&gt;
+  &lt;parameter key="enterprise_no" type="string"&gt;COMP01&lt;/parameter&gt;
+  &lt;parameter key="site_no" type="string"&gt;COMP01&lt;/parameter&gt;
+  &lt;parameter key="source_no" type="string"&gt;5902-20260319001&lt;/parameter&gt;
+  &lt;parameter key="source_type" type="numeric"&gt;0&lt;/parameter&gt;
+  &lt;parameter key="objective_doc_no" type="string"&gt;5902-20260319001&lt;/parameter&gt;
+
+  &lt;parameter key="outsourcing_info_data" type="data"&gt;
+    &lt;data name="outsourcing_info"&gt;
+      &lt;row seq="1"&gt;
+        &lt;field name="source_no" type="string"&gt;&lt;/field&gt;
+        &lt;field name="plot_no" type="string"&gt;&lt;/field&gt;
+        &lt;field name="purchase_seq" type="numeric"&gt;&lt;/field&gt;
+      &lt;/row&gt;
+    &lt;/data&gt;
+  &lt;/parameter&gt;
+&lt;/parameters&gt;</pre>
+            </div>
+
+            <h3>Response (สำเร็จ)</h3>
+            <div class="code-block">
+<pre>{
+  <span class="key">"code"</span>: <span class="number">200</span>,
+  <span class="key">"msg"</span>: <span class="string">"คืนค่าใบรับสินค้าจ้างผลิตสำเร็จ"</span>
+}</pre>
+            </div>
+
+            <h3>Response (ล้มเหลว)</h3>
+            <div class="code-block">
+<pre>{
+  <span class="key">"code"</span>: <span class="number">500</span>,
+  <span class="key">"msg"</span>: <span class="string">"เอกสารผ่านบัญชีแล้วยกเลิกไม่ได้ 5902-20260319001"</span>
+}</pre>
+            </div>
+        </div>
+
+        <!-- Race Condition -->
+        <div class="card" id="race">
+            <h2>8. คำอธิบายความเสี่ยง Race Condition</h2>
+
+            <div class="info-box danger">
+                <strong>ปัญหาที่ทราบ: TL011/TL012 ว่างเมื่อยกเลิก CheckOut</strong><br><br>
+                เมื่อผู้ใช้ยกเลิก CheckOut ก่อนที่ ERP จะส่งกลับ เนื่องจาก TL011/TL012 ยังไม่ได้เขียน <code>outsourcingProcess</code> จะไม่ถูกเรียก<br>
+                สิ่งนี้จะทำให้ข้อมูล MES และ ERP ไม่สอดคล้องกัน
+            </div>
+
+            <h3>ตัวอย่างไทม์ไลน์</h3>
+            <div class="flow-diagram">
+                <svg width="750" height="200" viewBox="0 0 750 200" xmlns="http://www.w3.org/2000/svg">
+                    <!-- ไทม์ไลน์ -->
+                    <line x1="50" y1="100" x2="700" y2="100" stroke="#e2e8f0" stroke-width="3"/>
+
+                    <!-- เหตุการณ์ -->
+                    <circle cx="100" cy="100" r="8" fill="#3b82f6"/>
+                    <text x="100" y="70" text-anchor="middle" font-size="11" fill="#1e293b">16:29:46</text>
+                    <text x="100" y="130" text-anchor="middle" font-size="10" fill="#64748b">MES CheckOut</text>
+                    <text x="100" y="145" text-anchor="middle" font-size="9" fill="#64748b">ส่ง ERP</text>
+
+                    <circle cx="300" cy="100" r="8" fill="#dc2626"/>
+                    <text x="300" y="70" text-anchor="middle" font-size="11" fill="#1e293b">16:31:08</text>
+                    <text x="300" y="130" text-anchor="middle" font-size="10" fill="#dc2626" font-weight="bold">ยกเลิก CheckOut</text>
+                    <text x="300" y="145" text-anchor="middle" font-size="9" fill="#dc2626">TL011/TL012 ว่าง!</text>
+
+                    <circle cx="500" cy="100" r="8" fill="#10b981"/>
+                    <text x="500" y="70" text-anchor="middle" font-size="11" fill="#1e293b">16:31:49</text>
+                    <text x="500" y="130" text-anchor="middle" font-size="10" fill="#64748b">ERP ส่งกลับ</text>
+                    <text x="500" y="145" text-anchor="middle" font-size="9" fill="#64748b">5902-20260310069</text>
+
+                    <!-- ผลลัพธ์ -->
+                    <rect x="550" y="140" width="150" height="40" rx="5" fill="#fee2e2" stroke="#dc2626"/>
+                    <text x="625" y="165" text-anchor="middle" font-size="10" fill="#dc2626">เอกสาร ERP ไม่ถูกยกเลิก</text>
+                </svg>
+            </div>
+
+            <h3>สาเหตุของปัญหา</h3>
+            <div class="code-block">
+<pre><span class="comment">// GeneralUpdater.java:1571</span>
+<span class="key">if</span>(!SftTransorderLine.getTl011().equals("") && !SftTransorderLine.getTl012().equals("")){
+    <span class="comment">// เฉพาะเมื่อ TL011/TL012 ไม่ว่างเท่านั้นถึงจะเรียก outsourcingProcess</span>
+    <span class="comment">// ถ้ายกเลิกก่อน ERP ส่งกลับ if นี้จะเป็น false ข้ามการเรียก ERP</span>
+}</pre>
+            </div>
+
+            <h3>ข้อเสนอแนะการจัดการ</h3>
+            <table>
+                <tr><th>แนวทาง</th><th>คำอธิบาย</th><th>ผลกระทบ</th></tr>
+                <tr><td><strong>จัดการทันที</strong></td><td>ไปที่ ERP ยกเลิกใบรับสินค้าจ้างผลิตนั้นด้วยตนเอง</td><td>ต้องมีคนแทรกแซง</td></tr>
+                <tr><td>กลไกรอ</td><td>เมื่อยกเลิก CheckOut ให้รอจนกว่า ERP จะส่งกลับ</td><td>ต้องแก้ไขโปรแกรม</td></tr>
+                <tr><td>กลไกล็อก</td><td>ห้ามยกเลิกขณะ CheckOut กำลังดำเนินการ</td><td>ต้องแก้ไขโปรแกรม</td></tr>
+                <tr><td>เปรียบเทียบเป็นระยะ</td><td>กำหนดการเปรียบเทียบสถานะเอกสาร MES และ ERP</td><td>ต้องเพิ่มฟังก์ชันใหม่</td></tr>
+            </table>
+        </div>
+
+    </div>
+</body>
+</html>

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -43,7 +43,6 @@
         }
         .lang-switcher a {
             color: rgba(255,255,255,0.7);
-            text-decoration: none;
             padding: 5px 10px;
             border-radius: 4px;
             font-size: 0.85em;
@@ -145,62 +144,62 @@
 </head>
 <body>
     <nav class="navbar">
-        <a href="index.html" class="back">← 返回 API 列表</a>
+        <a href="../index.html" class="back">← Back to API List</a>
         <div class="lang-switcher">
-            <a href="outsourcing-purchase-stockin-create.html" class="active">繁體中文</a>
-            <a href="en/outsourcing-purchase-stockin-create.html">English</a>
-            <a href="vi/outsourcing-purchase-stockin-create.html">Tiếng Việt</a>
-            <a href="th/outsourcing-purchase-stockin-create.html">ภาษาไทย</a>
+            <a href="../outsourcing-purchase-stockin-create.html">繁體中文</a>
+            <a href="outsourcing-purchase-stockin-create.html" class="active">English</a>
+            <a href="../vi/outsourcing-purchase-stockin-create.html">Tiếng Việt</a>
+            <a href="../th/outsourcing-purchase-stockin-create.html">ภาษาไทย</a>
         </div>
-        <span class="brand">eMES API 規格書</span>
+        <span class="brand">eMES API Specification</span>
     </nav>
 
     <div class="container">
         <!-- API Header -->
         <div class="api-header">
-            <h1>建立委外收貨單資料</h1>
+            <h1>Create Outsourcing Purchase Stock-In Data</h1>
             <div class="api-code">outsourcing.purchase.stockin.create</div>
             <div class="badges">
                 <span class="badge badge-post">POST</span>
                 <span class="badge badge-json">JSON</span>
-                <span class="badge badge-sync">同步</span>
+                <span class="badge badge-sync">Sync</span>
             </div>
         </div>
 
         <!-- TOC -->
         <div class="toc">
             <ul>
-                <li><a href="#basic">基本資訊</a></li>
-                <li><a href="#flow">業務流程</a></li>
+                <li><a href="#basic">Basic Info</a></li>
+                <li><a href="#flow">Business Flow</a></li>
                 <li><a href="#request">Request</a></li>
                 <li><a href="#response">Response</a></li>
-                <li><a href="#rules">檢核規則</a></li>
-                <li><a href="#errors">錯誤代碼</a></li>
-                <li><a href="#example">JSON 範例</a></li>
+                <li><a href="#rules">Validation Rules</a></li>
+                <li><a href="#errors">Error Codes</a></li>
+                <li><a href="#example">JSON Examples</a></li>
             </ul>
         </div>
 
-        <!-- 基本資訊 -->
+        <!-- Basic Information -->
         <div class="card" id="basic">
-            <h2>1. 基本資訊</h2>
+            <h2>1. Basic Information</h2>
             <table>
-                <tr><th width="25%">項目</th><th>說明</th></tr>
-                <tr><td>API 中文名稱</td><td>建立委外收貨單資料（託外進貨單）</td></tr>
+                <tr><th width="25%">Item</th><th>Description</th></tr>
+                <tr><td>API Name (Chinese)</td><td>Create Outsourcing Receipt Data</td></tr>
                 <tr><td>CROSS API Code</td><td><code>outsourcing.purchase.stockin.create</code></td></tr>
                 <tr><td>MES taskName</td><td><code>outsourcingPurchaseStockinCreate</code></td></tr>
-                <tr><td>ESB 路徑</td><td><code>/outsourcingPurchaseStockinCreate</code></td></tr>
-                <tr><td>DSMS 參考</td><td>api-2062 / vid-4462</td></tr>
-                <tr><td>呼叫方向</td><td>MES → ERP</td></tr>
-                <tr><td>觸發條件</td><td><code>TRANSTYPE = "59"</code></td></tr>
-                <tr><td>Request 格式</td><td><strong>JSON</strong> (Content-Type: application/json)</td></tr>
-                <tr><td>傳輸方式</td><td>HTTP POST via ESB</td></tr>
-                <tr><td>同步/非同步</td><td>同步呼叫</td></tr>
+                <tr><td>ESB Path</td><td><code>/outsourcingPurchaseStockinCreate</code></td></tr>
+                <tr><td>DSMS Reference</td><td>api-2062 / vid-4462</td></tr>
+                <tr><td>Call Direction</td><td>MES → ERP</td></tr>
+                <tr><td>Trigger Condition</td><td><code>TRANSTYPE = "59"</code></td></tr>
+                <tr><td>Request Format</td><td><strong>JSON</strong> (Content-Type: application/json)</td></tr>
+                <tr><td>Transport Method</td><td>HTTP POST via ESB</td></tr>
+                <tr><td>Sync/Async</td><td>Synchronous call</td></tr>
             </table>
         </div>
 
-        <!-- 業務流程 -->
+        <!-- Business Flow -->
         <div class="card" id="flow">
-            <h2>2. 業務流程</h2>
+            <h2>2. Business Flow</h2>
             <div class="flow-diagram">
                 <svg width="800" height="200" viewBox="0 0 800 200" xmlns="http://www.w3.org/2000/svg">
                     <defs>
@@ -210,21 +209,21 @@
                     </defs>
                     <!-- Steps -->
                     <rect x="20" y="60" width="120" height="60" rx="8" fill="#3b82f6"/>
-                    <text x="80" y="95" text-anchor="middle" fill="white" font-size="12">委外站出站</text>
+                    <text x="80" y="95" text-anchor="middle" fill="white" font-size="12">Outsourcing Checkout</text>
 
                     <rect x="180" y="60" width="120" height="60" rx="8" fill="#8b5cf6"/>
-                    <text x="240" y="85" text-anchor="middle" fill="white" font-size="11">判斷 TRANSTYPE</text>
+                    <text x="240" y="85" text-anchor="middle" fill="white" font-size="11">Check TRANSTYPE</text>
                     <text x="240" y="105" text-anchor="middle" fill="white" font-size="10">= "59"</text>
 
                     <rect x="340" y="60" width="120" height="60" rx="8" fill="#6366f1"/>
-                    <text x="400" y="95" text-anchor="middle" fill="white" font-size="11">組裝 JSON</text>
+                    <text x="400" y="95" text-anchor="middle" fill="white" font-size="11">Assemble JSON</text>
 
                     <rect x="500" y="60" width="120" height="60" rx="8" fill="#10b981"/>
-                    <text x="560" y="85" text-anchor="middle" fill="white" font-size="11">呼叫 ERP</text>
+                    <text x="560" y="85" text-anchor="middle" fill="white" font-size="11">Call ERP</text>
                     <text x="560" y="105" text-anchor="middle" fill="white" font-size="9">via ESB</text>
 
                     <rect x="660" y="60" width="120" height="60" rx="8" fill="#059669"/>
-                    <text x="720" y="85" text-anchor="middle" fill="white" font-size="11">回寫</text>
+                    <text x="720" y="85" text-anchor="middle" fill="white" font-size="11">Write Back</text>
                     <text x="720" y="105" text-anchor="middle" fill="white" font-size="10">TL011/TL012</text>
 
                     <!-- Arrows -->
@@ -234,121 +233,121 @@
                     <line x1="620" y1="90" x2="655" y2="90" stroke="#6366f1" stroke-width="2" marker-end="url(#arrow)"/>
 
                     <!-- Labels -->
-                    <text x="400" y="160" text-anchor="middle" font-size="11" fill="#64748b">程式位置: TransOrderDataToJson.java:648</text>
+                    <text x="400" y="160" text-anchor="middle" font-size="11" fill="#64748b">Code Location: TransOrderDataToJson.java:648</text>
                 </svg>
             </div>
 
             <div class="info-box info">
-                <strong>程式碼對應</strong>
+                <strong>Code Reference</strong>
                 <ul style="margin-top:10px; margin-left:20px;">
-                    <li>路由判斷: <code>TransOrderDataToJson.java:648</code></li>
-                    <li>JSON 組裝: <code>SendFormSbyJson.transferFormToJson()</code></li>
-                    <li>欄位映射: <code>SendFormElementbyJson.getTransferFormHead/Body()</code></li>
-                    <li>HTTP 傳送: <code>XmlToERP_handler.sendToErpByESB()</code></li>
+                    <li>Route Decision: <code>TransOrderDataToJson.java:648</code></li>
+                    <li>JSON Assembly: <code>SendFormSbyJson.transferFormToJson()</code></li>
+                    <li>Field Mapping: <code>SendFormElementbyJson.getTransferFormHead/Body()</code></li>
+                    <li>HTTP Send: <code>XmlToERP_handler.sendToErpByESB()</code></li>
                 </ul>
             </div>
         </div>
 
-        <!-- Request 規格 -->
+        <!-- Request Spec -->
         <div class="card" id="request">
-            <h2>3. Request 規格</h2>
+            <h2>3. Request Specification</h2>
 
             <div class="info-box success">
-                <strong>傳輸格式: JSON</strong><br>
+                <strong>Transport Format: JSON</strong><br>
                 <code>Content-Type: application/json</code> (HttpClient.java:25)
             </div>
 
-            <h3>3.1 外層結構</h3>
+            <h3>3.1 Outer Structure</h3>
             <table>
-                <tr><th>欄位</th><th>型別</th><th>必填</th><th>說明</th><th>MES 來源</th></tr>
-                <tr><td>companyID</td><td>string</td><td><span class="required">Y</span></td><td>公司別</td><td>COMPANYID</td></tr>
-                <tr><td>userId</td><td>string</td><td><span class="required">Y</span></td><td>操作人員</td><td>CONFIRMER</td></tr>
-                <tr><td>doAction</td><td>string</td><td><span class="required">Y</span></td><td>2=移轉單</td><td>DOACTION</td></tr>
-                <tr><td>docase</td><td>string</td><td><span class="required">Y</span></td><td>1=新增</td><td>DOCASE</td></tr>
-                <tr><td>head</td><td>object</td><td><span class="required">Y</span></td><td>表頭資料</td><td>-</td></tr>
-                <tr><td>line</td><td>array</td><td><span class="required">Y</span></td><td>表身明細</td><td>-</td></tr>
+                <tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th><th>MES Source</th></tr>
+                <tr><td>companyID</td><td>string</td><td><span class="required">Y</span></td><td>Company ID</td><td>COMPANYID</td></tr>
+                <tr><td>userId</td><td>string</td><td><span class="required">Y</span></td><td>Operator</td><td>CONFIRMER</td></tr>
+                <tr><td>doAction</td><td>string</td><td><span class="required">Y</span></td><td>2=Transfer</td><td>DOACTION</td></tr>
+                <tr><td>docase</td><td>string</td><td><span class="required">Y</span></td><td>1=Add</td><td>DOCASE</td></tr>
+                <tr><td>head</td><td>object</td><td><span class="required">Y</span></td><td>Header data</td><td>-</td></tr>
+                <tr><td>line</td><td>array</td><td><span class="required">Y</span></td><td>Line items</td><td>-</td></tr>
             </table>
 
-            <h3>3.2 表頭（head）</h3>
+            <h3>3.2 Header (head)</h3>
             <table>
-                <tr><th>欄位</th><th>型別</th><th>必填</th><th>說明</th><th>MES 來源</th></tr>
-                <tr><td>transferType</td><td>string</td><td><span class="required">Y</span></td><td>移轉單別（59=委外）→ ERP: doc_type_no</td><td>TRANSTYPE</td></tr>
-                <tr><td>date</td><td>string</td><td><span class="required">Y</span></td><td>單據日期 YYYY-MM-DD → ERP: receipt_date</td><td>TRANSDATE</td></tr>
-                <tr><td>moveOutType</td><td>string</td><td><span class="required">Y</span></td><td>移出類型</td><td>OUTTYPE</td></tr>
-                <tr><td>moveOutCode</td><td>string</td><td><span class="required">Y</span></td><td>移出代碼 → ERP: supplier_no</td><td>OUTDEPID</td></tr>
-                <tr><td>moveInType</td><td>string</td><td><span class="required">Y</span></td><td>移入類型</td><td>INTYPE</td></tr>
-                <tr><td>moveInCode</td><td>string</td><td><span class="required">Y</span></td><td>移入代碼（倉庫）</td><td>INDEPID</td></tr>
-                <tr><td>factoryCode</td><td>string</td><td><span class="required">Y</span></td><td>廠別</td><td>FACTORYID</td></tr>
-                <tr><td>remark</td><td>string</td><td><span class="optional">N</span></td><td>備註 → ERP: remark</td><td>COMMENT</td></tr>
-                <tr><td>create</td><td>string</td><td><span class="optional">N</span></td><td>操作人員 → ERP: operator_no</td><td>CONFIRMER</td></tr>
-                <tr><td>eMESTransferType</td><td>string</td><td><span class="required">Y</span></td><td>MES 單別</td><td>TRANSTYPE</td></tr>
-                <tr><td>eMESTransferCode</td><td>string</td><td><span class="required">Y</span></td><td>MES 單號</td><td>TRANSNO</td></tr>
-                <tr><td>source_no</td><td>string</td><td><span class="required">Y</span></td><td>來源單號（MES單別-單號）</td><td>eMESTransferType + "-" + eMESTransferCode</td></tr>
+                <tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th><th>MES Source</th></tr>
+                <tr><td>transferType</td><td>string</td><td><span class="required">Y</span></td><td>Transfer type (59=Outsourcing) → ERP: doc_type_no</td><td>TRANSTYPE</td></tr>
+                <tr><td>date</td><td>string</td><td><span class="required">Y</span></td><td>Document date YYYY-MM-DD → ERP: receipt_date</td><td>TRANSDATE</td></tr>
+                <tr><td>moveOutType</td><td>string</td><td><span class="required">Y</span></td><td>Move out type</td><td>OUTTYPE</td></tr>
+                <tr><td>moveOutCode</td><td>string</td><td><span class="required">Y</span></td><td>Move out code → ERP: supplier_no</td><td>OUTDEPID</td></tr>
+                <tr><td>moveInType</td><td>string</td><td><span class="required">Y</span></td><td>Move in type</td><td>INTYPE</td></tr>
+                <tr><td>moveInCode</td><td>string</td><td><span class="required">Y</span></td><td>Move in code (warehouse)</td><td>INDEPID</td></tr>
+                <tr><td>factoryCode</td><td>string</td><td><span class="required">Y</span></td><td>Factory code</td><td>FACTORYID</td></tr>
+                <tr><td>remark</td><td>string</td><td><span class="optional">N</span></td><td>Remark → ERP: remark</td><td>COMMENT</td></tr>
+                <tr><td>create</td><td>string</td><td><span class="optional">N</span></td><td>Operator → ERP: operator_no</td><td>CONFIRMER</td></tr>
+                <tr><td>eMESTransferType</td><td>string</td><td><span class="required">Y</span></td><td>MES doc type</td><td>TRANSTYPE</td></tr>
+                <tr><td>eMESTransferCode</td><td>string</td><td><span class="required">Y</span></td><td>MES doc number</td><td>TRANSNO</td></tr>
+                <tr><td>source_no</td><td>string</td><td><span class="required">Y</span></td><td>Source number (MES type-number)</td><td>eMESTransferType + "-" + eMESTransferCode</td></tr>
             </table>
 
-            <h3>3.3 表身（line）- 陣列</h3>
+            <h3>3.3 Line Items (line) - Array</h3>
             <table>
-                <tr><th>欄位</th><th>型別</th><th>必填</th><th>說明</th><th>MES 來源</th></tr>
-                <tr><td>moType</td><td>string</td><td><span class="required">Y</span></td><td>工單類別 (組合為 ERP: wo_no)</td><td>MOTYPE</td></tr>
-                <tr><td>moCode</td><td>string</td><td><span class="required">Y</span></td><td>工單號碼 (組合為 ERP: wo_no)</td><td>MONO</td></tr>
-                <tr><td>moveOutOpSeq</td><td>string</td><td><span class="required">Y</span></td><td>移出製程序</td><td>OUTOPSEQ</td></tr>
-                <tr><td>moveOutOpId</td><td>string</td><td><span class="required">Y</span></td><td>移出製程 → ERP: op_no (Head)</td><td>OUTOP</td></tr>
-                <tr><td>qty</td><td>decimal</td><td><span class="required">Y</span></td><td>數量 → ERP: qty</td><td>TRANSQTY</td></tr>
-                <tr><td>unit</td><td>string</td><td><span class="required">Y</span></td><td>單位 → ERP: unit_no</td><td>UNIT</td></tr>
-                <tr><td>batchCode</td><td>string</td><td><span class="required">Y</span></td><td>批號 → ERP: lot_no</td><td>LOTNO</td></tr>
-                <tr><td>prodCode</td><td>string</td><td><span class="required">Y</span></td><td>品號 → ERP: item_no</td><td>ITEMID</td></tr>
-                <tr><td>acceptanceQty</td><td>decimal</td><td><span class="optional">N</span></td><td>驗收數量 → ERP: receipt_qty</td><td>TL002</td></tr>
-                <tr><td>inspectionReturnQty</td><td>decimal</td><td><span class="optional">N</span></td><td>驗退數量 → ERP: return_qty</td><td>TL003</td></tr>
-                <tr><td>scrapQty</td><td>decimal</td><td><span class="optional">N</span></td><td>報廢數量 → ERP: scrap_qty</td><td>SCRAPQTY</td></tr>
-                <tr><td>valuationQty</td><td>decimal</td><td><span class="optional">N</span></td><td>計價數量 → ERP: valuation_qty</td><td>VALUATIONQTY</td></tr>
-                <tr><td>moveInLocation</td><td>string</td><td><span class="optional">N</span></td><td>移入儲位 → ERP: storage_spaces_no</td><td>INSTORAGESPACE</td></tr>
-                <tr><td>remark</td><td>string</td><td><span class="optional">N</span></td><td>備註 → ERP: body_remark</td><td>NOTE</td></tr>
-                <tr><td>outSourceType</td><td>string</td><td><span class="optional">N</span></td><td>託工單別</td><td>OUTORDERTYPE</td></tr>
-                <tr><td>outSourceCode</td><td>string</td><td><span class="optional">N</span></td><td>託工單號</td><td>OUTORDERNO</td></tr>
+                <tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th><th>MES Source</th></tr>
+                <tr><td>moType</td><td>string</td><td><span class="required">Y</span></td><td>Work order type (combine to ERP: wo_no)</td><td>MOTYPE</td></tr>
+                <tr><td>moCode</td><td>string</td><td><span class="required">Y</span></td><td>Work order number (combine to ERP: wo_no)</td><td>MONO</td></tr>
+                <tr><td>moveOutOpSeq</td><td>string</td><td><span class="required">Y</span></td><td>Move out op sequence</td><td>OUTOPSEQ</td></tr>
+                <tr><td>moveOutOpId</td><td>string</td><td><span class="required">Y</span></td><td>Move out operation → ERP: op_no (Head)</td><td>OUTOP</td></tr>
+                <tr><td>qty</td><td>decimal</td><td><span class="required">Y</span></td><td>Quantity → ERP: qty</td><td>TRANSQTY</td></tr>
+                <tr><td>unit</td><td>string</td><td><span class="required">Y</span></td><td>Unit → ERP: unit_no</td><td>UNIT</td></tr>
+                <tr><td>batchCode</td><td>string</td><td><span class="required">Y</span></td><td>Batch number → ERP: lot_no</td><td>LOTNO</td></tr>
+                <tr><td>prodCode</td><td>string</td><td><span class="required">Y</span></td><td>Item code → ERP: item_no</td><td>ITEMID</td></tr>
+                <tr><td>acceptanceQty</td><td>decimal</td><td><span class="optional">N</span></td><td>Acceptance qty → ERP: receipt_qty</td><td>TL002</td></tr>
+                <tr><td>inspectionReturnQty</td><td>decimal</td><td><span class="optional">N</span></td><td>Rejection qty → ERP: return_qty</td><td>TL003</td></tr>
+                <tr><td>scrapQty</td><td>decimal</td><td><span class="optional">N</span></td><td>Scrap qty → ERP: scrap_qty</td><td>SCRAPQTY</td></tr>
+                <tr><td>valuationQty</td><td>decimal</td><td><span class="optional">N</span></td><td>Valuation qty → ERP: valuation_qty</td><td>VALUATIONQTY</td></tr>
+                <tr><td>moveInLocation</td><td>string</td><td><span class="optional">N</span></td><td>Move in location → ERP: storage_spaces_no</td><td>INSTORAGESPACE</td></tr>
+                <tr><td>remark</td><td>string</td><td><span class="optional">N</span></td><td>Remark → ERP: body_remark</td><td>NOTE</td></tr>
+                <tr><td>outSourceType</td><td>string</td><td><span class="optional">N</span></td><td>Outsourcing order type</td><td>OUTORDERTYPE</td></tr>
+                <tr><td>outSourceCode</td><td>string</td><td><span class="optional">N</span></td><td>Outsourcing order number</td><td>OUTORDERNO</td></tr>
             </table>
         </div>
 
         <!-- Response -->
         <div class="card" id="response">
-            <h2>4. Response 規格</h2>
+            <h2>4. Response Specification</h2>
             <table>
-                <tr><th>欄位</th><th>型別</th><th>說明</th></tr>
-                <tr><td>code</td><td>int</td><td>200=成功，其他=失敗</td></tr>
-                <tr><td>msg</td><td>string</td><td>處理結果訊息</td></tr>
-                <tr><td>TB001</td><td>string</td><td>ERP 單別 → 回寫 TL011</td></tr>
-                <tr><td>TB002</td><td>string</td><td>ERP 單號 → 回寫 TL012</td></tr>
+                <tr><th>Field</th><th>Type</th><th>Description</th></tr>
+                <tr><td>code</td><td>int</td><td>200=Success, others=Failure</td></tr>
+                <tr><td>msg</td><td>string</td><td>Processing result message</td></tr>
+                <tr><td>TB001</td><td>string</td><td>ERP doc type → Write to TL011</td></tr>
+                <tr><td>TB002</td><td>string</td><td>ERP doc number → Write to TL012</td></tr>
             </table>
         </div>
 
-        <!-- 檢核規則 -->
+        <!-- Validation Rules -->
         <div class="card" id="rules">
-            <h2>5. 檢核規則</h2>
+            <h2>5. Validation Rules</h2>
             <table>
-                <tr><th>#</th><th>檢核項目</th><th>規則</th><th>程式位置</th></tr>
-                <tr><td>1</td><td>TRANSTYPE 判斷</td><td>= "59" 才用委外 API</td><td>TransOrderDataToJson.java:648</td></tr>
-                <tr><td>2</td><td>TO013 檢查</td><td>= 1 時才送 ERP</td><td>TransOrderDataToJson.java:612</td></tr>
-                <tr><td>3</td><td>明細資料存在</td><td>SFT_TRANSORDER_LINE_GRID 不可空</td><td>TransOrderDataToJson.java:609</td></tr>
-                <tr><td>4</td><td>ERP 連線</td><td>SFTConfig.isHasERP() = true</td><td>TransOrderDataToJson.java:646</td></tr>
+                <tr><th>#</th><th>Check Item</th><th>Rule</th><th>Code Location</th></tr>
+                <tr><td>1</td><td>TRANSTYPE check</td><td>= "59" to use outsourcing API</td><td>TransOrderDataToJson.java:648</td></tr>
+                <tr><td>2</td><td>TO013 check</td><td>= 1 to send to ERP</td><td>TransOrderDataToJson.java:612</td></tr>
+                <tr><td>3</td><td>Line data exists</td><td>SFT_TRANSORDER_LINE_GRID cannot be empty</td><td>TransOrderDataToJson.java:609</td></tr>
+                <tr><td>4</td><td>ERP connection</td><td>SFTConfig.isHasERP() = true</td><td>TransOrderDataToJson.java:646</td></tr>
             </table>
         </div>
 
-        <!-- 錯誤代碼 -->
+        <!-- Error Codes -->
         <div class="card" id="errors">
-            <h2>6. 錯誤代碼</h2>
+            <h2>6. Error Codes</h2>
             <table>
-                <tr><th>代碼</th><th>訊息</th><th>說明</th></tr>
-                <tr><td>E001</td><td>必填欄位缺失</td><td>Request 缺少必要欄位</td></tr>
-                <tr><td>E002</td><td>委外工單不存在</td><td>MOTYPE-MONO 錯誤</td></tr>
-                <tr><td>E003</td><td>委外工單狀態不允許</td><td>工單已結案或取消</td></tr>
-                <tr><td>E004</td><td>數量必須大於零</td><td>qty ≤ 0</td></tr>
-                <tr><td>E005</td><td>數量超過餘量</td><td>超過委外工單可入庫量</td></tr>
-                <tr><td>E999</td><td>系統錯誤</td><td>Timeout、連線異常</td></tr>
+                <tr><th>Code</th><th>Message</th><th>Description</th></tr>
+                <tr><td>E001</td><td>Required field missing</td><td>Request missing required fields</td></tr>
+                <tr><td>E002</td><td>Outsourcing work order not found</td><td>MOTYPE-MONO error</td></tr>
+                <tr><td>E003</td><td>Outsourcing work order status not allowed</td><td>Work order closed or cancelled</td></tr>
+                <tr><td>E004</td><td>Quantity must be greater than zero</td><td>qty ≤ 0</td></tr>
+                <tr><td>E005</td><td>Quantity exceeds remaining</td><td>Exceeds available outsourcing stock-in qty</td></tr>
+                <tr><td>E999</td><td>System error</td><td>Timeout, connection exception</td></tr>
             </table>
         </div>
 
-        <!-- JSON 範例 -->
+        <!-- JSON Examples -->
         <div class="card" id="example">
-            <h2>7. JSON 範例</h2>
+            <h2>7. JSON Examples</h2>
 
             <h3>Request (MES JSON)</h3>
             <div class="code-block">
@@ -365,7 +364,7 @@
     <span class="key">"moveInType"</span>: <span class="string">"2"</span>,
     <span class="key">"moveInCode"</span>: <span class="string">"FG01"</span>,
     <span class="key">"factoryCode"</span>: <span class="string">"P001"</span>,
-    <span class="key">"remark"</span>: <span class="string">"委外進貨"</span>,        <span class="comment">// → ERP: remark</span>
+    <span class="key">"remark"</span>: <span class="string">"Outsourcing receipt"</span>,        <span class="comment">// → ERP: remark</span>
     <span class="key">"create"</span>: <span class="string">"EMP001"</span>,         <span class="comment">// → ERP: operator_no</span>
     <span class="key">"eMESTransferType"</span>: <span class="string">"59"</span>,
     <span class="key">"eMESTransferCode"</span>: <span class="string">"T20260319001"</span>
@@ -379,33 +378,33 @@
     <span class="key">"unit"</span>: <span class="string">"PCS"</span>,               <span class="comment">// → ERP: unit_no</span>
     <span class="key">"batchCode"</span>: <span class="string">"LOT20260319001"</span>, <span class="comment">// → ERP: lot_no</span>
     <span class="key">"prodCode"</span>: <span class="string">"FG-A001-001"</span>,   <span class="comment">// → ERP: item_no</span>
-    <span class="key">"acceptanceQty"</span>: <span class="number">98</span>,         <span class="comment">// → ERP: receipt_qty (驗收數量)</span>
-    <span class="key">"inspectionReturnQty"</span>: <span class="number">1</span>,   <span class="comment">// → ERP: return_qty (驗退數量)</span>
-    <span class="key">"scrapQty"</span>: <span class="number">1</span>,               <span class="comment">// → ERP: scrap_qty (報廢數量)</span>
-    <span class="key">"valuationQty"</span>: <span class="number">98</span>,          <span class="comment">// → ERP: valuation_qty (計價數量)</span>
+    <span class="key">"acceptanceQty"</span>: <span class="number">98</span>,         <span class="comment">// → ERP: receipt_qty (acceptance qty)</span>
+    <span class="key">"inspectionReturnQty"</span>: <span class="number">1</span>,   <span class="comment">// → ERP: return_qty (rejection qty)</span>
+    <span class="key">"scrapQty"</span>: <span class="number">1</span>,               <span class="comment">// → ERP: scrap_qty (scrap qty)</span>
+    <span class="key">"valuationQty"</span>: <span class="number">98</span>,          <span class="comment">// → ERP: valuation_qty (valuation qty)</span>
     <span class="key">"moveInLocation"</span>: <span class="string">"A-01-01"</span>, <span class="comment">// → ERP: storage_spaces_no</span>
-    <span class="key">"remark"</span>: <span class="string">"品質良好"</span>,         <span class="comment">// → ERP: body_remark</span>
+    <span class="key">"remark"</span>: <span class="string">"Good quality"</span>,         <span class="comment">// → ERP: body_remark</span>
     <span class="key">"outSourceType"</span>: <span class="string">"5902"</span>,
     <span class="key">"outSourceCode"</span>: <span class="string">"20260319001"</span>
   }]
 }</pre>
             </div>
 
-            <h3>Response (成功)</h3>
+            <h3>Response (Success)</h3>
             <div class="code-block">
 <pre>{
   <span class="key">"code"</span>: <span class="number">200</span>,
-  <span class="key">"msg"</span>: <span class="string">"委外進貨單建立成功"</span>,
+  <span class="key">"msg"</span>: <span class="string">"Outsourcing receipt created successfully"</span>,
   <span class="key">"TB001"</span>: <span class="string">"5902"</span>,
   <span class="key">"TB002"</span>: <span class="string">"20260319001"</span>
 }</pre>
             </div>
 
-            <h3>Response (失敗)</h3>
+            <h3>Response (Failure)</h3>
             <div class="code-block">
 <pre>{
   <span class="key">"code"</span>: <span class="number">500</span>,
-  <span class="key">"msg"</span>: <span class="string">"委外工單不存在 5101-20260319999"</span>
+  <span class="key">"msg"</span>: <span class="string">"Outsourcing work order not found 5101-20260319999"</span>
 }</pre>
             </div>
         </div>

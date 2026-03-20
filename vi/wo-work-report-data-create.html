@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>wo.work.report.data.create - 拋送報工單 | eMES API 規格書</title>
+    <title>wo.work.report.data.create - Gửi phiếu báo công | eMES API Tài liệu kỹ thuật</title>
     <style>
         :root {
             --primary-color: #2563eb;
@@ -53,30 +53,6 @@
 
         .back-link:hover {
             color: white;
-        }
-
-        .lang-switcher {
-            float: right;
-            display: flex;
-            gap: 10px;
-        }
-
-        .lang-switcher a {
-            color: rgba(255,255,255,0.7);
-            text-decoration: none;
-            padding: 5px 10px;
-            border-radius: 4px;
-            font-size: 0.85em;
-        }
-
-        .lang-switcher a:hover {
-            color: white;
-            background: rgba(255,255,255,0.1);
-        }
-
-        .lang-switcher a.active {
-            color: white;
-            background: rgba(255,255,255,0.2);
         }
 
         .api-title {
@@ -306,104 +282,133 @@
             color: var(--text-muted);
             font-size: 0.9em;
         }
+
+        .lang-switcher {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 10px;
+            z-index: 1000;
+        }
+
+        .lang-switcher a {
+            display: block;
+            padding: 5px 15px;
+            color: var(--text-color);
+            text-decoration: none;
+            border-radius: 4px;
+        }
+
+        .lang-switcher a:hover {
+            background: var(--bg-color);
+        }
+
+        .lang-switcher a.active {
+            background: var(--primary-color);
+            color: white;
+        }
     </style>
 </head>
 <body>
+    <div class="lang-switcher">
+        <a href="../wo-work-report-data-create.html">繁體中文</a>
+        <a href="../en/wo-work-report-data-create.html">English</a>
+        <a href="wo-work-report-data-create.html" class="active">Tiếng Việt</a>
+        <a href="../th/wo-work-report-data-create.html">ภาษาไทย</a>
+    </div>
+
     <div class="header">
         <div class="header-content">
-            <div class="lang-switcher">
-                <a href="wo-work-report-data-create.html" class="active">繁體中文</a>
-                <a href="en/wo-work-report-data-create.html">English</a>
-                <a href="vi/wo-work-report-data-create.html">Tiếng Việt</a>
-                <a href="th/wo-work-report-data-create.html">ภาษาไทย</a>
-            </div>
-            <a href="index.html" class="back-link">← 返回 API 列表</a>
+            <a href="index.html" class="back-link">← Quay lại danh sách API</a>
             <div class="api-title">
-                <h1>拋送報工單</h1>
+                <h1>Gửi phiếu báo công</h1>
                 <span class="method-badge">POST</span>
                 <span class="method-badge">MES → ERP</span>
             </div>
             <div class="api-code">wo.work.report.data.create</div>
             <p class="api-desc">
-                工單出站完成後，將報工資料（生產報工單）拋送至 ERP 系統。
-                ERP 回傳報工單號後，MES 將單號回寫至 SFT_OP_REALRUN 和 SFT_WS_RUN。
+                Sau khi hoàn thành xuất trạm lệnh sản xuất, gửi dữ liệu báo công (phiếu báo công sản xuất) đến hệ thống ERP.
+                Sau khi ERP trả về số phiếu báo công, MES sẽ ghi lại số phiếu vào SFT_OP_REALRUN và SFT_WS_RUN.
             </p>
         </div>
     </div>
 
     <div class="container">
-        <!-- 基本資訊 -->
+        <!-- Thông tin cơ bản -->
         <div class="section">
-            <h2>基本資訊</h2>
+            <h2>Thông tin cơ bản</h2>
             <div class="info-grid">
                 <div class="info-item">
-                    <div class="label">API 名稱</div>
+                    <div class="label">Tên API</div>
                     <div class="value">wo.work.report.data.create</div>
                 </div>
                 <div class="info-item">
-                    <div class="label">內部任務名稱</div>
+                    <div class="label">Tên tác vụ nội bộ</div>
                     <div class="value">generateProductionForm</div>
                 </div>
                 <div class="info-item">
-                    <div class="label">傳輸格式</div>
+                    <div class="label">Định dạng truyền tải</div>
                     <div class="value">JSON (Content-Type: application/json)</div>
                 </div>
                 <div class="info-item">
-                    <div class="label">案號</div>
+                    <div class="label">Số dự án</div>
                     <div class="value">0190760</div>
                 </div>
                 <div class="info-item">
-                    <div class="label">API 編號</div>
+                    <div class="label">Mã API</div>
                     <div class="value">api-2195</div>
                 </div>
                 <div class="info-item">
-                    <div class="label">資料方向</div>
+                    <div class="label">Hướng dữ liệu</div>
                     <div class="value">MES → ERP</div>
                 </div>
             </div>
         </div>
 
-        <!-- 觸發時機 -->
+        <!-- Thời điểm kích hoạt -->
         <div class="section">
-            <h2>觸發時機</h2>
+            <h2>Thời điểm kích hoạt</h2>
             <div class="flow-diagram">
                 <svg viewBox="0 0 900 200" style="max-width: 900px; width: 100%;">
-                    <!-- 步驟 1: 出站作業 -->
+                    <!-- Bước 1: Xuất trạm -->
                     <rect x="20" y="60" width="150" height="80" rx="8" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
-                    <text x="95" y="95" text-anchor="middle" font-size="14" font-weight="600" fill="#1e40af">出站作業</text>
+                    <text x="95" y="95" text-anchor="middle" font-size="14" font-weight="600" fill="#1e40af">Xuất trạm</text>
                     <text x="95" y="115" text-anchor="middle" font-size="11" fill="#3b82f6">CheckOut</text>
 
-                    <!-- 箭頭 1 -->
+                    <!-- Mũi tên 1 -->
                     <path d="M170 100 L210 100" stroke="#64748b" stroke-width="2" marker-end="url(#arrowhead)"/>
 
-                    <!-- 步驟 2: 產生報工單 -->
+                    <!-- Bước 2: Tạo phiếu báo công -->
                     <rect x="220" y="60" width="150" height="80" rx="8" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
-                    <text x="295" y="90" text-anchor="middle" font-size="14" font-weight="600" fill="#166534">產生報工單</text>
+                    <text x="295" y="90" text-anchor="middle" font-size="14" font-weight="600" fill="#166534">Tạo phiếu báo công</text>
                     <text x="295" y="110" text-anchor="middle" font-size="10" fill="#22c55e">generateProductionForm</text>
                     <text x="295" y="125" text-anchor="middle" font-size="10" fill="#22c55e">MainDataHead:354</text>
 
-                    <!-- 箭頭 2 -->
+                    <!-- Mũi tên 2 -->
                     <path d="M370 100 L410 100" stroke="#64748b" stroke-width="2" marker-end="url(#arrowhead)"/>
 
-                    <!-- 步驟 3: 送 ERP -->
+                    <!-- Bước 3: Gửi ERP -->
                     <rect x="420" y="60" width="150" height="80" rx="8" fill="#fef3c7" stroke="#f59e0b" stroke-width="2"/>
-                    <text x="495" y="90" text-anchor="middle" font-size="14" font-weight="600" fill="#92400e">送出至 ERP</text>
+                    <text x="495" y="90" text-anchor="middle" font-size="14" font-weight="600" fill="#92400e">Gửi đến ERP</text>
                     <text x="495" y="110" text-anchor="middle" font-size="10" fill="#d97706">wo.work.report</text>
                     <text x="495" y="125" text-anchor="middle" font-size="10" fill="#d97706">.data.create</text>
 
-                    <!-- 箭頭 3 -->
+                    <!-- Mũi tên 3 -->
                     <path d="M570 100 L610 100" stroke="#64748b" stroke-width="2" marker-end="url(#arrowhead)"/>
 
-                    <!-- 步驟 4: 回寫單號 -->
+                    <!-- Bước 4: Ghi lại số phiếu -->
                     <rect x="620" y="60" width="150" height="80" rx="8" fill="#f3e8ff" stroke="#9333ea" stroke-width="2"/>
-                    <text x="695" y="90" text-anchor="middle" font-size="14" font-weight="600" fill="#7e22ce">回寫報工單號</text>
+                    <text x="695" y="90" text-anchor="middle" font-size="14" font-weight="600" fill="#7e22ce">Ghi lại số phiếu</text>
                     <text x="695" y="110" text-anchor="middle" font-size="10" fill="#a855f7">SFT_OP_REALRUN</text>
                     <text x="695" y="125" text-anchor="middle" font-size="10" fill="#a855f7">SFT_WS_RUN</text>
 
-                    <!-- 箭頭 4 -->
+                    <!-- Mũi tên 4 -->
                     <path d="M770 100 L810 100" stroke="#64748b" stroke-width="2" marker-end="url(#arrowhead)"/>
 
-                    <!-- 完成 -->
+                    <!-- Hoàn thành -->
                     <circle cx="840" cy="100" r="30" fill="#10b981"/>
                     <text x="840" y="105" text-anchor="middle" font-size="20" fill="white">✓</text>
 
@@ -416,207 +421,207 @@
             </div>
 
             <div class="note">
-                <div class="note-title">觸發條件</div>
+                <div class="note-title">Điều kiện kích hoạt</div>
                 <div class="note-content">
-                    當作業員完成出站（CheckOut）、進站（CheckIn）、批次出站（BatchCheckOut）、批次進站（BatchCheckIn）等作業後，
-                    系統會呼叫 <code class="code-inline">MainDataHead.generateProductionForm()</code> 方法，
-                    將報工資料拋送至 ERP。
+                    Khi công nhân hoàn thành xuất trạm (CheckOut), vào trạm (CheckIn), xuất trạm hàng loạt (BatchCheckOut), vào trạm hàng loạt (BatchCheckIn),
+                    hệ thống sẽ gọi phương thức <code class="code-inline">MainDataHead.generateProductionForm()</code>,
+                    để gửi dữ liệu báo công đến ERP.
                 </div>
             </div>
         </div>
 
-        <!-- 請求參數 - HEAD -->
+        <!-- Tham số yêu cầu - HEAD -->
         <div class="section">
-            <h2>請求參數</h2>
+            <h2>Tham số yêu cầu</h2>
 
-            <h3><span class="tag tag-head">HEAD</span> 報工單頭檔 (SFT_SFCTD)</h3>
+            <h3><span class="tag tag-head">HEAD</span> Header phiếu báo công (SFT_SFCTD)</h3>
             <table>
                 <thead>
                     <tr>
-                        <th>欄位</th>
-                        <th>MES 欄位</th>
-                        <th>ERP 欄位</th>
-                        <th>類型</th>
-                        <th>必填</th>
-                        <th>說明</th>
+                        <th>Trường</th>
+                        <th>Trường MES</th>
+                        <th>Trường ERP</th>
+                        <th>Loại</th>
+                        <th>Bắt buộc</th>
+                        <th>Mô tả</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <td>報工類別</td>
+                        <td>Loại báo công</td>
                         <td><code class="code-inline">TD001</code></td>
                         <td><code class="code-inline">doc_type_no</code></td>
                         <td>String</td>
-                        <td><span class="tag tag-required">必填</span></td>
-                        <td>報工單類型代碼</td>
+                        <td><span class="tag tag-required">Bắt buộc</span></td>
+                        <td>Mã loại phiếu báo công</td>
                     </tr>
                     <tr>
-                        <td>報工日期</td>
+                        <td>Ngày báo công</td>
                         <td><code class="code-inline">TD003</code></td>
                         <td><code class="code-inline">create_date</code></td>
                         <td>Date</td>
-                        <td><span class="tag tag-required">必填</span></td>
-                        <td>報工作業日期 (yyyy-MM-dd)</td>
+                        <td><span class="tag tag-required">Bắt buộc</span></td>
+                        <td>Ngày tác nghiệp báo công (yyyy-MM-dd)</td>
                     </tr>
                     <tr>
-                        <td>工作站</td>
+                        <td>Trạm làm việc</td>
                         <td><code class="code-inline">TD004</code></td>
                         <td><code class="code-inline">workstation_no</code></td>
                         <td>String</td>
-                        <td><span class="tag tag-required">必填</span></td>
-                        <td>ERP 工作站代號 (ERP_WSID)</td>
+                        <td><span class="tag tag-required">Bắt buộc</span></td>
+                        <td>Mã trạm làm việc ERP (ERP_WSID)</td>
                     </tr>
                     <tr>
-                        <td>備註</td>
+                        <td>Ghi chú</td>
                         <td><code class="code-inline">TD006</code></td>
                         <td><code class="code-inline">remark</code></td>
                         <td>String</td>
-                        <td><span class="tag tag-optional">選填</span></td>
-                        <td>報工單備註</td>
+                        <td><span class="tag tag-optional">Tùy chọn</span></td>
+                        <td>Ghi chú phiếu báo công</td>
                     </tr>
                     <tr>
-                        <td>品號-品名</td>
+                        <td>Mã SP-Tên SP</td>
                         <td><code class="code-inline">itemCode-itemName</code></td>
                         <td><code class="code-inline">source_no</code></td>
                         <td>String</td>
-                        <td><span class="tag tag-optional">選填</span></td>
-                        <td>產品來源識別</td>
+                        <td><span class="tag tag-optional">Tùy chọn</span></td>
+                        <td>Định danh nguồn sản phẩm</td>
                     </tr>
                 </tbody>
             </table>
 
-            <h3><span class="tag tag-line">LINE</span> 報工單明細 (SFT_SFCTE)</h3>
+            <h3><span class="tag tag-line">LINE</span> Chi tiết phiếu báo công (SFT_SFCTE)</h3>
             <table>
                 <thead>
                     <tr>
-                        <th>欄位</th>
-                        <th>MES 欄位</th>
-                        <th>ERP 欄位</th>
-                        <th>類型</th>
-                        <th>必填</th>
-                        <th>說明</th>
+                        <th>Trường</th>
+                        <th>Trường MES</th>
+                        <th>Trường ERP</th>
+                        <th>Loại</th>
+                        <th>Bắt buộc</th>
+                        <th>Mô tả</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <td>報工人員</td>
+                        <td>Nhân viên báo công</td>
                         <td><code class="code-inline">TE004</code></td>
                         <td><code class="code-inline">reporter</code></td>
                         <td>String</td>
-                        <td><span class="tag tag-required">必填</span></td>
-                        <td>操作人員 ID</td>
+                        <td><span class="tag tag-required">Bắt buộc</span></td>
+                        <td>ID nhân viên thao tác</td>
                     </tr>
                     <tr>
-                        <td>機台編號</td>
+                        <td>Mã máy</td>
                         <td><code class="code-inline">TE005</code></td>
                         <td><code class="code-inline">machine_no</code></td>
                         <td>String</td>
-                        <td><span class="tag tag-required">必填</span></td>
-                        <td>設備編號 (eqId)</td>
+                        <td><span class="tag tag-required">Bắt buộc</span></td>
+                        <td>Mã thiết bị (eqId)</td>
                     </tr>
                     <tr>
-                        <td>工單類別</td>
+                        <td>Loại lệnh sản xuất</td>
                         <td><code class="code-inline">TE006</code></td>
                         <td rowspan="2"><code class="code-inline">wo_no</code></td>
                         <td>String</td>
-                        <td><span class="tag tag-required">必填</span></td>
-                        <td>製令類別 (moType)</td>
+                        <td><span class="tag tag-required">Bắt buộc</span></td>
+                        <td>Loại lệnh sản xuất (moType)</td>
                     </tr>
                     <tr>
-                        <td>工單號</td>
+                        <td>Số lệnh sản xuất</td>
                         <td><code class="code-inline">TE007</code></td>
                         <td>String</td>
-                        <td><span class="tag tag-required">必填</span></td>
-                        <td>製令號 (moCode)，與工單類別組合</td>
+                        <td><span class="tag tag-required">Bắt buộc</span></td>
+                        <td>Số lệnh sản xuất (moCode), kết hợp với loại lệnh</td>
                     </tr>
                     <tr>
-                        <td>製程序號</td>
+                        <td>Số thứ tự công đoạn</td>
                         <td><code class="code-inline">TE008</code></td>
                         <td><code class="code-inline">op_seq</code></td>
                         <td>String</td>
-                        <td><span class="tag tag-required">必填</span></td>
-                        <td>操作製程序列 (ERP_OPSEQ)</td>
+                        <td><span class="tag tag-required">Bắt buộc</span></td>
+                        <td>Số thứ tự công đoạn (ERP_OPSEQ)</td>
                     </tr>
                     <tr>
-                        <td>製程代碼</td>
+                        <td>Mã công đoạn</td>
                         <td><code class="code-inline">TE009</code></td>
                         <td><code class="code-inline">op_no</code></td>
                         <td>String</td>
-                        <td><span class="tag tag-required">必填</span></td>
-                        <td>操作製程代碼 (ERP_OPID)</td>
+                        <td><span class="tag tag-required">Bắt buộc</span></td>
+                        <td>Mã công đoạn (ERP_OPID)</td>
                     </tr>
                     <tr>
-                        <td>報工數量</td>
+                        <td>Số lượng báo công</td>
                         <td><code class="code-inline">TE011</code></td>
                         <td><code class="code-inline">qty</code></td>
                         <td>Numeric</td>
-                        <td><span class="tag tag-required">必填</span></td>
-                        <td>完成數量</td>
+                        <td><span class="tag tag-required">Bắt buộc</span></td>
+                        <td>Số lượng hoàn thành</td>
                     </tr>
                     <tr>
-                        <td>勞動時間</td>
+                        <td>Thời gian lao động</td>
                         <td><code class="code-inline">TE012</code></td>
                         <td><code class="code-inline">labor_hours</code></td>
                         <td>Numeric</td>
-                        <td><span class="tag tag-required">必填</span></td>
-                        <td>人工時數（分鐘）</td>
+                        <td><span class="tag tag-required">Bắt buộc</span></td>
+                        <td>Số giờ công (phút)</td>
                     </tr>
                     <tr>
-                        <td>機器時間</td>
+                        <td>Thời gian máy</td>
                         <td><code class="code-inline">TE013</code></td>
                         <td><code class="code-inline">machine_hours</code></td>
                         <td>Numeric</td>
-                        <td><span class="tag tag-required">必填</span></td>
-                        <td>機器時數（分鐘）</td>
+                        <td><span class="tag tag-required">Bắt buộc</span></td>
+                        <td>Số giờ máy (phút)</td>
                     </tr>
                     <tr>
-                        <td>備註</td>
+                        <td>Ghi chú</td>
                         <td><code class="code-inline">TE015</code></td>
                         <td><code class="code-inline">remark</code></td>
                         <td>String</td>
-                        <td><span class="tag tag-optional">選填</span></td>
-                        <td>報工行備註</td>
+                        <td><span class="tag tag-optional">Tùy chọn</span></td>
+                        <td>Ghi chú dòng báo công</td>
                     </tr>
                     <tr>
-                        <td>完成日期</td>
+                        <td>Ngày hoàn thành</td>
                         <td><code class="code-inline">-</code></td>
                         <td><code class="code-inline">complete_date</code></td>
                         <td>Date</td>
-                        <td><span class="tag tag-optional">選填</span></td>
-                        <td>作業完成日期</td>
+                        <td><span class="tag tag-optional">Tùy chọn</span></td>
+                        <td>Ngày hoàn thành tác nghiệp</td>
                     </tr>
                     <tr>
-                        <td>單位</td>
+                        <td>Đơn vị</td>
                         <td><code class="code-inline">TE020</code></td>
                         <td><code class="code-inline">unit_no</code></td>
                         <td>String</td>
-                        <td><span class="tag tag-optional">選填</span></td>
-                        <td>基本單位</td>
+                        <td><span class="tag tag-optional">Tùy chọn</span></td>
+                        <td>Đơn vị cơ bản</td>
                     </tr>
                     <tr>
-                        <td>雙單位</td>
+                        <td>Đơn vị kép</td>
                         <td><code class="code-inline">TWINUNIT</code></td>
                         <td><code class="code-inline">-</code></td>
                         <td>String</td>
-                        <td><span class="tag tag-optional">選填</span></td>
-                        <td>製造雙單位名稱</td>
+                        <td><span class="tag tag-optional">Tùy chọn</span></td>
+                        <td>Tên đơn vị kép sản xuất</td>
                     </tr>
                 </tbody>
             </table>
         </div>
 
-        <!-- 請求範例 -->
+        <!-- Ví dụ yêu cầu -->
         <div class="section">
-            <h2>請求範例</h2>
-            <h3>MES 內部 JSON 格式</h3>
+            <h2>Ví dụ yêu cầu</h2>
+            <h3>Định dạng JSON nội bộ MES</h3>
             <pre>{
   "head": {
     "productionType": "10",
     "date": "2026-03-19",
     "wsId": "WS001",
-    "remark": "正常報工",
+    "remark": "Báo công bình thường",
     "itemCode": "ITEM-001",
-    "itemName": "測試品項",
+    "itemName": "Sản phẩm thử nghiệm",
     "create": "USER001"
   },
   "line": [
@@ -634,8 +639,8 @@
       "remark": "",
       "packagingQty": "10",
       "itemCode": "ITEM-001",
-      "itemName": "測試品項",
-      "description": "規格說明",
+      "itemName": "Sản phẩm thử nghiệm",
+      "description": "Mô tả quy cách",
       "unit": "PCS",
       "packUnit": "BOX",
       "manufactureDualUnit": "BOX"
@@ -643,10 +648,10 @@
   ]
 }</pre>
 
-            <h3>ERP XML 格式 (WFERP) - SendFormS.java:1520-1577</h3>
+            <h3>Định dạng XML ERP (WFERP) - SendFormS.java:1520-1577</h3>
             <pre>&lt;parameters&gt;
-  &lt;parameter key="enterprise_no" type="string"&gt;公司代碼&lt;/parameter&gt;
-  &lt;parameter key="site_no" type="string"&gt;工廠代碼&lt;/parameter&gt;
+  &lt;parameter key="enterprise_no" type="string"&gt;Mã công ty&lt;/parameter&gt;
+  &lt;parameter key="site_no" type="string"&gt;Mã nhà máy&lt;/parameter&gt;
 
   &lt;parameter key="report_data" type="data"&gt;
     &lt;data name="report"&gt;
@@ -655,10 +660,10 @@
         &lt;field name="doc_type_no" type="string"&gt;10&lt;/field&gt;
         &lt;field name="create_date" type="date"&gt;2026-03-19&lt;/field&gt;
         &lt;field name="workstation_no" type="string"&gt;WS001&lt;/field&gt;
-        &lt;field name="remark" type="string"&gt;正常報工&lt;/field&gt;
+        &lt;field name="remark" type="string"&gt;Báo công bình thường&lt;/field&gt;
         &lt;field name="factory_no" type="string"&gt;&lt;/field&gt;
         &lt;field name="shift_no" type="string"&gt;&lt;/field&gt;
-        &lt;field name="source_no" type="string"&gt;ITEM-001-測試品項&lt;/field&gt;
+        &lt;field name="source_no" type="string"&gt;ITEM-001-Sản phẩm thử nghiệm&lt;/field&gt;
         &lt;field name="plot_no" type="string"&gt;&lt;/field&gt;
         &lt;field name="doc_head_wo_no" type="string"&gt;&lt;/field&gt;
         &lt;field name="doc_head_reporter" type="string"&gt;&lt;/field&gt;
@@ -701,90 +706,90 @@
 &lt;/parameters&gt;</pre>
         </div>
 
-        <!-- 回應格式 -->
+        <!-- Định dạng phản hồi -->
         <div class="section">
-            <h2>回應格式</h2>
+            <h2>Định dạng phản hồi</h2>
 
             <div class="two-column">
                 <div>
-                    <h3>成功回應 (code=200)</h3>
+                    <h3>Phản hồi thành công (code=200)</h3>
                     <div class="success-box">
                         <pre style="background: transparent; padding: 0; margin: 0;">{
   "code": 200,
-  "msg": "報工單建立成功",
+  "msg": "Tạo phiếu báo công thành công",
   "ERPMessage": {
-    "description": "處理成功",
+    "description": "Xử lý thành công",
     "report_no": "10-20260319001"
   }
 }</pre>
                     </div>
                 </div>
                 <div>
-                    <h3>失敗回應 (code=500)</h3>
+                    <h3>Phản hồi thất bại (code=500)</h3>
                     <div class="error-box">
                         <pre style="background: transparent; padding: 0; margin: 0;">{
   "code": 500,
-  "msg": "報工單建立失敗",
+  "msg": "Tạo phiếu báo công thất bại",
   "ERPMessage": {
-    "description": "工單號不存在"
+    "description": "Số lệnh sản xuất không tồn tại"
   }
 }</pre>
                     </div>
                 </div>
             </div>
 
-            <h3>回應欄位說明</h3>
+            <h3>Mô tả trường phản hồi</h3>
             <table>
                 <thead>
                     <tr>
-                        <th>欄位</th>
-                        <th>類型</th>
-                        <th>說明</th>
+                        <th>Trường</th>
+                        <th>Loại</th>
+                        <th>Mô tả</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td><code class="code-inline">code</code></td>
                         <td>Integer</td>
-                        <td>200=成功, 500=失敗</td>
+                        <td>200=Thành công, 500=Thất bại</td>
                     </tr>
                     <tr>
                         <td><code class="code-inline">msg</code></td>
                         <td>String</td>
-                        <td>處理訊息</td>
+                        <td>Thông báo xử lý</td>
                     </tr>
                     <tr>
                         <td><code class="code-inline">ERPMessage.report_no</code></td>
                         <td>String</td>
-                        <td>ERP 回傳的報工單號（類別-單號）</td>
+                        <td>Số phiếu báo công từ ERP (loại-số)</td>
                     </tr>
                 </tbody>
             </table>
         </div>
 
-        <!-- 回寫邏輯 -->
+        <!-- Logic ghi lại ERP -->
         <div class="section">
-            <h2>ERP 回寫邏輯</h2>
-            <p>ERP 回傳報工單號後，MES 會將單號回寫至以下資料表：</p>
+            <h2>Logic ghi lại ERP</h2>
+            <p>Sau khi ERP trả về số phiếu báo công, MES sẽ ghi lại số phiếu vào các bảng dữ liệu sau:</p>
 
             <div class="flow-diagram">
                 <svg viewBox="0 0 800 280" style="max-width: 800px; width: 100%;">
-                    <!-- ERP 回傳 -->
+                    <!-- ERP trả về -->
                     <rect x="20" y="100" width="150" height="80" rx="8" fill="#fef3c7" stroke="#f59e0b" stroke-width="2"/>
-                    <text x="95" y="130" text-anchor="middle" font-size="13" font-weight="600" fill="#92400e">ERP 回傳</text>
+                    <text x="95" y="130" text-anchor="middle" font-size="13" font-weight="600" fill="#92400e">ERP trả về</text>
                     <text x="95" y="150" text-anchor="middle" font-size="11" fill="#d97706">report_no</text>
                     <text x="95" y="165" text-anchor="middle" font-size="10" fill="#d97706">10-20260319001</text>
 
-                    <!-- 箭頭 -->
+                    <!-- Mũi tên -->
                     <path d="M170 140 L230 140" stroke="#64748b" stroke-width="2" marker-end="url(#arrowhead2)"/>
 
-                    <!-- 解析 -->
+                    <!-- Phân tích -->
                     <rect x="240" y="100" width="120" height="80" rx="8" fill="#e0e7ff" stroke="#6366f1" stroke-width="2"/>
-                    <text x="300" y="130" text-anchor="middle" font-size="13" font-weight="600" fill="#4338ca">解析單號</text>
+                    <text x="300" y="130" text-anchor="middle" font-size="13" font-weight="600" fill="#4338ca">Phân tích số</text>
                     <text x="300" y="150" text-anchor="middle" font-size="10" fill="#6366f1">PDTYPE=10</text>
                     <text x="300" y="165" text-anchor="middle" font-size="10" fill="#6366f1">PDNO=20260319001</text>
 
-                    <!-- 分支箭頭 -->
+                    <!-- Mũi tên nhánh -->
                     <path d="M360 120 L420 60" stroke="#64748b" stroke-width="2" marker-end="url(#arrowhead2)"/>
                     <path d="M360 160 L420 220" stroke="#64748b" stroke-width="2" marker-end="url(#arrowhead2)"/>
 
@@ -797,10 +802,10 @@
                     <!-- SFT_WS_RUN -->
                     <rect x="430" y="180" width="200" height="80" rx="8" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
                     <text x="530" y="210" text-anchor="middle" font-size="13" font-weight="600" fill="#1e40af">SFT_WS_RUN</text>
-                    <text x="530" y="230" text-anchor="middle" font-size="10" fill="#3b82f6">WR024 (報工單號)</text>
-                    <text x="530" y="245" text-anchor="middle" font-size="10" fill="#3b82f6">WR025 (報工序號)</text>
+                    <text x="530" y="230" text-anchor="middle" font-size="10" fill="#3b82f6">WR024 (Số phiếu báo công)</text>
+                    <text x="530" y="245" text-anchor="middle" font-size="10" fill="#3b82f6">WR025 (Số thứ tự báo công)</text>
 
-                    <!-- 完成標記 -->
+                    <!-- Đánh dấu hoàn thành -->
                     <circle cx="720" y="60" r="25" fill="#10b981"/>
                     <text x="720" y="65" text-anchor="middle" font-size="18" fill="white">✓</text>
                     <path d="M630 60 L685 60" stroke="#64748b" stroke-width="2" marker-end="url(#arrowhead2)"/>
@@ -817,8 +822,8 @@
                 </svg>
             </div>
 
-            <h3>回寫 SQL 邏輯</h3>
-            <pre>-- 更新 SFT_OP_REALRUN
+            <h3>Logic SQL ghi lại</h3>
+            <pre>-- Cập nhật SFT_OP_REALRUN
 UPDATE SFT_OP_REALRUN
 SET PRODUCTION_REPORTID = 'PDTYPE-PDNO',
     PRODUCTION_REPORTSN = TE003
@@ -828,96 +833,96 @@ WHERE ID = :KEYID
   AND ERP_WSID = :TD004
   AND SEQUENCE = :PRODUCTIONSEQ
 
--- 更新 SFT_WS_RUN
+-- Cập nhật SFT_WS_RUN
 UPDATE SFT_WS_RUN
 SET WR024 = 'PDTYPE-PDNO',
     WR025 = TE003
-WHERE (對應的進出站記錄條件)</pre>
+WHERE (điều kiện bản ghi vào/xuất trạm tương ứng)</pre>
 
             <div class="note">
-                <div class="note-title">合併報工模式</div>
+                <div class="note-title">Chế độ báo công gộp</div>
                 <div class="note-content">
-                    當系統設定 <code class="code-inline">EmploymentReportingItemized = "-1"</code> 時，
-                    採用合併報工模式，會根據 TD001 和 TD002 批次更新相關記錄。
+                    Khi cấu hình hệ thống <code class="code-inline">EmploymentReportingItemized = "-1"</code>,
+                    sử dụng chế độ báo công gộp, sẽ cập nhật hàng loạt các bản ghi liên quan theo TD001 và TD002.
                 </div>
             </div>
         </div>
 
-        <!-- 相關資料表 -->
+        <!-- Bảng dữ liệu liên quan -->
         <div class="section">
-            <h2>相關資料表</h2>
+            <h2>Bảng dữ liệu liên quan</h2>
             <table>
                 <thead>
                     <tr>
-                        <th>資料表</th>
-                        <th>說明</th>
-                        <th>關鍵欄位</th>
+                        <th>Bảng dữ liệu</th>
+                        <th>Mô tả</th>
+                        <th>Trường quan trọng</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td><code class="code-inline">SFT_SFCTD</code></td>
-                        <td>報工單頭檔</td>
-                        <td>TD001(類別), TD002(單號), TD003(日期), TD004(工作站)</td>
+                        <td>Header phiếu báo công</td>
+                        <td>TD001(Loại), TD002(Số), TD003(Ngày), TD004(Trạm làm việc)</td>
                     </tr>
                     <tr>
                         <td><code class="code-inline">SFT_SFCTE</code></td>
-                        <td>報工單明細</td>
-                        <td>TE001-TE002(FK), TE003(行號), TE011(數量)</td>
+                        <td>Chi tiết phiếu báo công</td>
+                        <td>TE001-TE002(FK), TE003(Số dòng), TE011(Số lượng)</td>
                     </tr>
                     <tr>
                         <td><code class="code-inline">SFT_OP_REALRUN</code></td>
-                        <td>製程執行記錄</td>
+                        <td>Bản ghi thực thi công đoạn</td>
                         <td>PRODUCTION_REPORTID, PRODUCTION_REPORTSN</td>
                     </tr>
                     <tr>
                         <td><code class="code-inline">SFT_WS_RUN</code></td>
-                        <td>工作站執行記錄</td>
-                        <td>WR024(報工單號), WR025(報工序號)</td>
+                        <td>Bản ghi thực thi trạm làm việc</td>
+                        <td>WR024(Số phiếu báo công), WR025(Số thứ tự báo công)</td>
                     </tr>
                 </tbody>
             </table>
         </div>
 
-        <!-- 程式碼位置 -->
+        <!-- Vị trí mã nguồn -->
         <div class="section">
-            <h2>程式碼位置</h2>
+            <h2>Vị trí mã nguồn</h2>
             <table>
                 <thead>
                     <tr>
-                        <th>功能</th>
-                        <th>檔案路徑</th>
-                        <th>行號</th>
+                        <th>Chức năng</th>
+                        <th>Đường dẫn file</th>
+                        <th>Số dòng</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <td>報工單生成入口</td>
+                        <td>Điểm vào tạo phiếu báo công</td>
                         <td>SFT_core/src/com/dci/sft/dataTrunk/MainDataHead.java</td>
                         <td>354</td>
                     </tr>
                     <tr>
-                        <td>JSON 轉換</td>
+                        <td>Chuyển đổi JSON</td>
                         <td>SFT_core/src/com/dci/sft/erp/webservice/SendFormSbyJson.java</td>
                         <td>47-57</td>
                     </tr>
                     <tr>
-                        <td>欄位定義</td>
+                        <td>Định nghĩa trường</td>
                         <td>SFT_core/src/com/dci/sft/erp/webservice/SendFormElementbyJson.java</td>
                         <td>289-343</td>
                     </tr>
                     <tr>
-                        <td>XML 參數組裝</td>
+                        <td>Tổ hợp tham số XML</td>
                         <td>SFT_ERPIntegrate/src/com/dci/sft/erp/webservice/SendFormS.java</td>
                         <td>1503-1577</td>
                     </tr>
                     <tr>
-                        <td>ERP 送出</td>
+                        <td>Gửi ERP</td>
                         <td>SFT_core/src/com/dci/sft/jsonMappingHibernate/TransOrderDataToJson.java</td>
                         <td>1636-1645</td>
                     </tr>
                     <tr>
-                        <td>回寫處理</td>
+                        <td>Xử lý ghi lại</td>
                         <td>SFT_core/src/com/dci/sft/jsonMappingHibernate/TransOrderDataToJson.java</td>
                         <td>1452-1527</td>
                     </tr>
@@ -925,51 +930,51 @@ WHERE (對應的進出站記錄條件)</pre>
             </table>
         </div>
 
-        <!-- 錯誤處理 -->
+        <!-- Xử lý lỗi -->
         <div class="section">
-            <h2>錯誤處理</h2>
+            <h2>Xử lý lỗi</h2>
             <table>
                 <thead>
                     <tr>
-                        <th>錯誤類型</th>
-                        <th>原因</th>
-                        <th>處理方式</th>
+                        <th>Loại lỗi</th>
+                        <th>Nguyên nhân</th>
+                        <th>Cách xử lý</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td><code class="code-inline">SocketTimeoutException</code></td>
-                        <td>連線超時</td>
-                        <td>檢查 ERP 伺服器狀態，重新補送</td>
+                        <td>Hết thời gian kết nối</td>
+                        <td>Kiểm tra trạng thái máy chủ ERP, gửi lại</td>
                     </tr>
                     <tr>
                         <td><code class="code-inline">ConnectException</code></td>
-                        <td>無法連線</td>
-                        <td>檢查網路、ERP 伺服器狀態</td>
+                        <td>Không thể kết nối</td>
+                        <td>Kiểm tra mạng, trạng thái máy chủ ERP</td>
                     </tr>
                     <tr>
                         <td><code class="code-inline">RemoteException</code></td>
-                        <td>遠端服務錯誤</td>
-                        <td>查閱 ERP 日誌，聯絡 ERP 廠商</td>
+                        <td>Lỗi dịch vụ từ xa</td>
+                        <td>Xem log ERP, liên hệ nhà cung cấp ERP</td>
                     </tr>
                     <tr>
-                        <td>工單號不存在</td>
-                        <td>ERP 端無此工單</td>
-                        <td>確認工單已同步至 ERP</td>
+                        <td>Số lệnh sản xuất không tồn tại</td>
+                        <td>ERP không có lệnh sản xuất này</td>
+                        <td>Xác nhận lệnh sản xuất đã đồng bộ với ERP</td>
                     </tr>
                 </tbody>
             </table>
 
-            <h3>LOG 記錄</h3>
-            <pre>// 日誌檔案：logs/ERPReturnErrorRec.log
+            <h3>Ghi LOG</h3>
+            <pre>// File log: logs/ERPReturnErrorRec.log
 
 [ERP_SEND_ERROR] taskName=generateProductionForm, errorType=SocketTimeoutException, errorMsg=Read timed out
-[ERP_SEND_ERROR] 送出内容={...JSON...}</pre>
+[ERP_SEND_ERROR] Nội dung gửi={...JSON...}</pre>
         </div>
     </div>
 
     <div class="footer">
-        <p>eMES API 規格書 | 案號: 0190760 | 更新日期: 2026-03-19</p>
+        <p>eMES API Tài liệu kỹ thuật | Số dự án: 0190760 | Ngày cập nhật: 2026-03-19</p>
     </div>
 </body>
 </html>
