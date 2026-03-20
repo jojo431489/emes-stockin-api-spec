@@ -592,32 +592,39 @@
   ]
 }</pre>
 
-            <h3>ERP XML 格式 (WFERP)</h3>
+            <h3>ERP XML 格式 (WFERP) - SendFormS.java:1773-1804</h3>
             <pre>&lt;parameters&gt;
   &lt;parameter key="enterprise_no" type="string"&gt;公司代碼&lt;/parameter&gt;
   &lt;parameter key="site_no" type="string"&gt;工廠代碼&lt;/parameter&gt;
 
-  &lt;parameter key="scrap_data" type="data"&gt;
-    &lt;data name="scrap"&gt;
+  &lt;parameter key="wo_scrap_data" type="data"&gt;
+    &lt;data name="wo_scrap"&gt;
       &lt;row seq="1"&gt;
+        &lt;!-- ======== Head ======== --&gt;
         &lt;field name="doc_type_no" type="string"&gt;58&lt;/field&gt;
         &lt;field name="source_no" type="string"&gt;SC-20260319001&lt;/field&gt;
         &lt;field name="create_date" type="date"&gt;2026-03-19&lt;/field&gt;
+        &lt;field name="remark" type="string"&gt;不良品入庫&lt;/field&gt;
         &lt;field name="workstation_no" type="string"&gt;WS001&lt;/field&gt;
         &lt;field name="factory_no" type="string"&gt;FACTORY01&lt;/field&gt;
+        &lt;field name="shift_no" type="string"&gt;&lt;/field&gt;
         &lt;field name="operator_no" type="string"&gt;USER001&lt;/field&gt;
-        &lt;field name="remark" type="string"&gt;不良品入庫&lt;/field&gt;
 
-        &lt;detail name="scrap_detail"&gt;
+        &lt;!-- ======== Line ======== --&gt;
+        &lt;detail name="wo_scrap_detail"&gt;
           &lt;row&gt;
+            &lt;field name="seq" type="string"&gt;&lt;/field&gt;
             &lt;field name="wo_no" type="string"&gt;5101-20260319001&lt;/field&gt;
             &lt;field name="item_no" type="string"&gt;ITEM-001&lt;/field&gt;
             &lt;field name="scrap_qty" type="numeric"&gt;5&lt;/field&gt;
             &lt;field name="unit_no" type="string"&gt;PCS&lt;/field&gt;
+            &lt;field name="remark" type="string"&gt;表面瑕疵&lt;/field&gt;
+            &lt;field name="machine_no" type="string"&gt;&lt;/field&gt;
             &lt;field name="warehouse_no" type="string"&gt;WH-SCRAP&lt;/field&gt;
             &lt;field name="location_no" type="string"&gt;A01&lt;/field&gt;
             &lt;field name="lot_no" type="string"&gt;BAT001&lt;/field&gt;
-            &lt;field name="remark" type="string"&gt;表面瑕疵&lt;/field&gt;
+            &lt;field name="damage_qty" type="numeric"&gt;&lt;/field&gt;
+            &lt;field name="stock_in_status" type="string"&gt;&lt;/field&gt;
           &lt;/row&gt;
         &lt;/detail&gt;
       &lt;/row&gt;

@@ -613,7 +613,7 @@
   ]
 }</pre>
 
-            <h3>ERP XML 格式 (WFERP)</h3>
+            <h3>ERP XML 格式 (WFERP) - SendFormS.java:1520-1577</h3>
             <pre>&lt;parameters&gt;
   &lt;parameter key="enterprise_no" type="string"&gt;公司代碼&lt;/parameter&gt;
   &lt;parameter key="site_no" type="string"&gt;工廠代碼&lt;/parameter&gt;
@@ -621,14 +621,32 @@
   &lt;parameter key="report_data" type="data"&gt;
     &lt;data name="report"&gt;
       &lt;row seq="1"&gt;
+        &lt;!-- ======== Head ======== --&gt;
         &lt;field name="doc_type_no" type="string"&gt;10&lt;/field&gt;
         &lt;field name="create_date" type="date"&gt;2026-03-19&lt;/field&gt;
         &lt;field name="workstation_no" type="string"&gt;WS001&lt;/field&gt;
         &lt;field name="remark" type="string"&gt;正常報工&lt;/field&gt;
+        &lt;field name="factory_no" type="string"&gt;&lt;/field&gt;
+        &lt;field name="shift_no" type="string"&gt;&lt;/field&gt;
         &lt;field name="source_no" type="string"&gt;ITEM-001-測試品項&lt;/field&gt;
+        &lt;field name="plot_no" type="string"&gt;&lt;/field&gt;
+        &lt;field name="doc_head_wo_no" type="string"&gt;&lt;/field&gt;
+        &lt;field name="doc_head_reporter" type="string"&gt;&lt;/field&gt;
+        &lt;field name="doc_head_complete_date" type="date"&gt;&lt;/field&gt;
+        &lt;field name="doc_head_machine_no" type="string"&gt;&lt;/field&gt;
+        &lt;field name="doc_head_unit_no" type="string"&gt;&lt;/field&gt;
+        &lt;field name="total_qty" type="numeric"&gt;&lt;/field&gt;
+        &lt;field name="total_labor_hours" type="numeric"&gt;&lt;/field&gt;
+        &lt;field name="total_machine_hours" type="numeric"&gt;&lt;/field&gt;
+        &lt;field name="total_number_of_operators" type="string"&gt;&lt;/field&gt;
+        &lt;field name="total_scrap_qty" type="numeric"&gt;&lt;/field&gt;
+        &lt;field name="total_shortage_qty" type="numeric"&gt;&lt;/field&gt;
+        &lt;field name="total_surplus_qty" type="numeric"&gt;&lt;/field&gt;
 
+        &lt;!-- ======== Line ======== --&gt;
         &lt;detail name="report_detail"&gt;
           &lt;row&gt;
+            &lt;field name="seq" type="string"&gt;&lt;/field&gt;
             &lt;field name="wo_no" type="string"&gt;5101-20260319001&lt;/field&gt;
             &lt;field name="qty" type="numeric"&gt;100&lt;/field&gt;
             &lt;field name="labor_hours" type="numeric"&gt;60&lt;/field&gt;
@@ -638,8 +656,13 @@
             &lt;field name="op_no" type="string"&gt;OP001&lt;/field&gt;
             &lt;field name="unit_no" type="string"&gt;PCS&lt;/field&gt;
             &lt;field name="reporter" type="string"&gt;USER001&lt;/field&gt;
+            &lt;field name="report_datetime_e" type="string"&gt;&lt;/field&gt;
+            &lt;field name="number_of_operators" type="string"&gt;&lt;/field&gt;
             &lt;field name="complete_date" type="date"&gt;2026-03-19&lt;/field&gt;
             &lt;field name="remark" type="string"&gt;&lt;/field&gt;
+            &lt;field name="return_type" type="string"&gt;&lt;/field&gt;
+            &lt;field name="price" type="numeric"&gt;&lt;/field&gt;
+            &lt;field name="wages" type="numeric"&gt;&lt;/field&gt;
           &lt;/row&gt;
         &lt;/detail&gt;
       &lt;/row&gt;
