@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>issue.wo.item.process - Xuat/Tra nguyen lieu lenh san xuat | eMES API</title>
+    <title>issue.wo.item.process - Xuất/Trả nguyên liệu lệnh sản xuất | eMES API</title>
     <style>
         :root { --primary-color: #2563eb; --bg-color: #f8fafc; --border-color: #e2e8f0; --text-color: #1e293b; --text-muted: #64748b; --warning-color: #d97706; --success-color: #16a34a; --error-color: #dc2626; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -57,136 +57,284 @@
                 <a href="issue-wo-item-process.html" class="active">Tiếng Việt</a>
                 <a href="../th/issue-wo-item-process.html">ภาษาไทย</a>
             </div>
-            <a href="index.html" class="back-link">← Quay lai danh sach API</a>
+            <a href="index.html" class="back-link">← Quay lại danh sách API</a>
             <div class="api-title">
-                <h1>Xuat/Tra nguyen lieu lenh san xuat</h1>
+                <h1>Xuất/Trả nguyên liệu lệnh sản xuất</h1>
                 <span class="method-badge">POST</span>
                 <span class="method-badge">ERP → MES</span>
             </div>
             <div class="api-code">issue.wo.item.process</div>
-            <p class="api-desc">ERP thong bao MES ve thao tac xuat/tra nguyen lieu cua lenh san xuat, dong bo du lieu vat tu, phieu xuat/tra va chi tiet.</p>
+            <p class="api-desc">ERP thông báo MES về thao tác xuất/trả nguyên liệu của lệnh sản xuất, đồng bộ dữ liệu vật tư, phiếu xuất/trả và chi tiết.</p>
         </div>
     </div>
 
     <div class="container">
         <div class="section">
-            <h2>Thong tin co ban</h2>
+            <h2>Thông tin cơ bản</h2>
             <div class="info-grid">
-                <div class="info-item"><div class="label">Ten API</div><div class="value">issue.wo.item.process</div></div>
-                <div class="info-item"><div class="label">Ten phuong thuc</div><div class="value">IssueWoItemProcess</div></div>
-                <div class="info-item"><div class="label">Bang du lieu</div><div class="value">material_requisition / material_apply_basis / material_apply_detail</div></div>
-                <div class="info-item"><div class="label">Huong du lieu</div><div class="value">ERP → MES</div></div>
-                <div class="info-item"><div class="label">Muc dich</div><div class="value">Dong bo xuat/tra nguyen lieu</div></div>
-                <div class="info-item"><div class="label">Module can thiet</div><div class="value">material (Quan ly vat tu)</div></div>
+                <div class="info-item"><div class="label">Tên API</div><div class="value">issue.wo.item.process</div></div>
+                <div class="info-item"><div class="label">Tên phương thức</div><div class="value">IssueWoItemProcess</div></div>
+                <div class="info-item"><div class="label">Bảng dữ liệu</div><div class="value">material_requisition / material_apply_basis / material_apply_detail</div></div>
+                <div class="info-item"><div class="label">Hướng dữ liệu</div><div class="value">ERP → MES</div></div>
+                <div class="info-item"><div class="label">Mục đích</div><div class="value">Đồng bộ xuất/trả nguyên liệu</div></div>
+                <div class="info-item"><div class="label">Module cần thiết</div><div class="value">material (Quản lý vật tư)</div></div>
             </div>
 
             <div class="note warning">
-                <div class="note-title">Kiem tra quyen</div>
+                <div class="note-title">Kiểm tra quyền</div>
                 <div class="note-content">
-                    API nay can co giay phep module <code>material</code>. Neu khong co quyen se tra ve loi.
+                    API này cần có giấy phép module <code>material</code> (Quản lý vật tư). Nếu không có quyền sẽ trả về lỗi.
                 </div>
             </div>
         </div>
 
         <div class="section">
-            <h2>Tham so yeu cau (Lop ngoai)</h2>
+            <h2>Tham số yêu cầu (Lớp ngoài)</h2>
             <table>
-                <thead><tr><th>Truong</th><th>Kieu</th><th>Bat buoc</th><th>Mo ta</th></tr></thead>
+                <thead><tr><th>Trường</th><th>Kiểu</th><th>Bắt buộc</th><th>Mô tả</th></tr></thead>
                 <tbody>
-                    <tr><td><code class="code-inline">doc_no</code></td><td>String</td><td><span class="required">Y</span></td><td>So chung tu</td></tr>
-                    <tr><td><code class="code-inline">create_date</code></td><td>String</td><td><span class="required">Y</span></td><td>Ngay tao</td></tr>
-                    <tr><td><code class="code-inline">status</code></td><td>String</td><td><span class="required">Y</span></td><td>Trang thai thao tac (1/2/3/4)</td></tr>
-                    <tr><td><code class="code-inline">remark</code></td><td>String</td><td><span class="optional">N</span></td><td>Ghi chu</td></tr>
-                    <tr><td><code class="code-inline">wo_item_detail</code></td><td>Array</td><td><span class="required">Y</span></td><td>Mang chi tiet vat tu</td></tr>
+                    <tr><td><code class="code-inline">doc_no</code></td><td>String</td><td><span class="required">Y</span></td><td>Số chứng từ</td></tr>
+                    <tr><td><code class="code-inline">create_date</code></td><td>String</td><td><span class="required">Y</span></td><td>Ngày tạo</td></tr>
+                    <tr><td><code class="code-inline">status</code></td><td>String</td><td><span class="required">Y</span></td><td>Trạng thái thao tác (1/2/3/4)</td></tr>
+                    <tr><td><code class="code-inline">remark</code></td><td>String</td><td><span class="optional">N</span></td><td>Ghi chú</td></tr>
+                    <tr><td><code class="code-inline">wo_item_detail</code></td><td>Array</td><td><span class="required">Y</span></td><td>Mảng chi tiết vật tư</td></tr>
                 </tbody>
             </table>
         </div>
 
         <div class="section">
-            <h2>Tham so yeu cau (wo_item_detail)</h2>
+            <h2>Tham số yêu cầu (wo_item_detail)</h2>
             <table>
-                <thead><tr><th>Truong</th><th>Kieu</th><th>Bat buoc</th><th>Mo ta</th></tr></thead>
+                <thead><tr><th>Trường</th><th>Kiểu</th><th>Bắt buộc</th><th>Mô tả</th></tr></thead>
                 <tbody>
-                    <tr><td><code class="code-inline">seq</code></td><td>String</td><td><span class="required">Y</span></td><td>So thu tu</td></tr>
-                    <tr><td><code class="code-inline">wo_no</code></td><td>String</td><td><span class="required">Y</span></td><td>So lenh san xuat</td></tr>
-                    <tr><td><code class="code-inline">item_type</code></td><td>String</td><td><span class="required">Y</span></td><td>Loai vat tu (0=Thanh pham/1=Nguyen lieu)</td></tr>
-                    <tr><td><code class="code-inline">item_no</code></td><td>String</td><td><span class="required">Y</span></td><td>Ma san pham</td></tr>
-                    <tr><td><code class="code-inline">qty</code></td><td>Numeric</td><td><span class="required">Y</span></td><td>So luong (phai > 0)</td></tr>
-                    <tr><td><code class="code-inline">unit_no</code></td><td>String</td><td><span class="optional">N</span></td><td>Don vi</td></tr>
-                    <tr><td><code class="code-inline">input_datetime</code></td><td>String</td><td><span class="optional">N</span></td><td>Thoi gian nhap</td></tr>
+                    <tr><td><code class="code-inline">seq</code></td><td>String</td><td><span class="required">Y</span></td><td>Số thứ tự</td></tr>
+                    <tr><td><code class="code-inline">wo_no</code></td><td>String</td><td><span class="required">Y</span></td><td>Số lệnh sản xuất</td></tr>
+                    <tr><td><code class="code-inline">item_type</code></td><td>String</td><td><span class="required">Y</span></td><td>Loại vật tư (0=Thành phẩm/1=Nguyên liệu)</td></tr>
+                    <tr><td><code class="code-inline">item_no</code></td><td>String</td><td><span class="required">Y</span></td><td>Mã sản phẩm</td></tr>
+                    <tr><td><code class="code-inline">qty</code></td><td>Numeric</td><td><span class="required">Y</span></td><td>Số lượng (phải > 0)</td></tr>
+                    <tr><td><code class="code-inline">unit_no</code></td><td>String</td><td><span class="optional">N</span></td><td>Đơn vị</td></tr>
+                    <tr><td><code class="code-inline">input_datetime</code></td><td>String</td><td><span class="optional">N</span></td><td>Thời gian nhập</td></tr>
                     <tr><td><code class="code-inline">warehouse_no</code></td><td>String</td><td><span class="optional">N</span></td><td>Kho</td></tr>
-                    <tr><td><code class="code-inline">location_no</code></td><td>String</td><td><span class="optional">N</span></td><td>Vi tri</td></tr>
-                    <tr><td><code class="code-inline">lot_no</code></td><td>String</td><td><span class="optional">N</span></td><td>So lo</td></tr>
-                    <tr><td><code class="code-inline">expiry_date</code></td><td>String</td><td><span class="optional">N</span></td><td>Han su dung</td></tr>
-                    <tr><td><code class="code-inline">remark</code></td><td>String</td><td><span class="optional">N</span></td><td>Ghi chu</td></tr>
-                    <tr><td><code class="code-inline">positive_negative</code></td><td>String</td><td><span class="required">Y</span></td><td>Huong (-1=Xuat/Khac=Tra)</td></tr>
-                    <tr><td><code class="code-inline">issue_to_type</code></td><td>String</td><td><span class="optional">N</span></td><td>Loai xuat</td></tr>
-                    <tr><td><code class="code-inline">op_no</code></td><td>String</td><td><span class="optional">N</span></td><td>Ma quy trinh</td></tr>
+                    <tr><td><code class="code-inline">location_no</code></td><td>String</td><td><span class="optional">N</span></td><td>Vị trí</td></tr>
+                    <tr><td><code class="code-inline">lot_no</code></td><td>String</td><td><span class="optional">N</span></td><td>Số lô</td></tr>
+                    <tr><td><code class="code-inline">expiry_date</code></td><td>String</td><td><span class="optional">N</span></td><td>Hạn sử dụng</td></tr>
+                    <tr><td><code class="code-inline">remark</code></td><td>String</td><td><span class="optional">N</span></td><td>Ghi chú</td></tr>
+                    <tr><td><code class="code-inline">positive_negative</code></td><td>String</td><td><span class="required">Y</span></td><td>Hướng (-1=Xuất/Khác=Trả)</td></tr>
+                    <tr><td><code class="code-inline">issue_to_type</code></td><td>String</td><td><span class="optional">N</span></td><td>Loại xuất</td></tr>
+                    <tr><td><code class="code-inline">op_no</code></td><td>String</td><td><span class="optional">N</span></td><td>Mã quy trình</td></tr>
                 </tbody>
             </table>
         </div>
 
         <div class="section">
-            <h2>Trang thai thao tac</h2>
+            <h2>Trạng thái thao tác</h2>
             <table>
-                <thead><tr><th>Trang thai</th><th>Mo ta</th><th>Tinh toan so luong</th></tr></thead>
+                <thead><tr><th>Trạng thái</th><th>Mô tả</th><th>Tính toán số lượng</th></tr></thead>
                 <tbody>
-                    <tr><td><code class="code-inline">1</code></td><td>Xuat - Them moi</td><td>demand_quantity + qty</td></tr>
-                    <tr><td><code class="code-inline">2</code></td><td>Xuat - Xoa</td><td>demand_quantity - qty</td></tr>
-                    <tr><td><code class="code-inline">3</code></td><td>Tra - Them moi</td><td>demand_quantity - qty</td></tr>
-                    <tr><td><code class="code-inline">4</code></td><td>Tra - Xoa</td><td>demand_quantity + qty</td></tr>
+                    <tr><td><code class="code-inline">1</code></td><td>Xuất - Thêm mới</td><td>demand_quantity + qty</td></tr>
+                    <tr><td><code class="code-inline">2</code></td><td>Xuất - Xóa</td><td>demand_quantity - qty</td></tr>
+                    <tr><td><code class="code-inline">3</code></td><td>Trả - Thêm mới</td><td>demand_quantity - qty</td></tr>
+                    <tr><td><code class="code-inline">4</code></td><td>Trả - Xóa</td><td>demand_quantity + qty</td></tr>
                 </tbody>
             </table>
 
             <div class="note warning">
-                <div class="note-title">Kiem tra so luong</div>
+                <div class="note-title">Kiểm tra số lượng</div>
                 <div class="note-content">
-                    Khi thuc hien thao tac tru (trang thai 2, 3), neu resultQty < 0 se tra ve loi:<br>
-                    <code>JAVA_0119_00057</code>: So luong yeu cau khong du, khong the thuc hien
+                    Khi thực hiện thao tác trừ (trạng thái 2, 3), nếu resultQty < 0 sẽ trả về lỗi:<br>
+                    <code>JAVA_0119_00057</code>: Số lượng yêu cầu không đủ, không thể thực hiện
                 </div>
             </div>
         </div>
 
         <div class="section">
-            <h2>Bang du lieu bi anh huong</h2>
+            <h2>Ví dụ yêu cầu</h2>
+            <pre>{
+  "doc_no": "ISS20260415001",
+  "create_date": "2026-04-15 10:30:00",
+  "status": "1",
+  "remark": "Xuất nguyên liệu sản xuất",
+  "wo_item_detail": [
+    {
+      "seq": "001",
+      "wo_no": "5101-20260319001",
+      "item_type": "1",
+      "item_no": "MAT-001",
+      "qty": "100",
+      "unit_no": "PCS",
+      "input_datetime": "2026-04-15 10:30:00",
+      "warehouse_no": "WH01",
+      "location_no": "A01",
+      "lot_no": "LOT20260415",
+      "expiry_date": "2027-04-15",
+      "remark": "",
+      "positive_negative": "-1",
+      "issue_to_type": "1",
+      "op_no": "OP01"
+    }
+  ]
+}</pre>
+        </div>
+
+        <div class="section">
+            <h2>Logic xử lý</h2>
+            <div class="note">
+                <div class="note-title">Quy trình nghiệp vụ</div>
+                <div class="note-content">
+                    <ol style="margin-left: 20px; margin-top: 10px;">
+                        <li>Kiểm tra quyền module material</li>
+                        <li>Xác nhận status phải là 1/2/3/4</li>
+                        <li>Xác nhận wo_no (số lệnh sản xuất) tồn tại trong MODETAIL</li>
+                        <li>Truy vấn material_requisition để lấy demand_quantity hiện tại</li>
+                        <li>Tính toán resultQty mới theo status</li>
+                        <li>Thêm bản ghi material_requisition</li>
+                        <li>Thêm/Cập nhật material_apply_basis (tiêu đề phiếu xuất/trả)</li>
+                        <li>Thêm material_apply_detail (chi tiết phiếu xuất/trả)</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>SQL cập nhật cơ sở dữ liệu</h2>
+
+            <h3>1. Kiểm tra lệnh sản xuất tồn tại</h3>
+            <pre>SELECT 1 FROM MODETAIL WITH (NOLOCK) WHERE CMOID = :wo_no</pre>
+
+            <h3>2. Truy vấn số lượng yêu cầu hiện tại</h3>
+            <pre>SELECT TOP 1 ISNULL(demand_quantity, 0) AS demand_quantity
+FROM material_requisition WITH (NOLOCK)
+WHERE modetail_cmoid = :wo_no
+  AND material_id = :item_no
+ORDER BY serial DESC</pre>
+
+            <h3>3. INSERT material_requisition (chi tiết vật tư lệnh sản xuất)</h3>
+            <pre>INSERT INTO material_requisition (
+    serial, modetail_cmoid, material_type, material_id,
+    opid, erp_wsid, material_batch, remark,
+    demand_quantity, withdrawn_quantity, mr01
+) VALUES (
+    :serial,           -- MAX(serial) + 1
+    :wo_no,            -- Số lệnh sản xuất
+    :item_type,        -- Loại vật tư (1=Thành phẩm/2=Nguyên liệu)
+    :item_no,          -- Mã sản phẩm
+    :op_no,            -- Mã quy trình
+    '',                -- Mã trạm làm việc
+    :lot_no,           -- Số lô
+    :remark,           -- Ghi chú
+    :resultQty,        -- Số lượng yêu cầu sau tính toán
+    0,                 -- Số lượng đã xuất
+    N'{Thời gian hiện tại}'  -- Thời gian tạo
+)</pre>
+
+            <h3>4. INSERT material_apply_basis (tiêu đề phiếu xuất/trả)</h3>
+            <pre>IF NOT EXISTS (
+    SELECT 1 FROM material_apply_basis
+    WHERE material_order_id = :doc_no
+)
+INSERT INTO material_apply_basis (
+    material_order_id, material_order_type, factory_id,
+    order_source, material_order_status,
+    creator, create_time, modifier, modify_time
+) VALUES (
+    :doc_no,           -- Số chứng từ
+    :positive_negative, -- 1=Xuất/2=Trả
+    '001',             -- Mã nhà máy
+    '2',               -- Nguồn (ERP)
+    '1',               -- Trạng thái
+    'ERP_SYSTEM',
+    N'{Thời gian hiện tại}',
+    'ERP_SYSTEM',
+    N'{Thời gian hiện tại}'
+)</pre>
+
+            <h3>5. INSERT material_apply_detail (chi tiết phiếu xuất/trả)</h3>
+            <pre>IF NOT EXISTS (
+    SELECT 1 FROM material_apply_detail
+    WHERE material_order_id = :doc_no
+      AND material_order_seq = :seq
+)
+INSERT INTO material_apply_detail (
+    material_order_id, material_order_seq, mo_id, material_seq,
+    material_id, apply_qty, receive_qty, op_id, ws_id,
+    material_type, standard_quantity,
+    creator, create_time, modifier, modify_time
+) VALUES (
+    :doc_no,           -- Số chứng từ
+    :seq,              -- Số thứ tự
+    :wo_no,            -- Số lệnh sản xuất
+    :serial,           -- Số serial vật tư
+    :item_no,          -- Mã sản phẩm
+    :qty,              -- Số lượng yêu cầu
+    :qty,              -- Số lượng nhận
+    :op_no,            -- Mã quy trình
+    '',                -- Mã trạm làm việc
+    :item_type,        -- Loại vật tư
+    :qty,              -- Số lượng tiêu chuẩn
+    'ERP_SYSTEM',
+    N'{Thời gian hiện tại}',
+    'ERP_SYSTEM',
+    N'{Thời gian hiện tại}'
+)</pre>
+        </div>
+
+        <div class="section">
+            <h2>Bảng dữ liệu bị ảnh hưởng</h2>
             <table>
-                <thead><tr><th>Bang</th><th>Thao tac</th><th>Mo ta</th></tr></thead>
+                <thead><tr><th>Bảng</th><th>Thao tác</th><th>Mô tả</th></tr></thead>
                 <tbody>
-                    <tr><td>material_requisition</td><td>INSERT</td><td>Chi tiet vat tu lenh san xuat</td></tr>
-                    <tr><td>material_apply_basis</td><td>INSERT</td><td>Phieu xuat/tra (tao neu chua co)</td></tr>
-                    <tr><td>material_apply_detail</td><td>INSERT</td><td>Chi tiet phieu xuat/tra</td></tr>
+                    <tr><td>material_requisition</td><td>INSERT</td><td>Chi tiết vật tư lệnh sản xuất (thêm một bản ghi cho mỗi dòng)</td></tr>
+                    <tr><td>material_apply_basis</td><td>INSERT</td><td>Tiêu đề phiếu xuất/trả (tạo nếu chưa có)</td></tr>
+                    <tr><td>material_apply_detail</td><td>INSERT</td><td>Chi tiết phiếu xuất/trả (tạo nếu chưa có)</td></tr>
                 </tbody>
             </table>
 
             <div class="note info">
-                <div class="note-title">Vi tri ma nguon</div>
+                <div class="note-title">Vị trí mã nguồn</div>
                 <div class="note-content">
-                    Diem vao API: <code>IssueWoItemProcess.java</code> (SFT_ERPIntegrate)<br>
-                    Logic chinh: <code>RegularESB.upMaterialCROSS()</code> (SFT_dataImport:3715-3905)
+                    Điểm vào API: <code>IssueWoItemProcess.java</code> (SFT_ERPIntegrate)<br>
+                    Logic chính: <code>RegularESB.upMaterialCROSS()</code> (SFT_dataImport:3715-3905)
                 </div>
             </div>
         </div>
 
         <div class="section">
-            <h2>Ma loi</h2>
+            <h2>Mã lỗi</h2>
             <table>
-                <thead><tr><th>Ma</th><th>Thong bao</th><th>Mo ta</th></tr></thead>
+                <thead><tr><th>Mã</th><th>Thông báo</th><th>Mô tả</th></tr></thead>
                 <tbody>
-                    <tr><td>JAVA_0119_00059</td><td>Trang thai khong duoc de trong va phai la 1/2/3/4</td><td>Tham so status khong hop le</td></tr>
-                    <tr><td>JS_0097_00005</td><td>So lenh san xuat khong duoc de trong</td><td>wo_no trong</td></tr>
-                    <tr><td>JAVA_0119_00058</td><td>Loai vat tu khong duoc de trong va phai la 0 hoac 1</td><td>item_type khong hop le</td></tr>
-                    <tr><td>JS_0085_00004</td><td>Ma san pham khong duoc de trong</td><td>item_no trong</td></tr>
-                    <tr><td>JAVA_0119_00060</td><td>So luong phai lon hon 0</td><td>qty khong hop le</td></tr>
-                    <tr><td>JSP_0119_00009</td><td>Lenh san xuat khong ton tai</td><td>Khong tim thay trong MODETAIL</td></tr>
-                    <tr><td>JAVA_0119_00057</td><td>So luong yeu cau khong du</td><td>Ket qua so luong am</td></tr>
-                    <tr><td>eMES_Material_007</td><td>Module quan ly vat tu</td><td>Module chua duoc cap quyen</td></tr>
+                    <tr><td>JAVA_0119_00059</td><td>Trạng thái không được để trống và phải là 1/2/3/4</td><td>Tham số status không hợp lệ</td></tr>
+                    <tr><td>JS_0097_00005</td><td>Số lệnh sản xuất không được để trống</td><td>wo_no trống</td></tr>
+                    <tr><td>JAVA_0119_00058</td><td>Loại vật tư không được để trống và phải là 0 hoặc 1</td><td>item_type không hợp lệ</td></tr>
+                    <tr><td>JS_0085_00004</td><td>Mã sản phẩm không được để trống</td><td>item_no trống</td></tr>
+                    <tr><td>JAVA_0119_00060</td><td>Số lượng phải lớn hơn 0</td><td>qty không hợp lệ</td></tr>
+                    <tr><td>JSP_0119_00009</td><td>Lệnh sản xuất không tồn tại</td><td>Không tìm thấy trong MODETAIL</td></tr>
+                    <tr><td>JAVA_0119_00057</td><td>Số lượng yêu cầu không đủ</td><td>Kết quả số lượng âm</td></tr>
+                    <tr><td>eMES_Material_007</td><td>Module quản lý vật tư</td><td>Module chưa được cấp quyền</td></tr>
                 </tbody>
             </table>
+        </div>
+
+        <div class="section">
+            <h2>Ví dụ phản hồi</h2>
+
+            <h3>Thành công</h3>
+            <pre>{
+  "code": "200",
+  "msg": "Thành công!",
+  "return_no": "ISS20260415001"
+}</pre>
+
+            <h3>Thất bại</h3>
+            <pre>{
+  "code": "500",
+  "msg": "Lệnh sản xuất không tồn tại"
+}</pre>
         </div>
     </div>
 
     <div class="footer">
-        <p>Tai lieu API eMES | Xuat/Tra nguyen lieu lenh san xuat | Ngay cap nhat: 2026-04-15</p>
+        <p>Tài liệu API eMES | Xuất/Trả nguyên liệu lệnh sản xuất | Ngày cập nhật: 2026-04-15</p>
     </div>
 </body>
 </html>
