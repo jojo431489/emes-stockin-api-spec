@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>issue.wo.item.process - Work Order Material Status | eMES API Specification</title>
+    <title>issue.wo.item.process - Work Order Material Issue/Return | eMES API Specification</title>
     <style>
-        :root { --primary-color: #2563eb; --bg-color: #f8fafc; --border-color: #e2e8f0; --text-color: #1e293b; --text-muted: #64748b; }
+        :root { --primary-color: #2563eb; --bg-color: #f8fafc; --border-color: #e2e8f0; --text-color: #1e293b; --text-muted: #64748b; --warning-color: #d97706; --success-color: #16a34a; --error-color: #dc2626; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif; line-height: 1.6; color: var(--text-color); background: var(--bg-color); }
         .header { background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%); color: white; padding: 40px 20px; }
@@ -16,18 +16,15 @@
         .method-badge { background: rgba(255,255,255,0.2); padding: 5px 15px; border-radius: 20px; font-size: 0.9em; font-weight: 600; }
         .api-code { font-family: 'Consolas', monospace; background: rgba(0,0,0,0.2); padding: 10px 20px; border-radius: 8px; margin-top: 15px; font-size: 1.1em; display: inline-block; }
         .api-desc { margin-top: 15px; opacity: 0.9; max-width: 800px; }
-        .lang-switcher { display: flex; gap: 10px; margin-top: 15px; }
-        .lang-switcher a { color: rgba(255,255,255,0.7); padding: 5px 10px; border-radius: 4px; font-size: 0.85em; text-decoration: none; }
-        .lang-switcher a:hover { color: white; background: rgba(255,255,255,0.1); }
-        .lang-switcher a.active { color: white; background: rgba(255,255,255,0.2); }
         .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
         .section { background: white; border-radius: 12px; padding: 30px; margin-bottom: 30px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
         .section h2 { font-size: 1.4em; color: var(--text-color); margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid var(--bg-color); }
+        .section h3 { font-size: 1.1em; color: var(--text-color); margin: 20px 0 10px; }
         .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
         .info-item { background: var(--bg-color); padding: 15px; border-radius: 8px; }
         .info-item .label { font-size: 0.85em; color: var(--text-muted); margin-bottom: 5px; }
         .info-item .value { font-weight: 600; color: var(--text-color); }
-        table { width: 100%; border-collapse: collapse; font-size: 0.95em; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.95em; margin: 15px 0; }
         th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid var(--border-color); }
         th { background: var(--bg-color); font-weight: 600; }
         tr:hover { background: #f1f5f9; }
@@ -36,26 +33,38 @@
         .note { background: #f3e8ff; border-left: 4px solid #8b5cf6; padding: 15px 20px; border-radius: 0 8px 8px 0; margin: 20px 0; }
         .note-title { font-weight: 600; color: #6d28d9; margin-bottom: 5px; }
         .note-content { color: #5b21b6; font-size: 0.95em; }
+        .note.warning { background: #fef3c7; border-left-color: var(--warning-color); }
+        .note.warning .note-title { color: var(--warning-color); }
+        .note.warning .note-content { color: #92400e; }
+        .note.info { background: #dbeafe; border-left-color: var(--primary-color); }
+        .note.info .note-title { color: var(--primary-color); }
+        .note.info .note-content { color: #1e40af; }
+        .required { background: var(--error-color); color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.75em; }
+        .optional { background: var(--text-muted); color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.75em; }
         .footer { text-align: center; padding: 40px 20px; color: var(--text-muted); font-size: 0.9em; }
+        .lang-switcher { float: right; display: flex; gap: 10px; }
+        .lang-switcher a { color: rgba(255,255,255,0.7); text-decoration: none; padding: 5px 10px; border-radius: 4px; font-size: 0.85em; }
+        .lang-switcher a:hover { color: white; background: rgba(255,255,255,0.1); }
+        .lang-switcher a.active { color: white; background: rgba(255,255,255,0.2); }
     </style>
 </head>
 <body>
     <div class="header">
         <div class="header-content">
-            <a href="index.html" class="back-link">← Back to API List</a>
-            <div class="api-title">
-                <h1>Work Order Material Status</h1>
-                <span class="method-badge">POST</span>
-                <span class="method-badge">ERP → MES</span>
-            </div>
-            <div class="api-code">issue.wo.item.process</div>
-            <p class="api-desc">ERP notifies MES of work order material preparation status changes, used to update material preparation information in MES.</p>
             <div class="lang-switcher">
                 <a href="../issue-wo-item-process.html">繁體中文</a>
                 <a href="issue-wo-item-process.html" class="active">English</a>
                 <a href="../vi/issue-wo-item-process.html">Tiếng Việt</a>
                 <a href="../th/issue-wo-item-process.html">ภาษาไทย</a>
             </div>
+            <a href="index.html" class="back-link">← Back to API List</a>
+            <div class="api-title">
+                <h1>Work Order Material Issue/Return</h1>
+                <span class="method-badge">POST</span>
+                <span class="method-badge">ERP → MES</span>
+            </div>
+            <div class="api-code">issue.wo.item.process</div>
+            <p class="api-desc">ERP notifies MES of work order material issue/return operations, synchronizing material usage data, issue/return orders and details.</p>
         </div>
     </div>
 
@@ -64,103 +73,185 @@
             <h2>Basic Information</h2>
             <div class="info-grid">
                 <div class="info-item"><div class="label">API Name</div><div class="value">issue.wo.item.process</div></div>
-                <div class="info-item"><div class="label">Method Name</div><div class="value">issueWoItemProcess</div></div>
-                <div class="info-item"><div class="label">Target Table</div><div class="value">MODETAIL / material_requisition</div></div>
+                <div class="info-item"><div class="label">Method Name</div><div class="value">IssueWoItemProcess</div></div>
+                <div class="info-item"><div class="label">Target Tables</div><div class="value">material_requisition / material_apply_basis / material_apply_detail</div></div>
                 <div class="info-item"><div class="label">Data Direction</div><div class="value">ERP → MES</div></div>
-                <div class="info-item"><div class="label">Purpose</div><div class="value">Work order material status sync</div></div>
+                <div class="info-item"><div class="label">Purpose</div><div class="value">Work order material issue/return sync</div></div>
+                <div class="info-item"><div class="label">Required Module</div><div class="value">material (Material Management)</div></div>
+            </div>
+
+            <div class="note warning">
+                <div class="note-title">Authorization Check</div>
+                <div class="note-content">
+                    This API requires the <code>material</code> module license. An error will be returned if not authorized.
+                </div>
             </div>
         </div>
 
         <div class="section">
-            <h2>Request Parameters</h2>
+            <h2>Request Parameters (Outer)</h2>
             <table>
                 <thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
                 <tbody>
-                    <tr><td><code class="code-inline">enterprise_no</code></td><td>String</td><td>Required</td><td>Company number</td></tr>
-                    <tr><td><code class="code-inline">site_no</code></td><td>String</td><td>Required</td><td>Site number</td></tr>
-                    <tr><td><code class="code-inline">wo_no</code></td><td>String</td><td>Required</td><td>Work order number</td></tr>
-                    <tr><td><code class="code-inline">issue_status</code></td><td>String</td><td>Required</td><td>Material preparation status</td></tr>
-                    <tr><td><code class="code-inline">issue_date</code></td><td>Date</td><td>Optional</td><td>Material preparation date</td></tr>
-                    <tr><td><code class="code-inline">issue_qty</code></td><td>Numeric</td><td>Optional</td><td>Material preparation quantity</td></tr>
+                    <tr><td><code class="code-inline">doc_no</code></td><td>String</td><td><span class="required">Y</span></td><td>Document number</td></tr>
+                    <tr><td><code class="code-inline">create_date</code></td><td>String</td><td><span class="required">Y</span></td><td>Create date</td></tr>
+                    <tr><td><code class="code-inline">status</code></td><td>String</td><td><span class="required">Y</span></td><td>Operation status (1/2/3/4)</td></tr>
+                    <tr><td><code class="code-inline">remark</code></td><td>String</td><td><span class="optional">N</span></td><td>Remark</td></tr>
+                    <tr><td><code class="code-inline">wo_item_detail</code></td><td>Array</td><td><span class="required">Y</span></td><td>Work order material detail array</td></tr>
                 </tbody>
             </table>
         </div>
 
         <div class="section">
-            <h2>Material Preparation Status</h2>
+            <h2>Request Parameters (wo_item_detail)</h2>
             <table>
-                <thead><tr><th>Status Code</th><th>Description</th></tr></thead>
+                <thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
                 <tbody>
-                    <tr><td><code class="code-inline">0</code></td><td>Not prepared</td></tr>
-                    <tr><td><code class="code-inline">1</code></td><td>Partially prepared</td></tr>
-                    <tr><td><code class="code-inline">2</code></td><td>Fully prepared</td></tr>
-                    <tr><td><code class="code-inline">3</code></td><td>Preparation cancelled</td></tr>
+                    <tr><td><code class="code-inline">seq</code></td><td>String</td><td><span class="required">Y</span></td><td>Sequence number</td></tr>
+                    <tr><td><code class="code-inline">wo_no</code></td><td>String</td><td><span class="required">Y</span></td><td>Work order number</td></tr>
+                    <tr><td><code class="code-inline">item_type</code></td><td>String</td><td><span class="required">Y</span></td><td>Material type (0=Finished goods/1=Raw material)</td></tr>
+                    <tr><td><code class="code-inline">item_no</code></td><td>String</td><td><span class="required">Y</span></td><td>Item number</td></tr>
+                    <tr><td><code class="code-inline">qty</code></td><td>Numeric</td><td><span class="required">Y</span></td><td>Quantity (must be > 0)</td></tr>
+                    <tr><td><code class="code-inline">unit_no</code></td><td>String</td><td><span class="optional">N</span></td><td>Unit</td></tr>
+                    <tr><td><code class="code-inline">input_datetime</code></td><td>String</td><td><span class="optional">N</span></td><td>Input datetime</td></tr>
+                    <tr><td><code class="code-inline">warehouse_no</code></td><td>String</td><td><span class="optional">N</span></td><td>Warehouse</td></tr>
+                    <tr><td><code class="code-inline">location_no</code></td><td>String</td><td><span class="optional">N</span></td><td>Location</td></tr>
+                    <tr><td><code class="code-inline">lot_no</code></td><td>String</td><td><span class="optional">N</span></td><td>Lot number</td></tr>
+                    <tr><td><code class="code-inline">expiry_date</code></td><td>String</td><td><span class="optional">N</span></td><td>Expiry date</td></tr>
+                    <tr><td><code class="code-inline">remark</code></td><td>String</td><td><span class="optional">N</span></td><td>Remark</td></tr>
+                    <tr><td><code class="code-inline">positive_negative</code></td><td>String</td><td><span class="required">Y</span></td><td>Direction (-1=Issue/Other=Return)</td></tr>
+                    <tr><td><code class="code-inline">issue_to_type</code></td><td>String</td><td><span class="optional">N</span></td><td>Issue type</td></tr>
+                    <tr><td><code class="code-inline">op_no</code></td><td>String</td><td><span class="optional">N</span></td><td>Operation code</td></tr>
                 </tbody>
             </table>
+        </div>
+
+        <div class="section">
+            <h2>Operation Status</h2>
+            <table>
+                <thead><tr><th>Status</th><th>Description</th><th>Quantity Calculation</th></tr></thead>
+                <tbody>
+                    <tr><td><code class="code-inline">1</code></td><td>Issue - Create</td><td>demand_quantity + qty</td></tr>
+                    <tr><td><code class="code-inline">2</code></td><td>Issue - Delete</td><td>demand_quantity - qty</td></tr>
+                    <tr><td><code class="code-inline">3</code></td><td>Return - Create</td><td>demand_quantity - qty</td></tr>
+                    <tr><td><code class="code-inline">4</code></td><td>Return - Delete</td><td>demand_quantity + qty</td></tr>
+                </tbody>
+            </table>
+
+            <div class="note warning">
+                <div class="note-title">Quantity Validation</div>
+                <div class="note-content">
+                    When performing deduction operations (status 2, 3), if resultQty < 0, an error will be thrown:<br>
+                    <code>JAVA_0119_00057</code>: Insufficient demand quantity, cannot perform deduction
+                </div>
+            </div>
         </div>
 
         <div class="section">
             <h2>Request Example</h2>
             <pre>{
-  "enterprise_no": "COMP01",
-  "site_no": "SITE01",
-  "wo_no": "5101-20260319001",
-  "issue_status": "2",
-  "issue_date": "2026-03-19",
-  "issue_qty": "100"
+  "doc_no": "ISS20260415001",
+  "create_date": "2026-04-15 10:30:00",
+  "status": "1",
+  "remark": "Production issue",
+  "wo_item_detail": [
+    {
+      "seq": "001",
+      "wo_no": "5101-20260319001",
+      "item_type": "1",
+      "item_no": "MAT-001",
+      "qty": "100",
+      "unit_no": "PCS",
+      "input_datetime": "2026-04-15 10:30:00",
+      "warehouse_no": "WH01",
+      "location_no": "A01",
+      "lot_no": "LOT20260415",
+      "expiry_date": "2027-04-15",
+      "remark": "",
+      "positive_negative": "-1",
+      "issue_to_type": "1",
+      "op_no": "OP01"
+    }
+  ]
 }</pre>
         </div>
 
         <div class="section">
             <h2>Processing Logic</h2>
             <div class="note">
-                <div class="note-title">Material Status Update</div>
+                <div class="note-title">Business Flow</div>
                 <div class="note-content">
-                    This API is actively called by ERP to notify MES that the work order's material preparation status has changed.
-                    Upon receiving this notification, MES updates the material status field in the MODETAIL table,
-                    which may affect the work order's release eligibility.
+                    <ol style="margin-left: 20px; margin-top: 10px;">
+                        <li>Check material module authorization</li>
+                        <li>Validate status must be 1/2/3/4</li>
+                        <li>Validate wo_no exists in MODETAIL</li>
+                        <li>Query material_requisition for current demand_quantity</li>
+                        <li>Calculate new resultQty based on status</li>
+                        <li>Insert material_requisition record</li>
+                        <li>Insert/Update material_apply_basis (issue/return header)</li>
+                        <li>Insert material_apply_detail (issue/return detail)</li>
+                    </ol>
                 </div>
             </div>
         </div>
 
         <div class="section">
-            <h2>Database Update SQL</h2>
-            <h3 style="font-size: 1.1em; margin: 20px 0 10px;">Query Work Order</h3>
-            <pre>-- Combine work order number CMOID = wo_no
-SELECT COUNT(1) FROM MODETAIL WHERE CMOID = N'{wo_no}'</pre>
+            <h2>Affected Tables</h2>
+            <table>
+                <thead><tr><th>Table</th><th>Operation</th><th>Description</th></tr></thead>
+                <tbody>
+                    <tr><td>material_requisition</td><td>INSERT</td><td>Work order material details (one record per detail)</td></tr>
+                    <tr><td>material_apply_basis</td><td>INSERT</td><td>Issue/return order header (insert if not exists)</td></tr>
+                    <tr><td>material_apply_detail</td><td>INSERT</td><td>Issue/return order detail (insert if not exists)</td></tr>
+                </tbody>
+            </table>
 
-            <h3 style="font-size: 1.1em; margin: 20px 0 10px;">UPDATE (Update Material Status)</h3>
-            <pre>UPDATE MODETAIL SET
-    ISSUE_STATUS = :issue_status,
-    ISSUE_DATE = :issue_date,
-    ISSUE_QTY = :issue_qty,
-    LASTMAINTAINUSER = :userid,
-    LASTMAINTAINDATETIME = N'{current_time}'
-WHERE CMOID = :wo_no</pre>
-
-            <h3 style="font-size: 1.1em; margin: 20px 0 10px;">material_requisition Linked Update</h3>
-            <pre>-- Update work order material preparation status
-UPDATE material_requisition SET
-    issue_status = :issue_status,
-    issue_date = :issue_date,
-    LASTMAINTAINDATETIME = N'{current_time}'
-WHERE modetail_cmoid = :wo_no</pre>
-
-            <div class="note">
-                <div class="note-title">Affected Tables List</div>
+            <div class="note info">
+                <div class="note-title">Code Location</div>
                 <div class="note-content">
-                    <table style="margin-top:10px; width:100%;">
-                        <tr><th>Table</th><th>Operation</th><th>Description</th></tr>
-                        <tr><td>MODETAIL</td><td>UPDATE</td><td>Update work order master material status</td></tr>
-                        <tr><td>material_requisition</td><td>UPDATE</td><td>Update work order material preparation status</td></tr>
-                    </table>
+                    API Entry: <code>IssueWoItemProcess.java</code> (SFT_ERPIntegrate)<br>
+                    Core Logic: <code>RegularESB.upMaterialCROSS()</code> (SFT_dataImport:3715-3905)
                 </div>
             </div>
+        </div>
+
+        <div class="section">
+            <h2>Error Codes</h2>
+            <table>
+                <thead><tr><th>Code</th><th>Message</th><th>Description</th></tr></thead>
+                <tbody>
+                    <tr><td>JAVA_0119_00059</td><td>Status cannot be empty and must be 1/2/3/4</td><td>Invalid status parameter</td></tr>
+                    <tr><td>JS_0097_00005</td><td>Work order number cannot be empty</td><td>wo_no is empty</td></tr>
+                    <tr><td>JAVA_0119_00058</td><td>Material type cannot be empty and must be 0 or 1</td><td>Invalid item_type</td></tr>
+                    <tr><td>JS_0085_00004</td><td>Item number cannot be empty</td><td>item_no is empty</td></tr>
+                    <tr><td>JAVA_0119_00060</td><td>Quantity must be greater than 0</td><td>Invalid qty</td></tr>
+                    <tr><td>JSP_0119_00009</td><td>Work order does not exist</td><td>Not found in MODETAIL</td></tr>
+                    <tr><td>JAVA_0119_00057</td><td>Insufficient demand quantity</td><td>Result quantity is negative</td></tr>
+                    <tr><td>eMES_Material_007</td><td>Material Management Module</td><td>Module not authorized</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2>Response Example</h2>
+
+            <h3>Success</h3>
+            <pre>{
+  "code": "200",
+  "msg": "Success!",
+  "return_no": "ISS20260415001"
+}</pre>
+
+            <h3>Failure</h3>
+            <pre>{
+  "code": "500",
+  "msg": "Work order does not exist"
+}</pre>
         </div>
     </div>
 
     <div class="footer">
-        <p>eMES API Specification | Work Order Material Sync | Updated: 2026-03-19</p>
+        <p>eMES API Specification | Work Order Material Issue/Return | Updated: 2026-04-15</p>
     </div>
 </body>
 </html>

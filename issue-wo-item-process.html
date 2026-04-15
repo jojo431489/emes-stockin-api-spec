@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>issue.wo.item.process - 工單備料狀態處理 | eMES API 規格書</title>
+    <title>issue.wo.item.process - 工單領退料作業 | eMES API 規格書</title>
     <style>
-        :root { --primary-color: #2563eb; --bg-color: #f8fafc; --border-color: #e2e8f0; --text-color: #1e293b; --text-muted: #64748b; }
+        :root { --primary-color: #2563eb; --bg-color: #f8fafc; --border-color: #e2e8f0; --text-color: #1e293b; --text-muted: #64748b; --warning-color: #d97706; --success-color: #16a34a; --error-color: #dc2626; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif; line-height: 1.6; color: var(--text-color); background: var(--bg-color); }
         .header { background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%); color: white; padding: 40px 20px; }
@@ -19,11 +19,12 @@
         .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
         .section { background: white; border-radius: 12px; padding: 30px; margin-bottom: 30px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
         .section h2 { font-size: 1.4em; color: var(--text-color); margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid var(--bg-color); }
+        .section h3 { font-size: 1.1em; color: var(--text-color); margin: 20px 0 10px; }
         .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
         .info-item { background: var(--bg-color); padding: 15px; border-radius: 8px; }
         .info-item .label { font-size: 0.85em; color: var(--text-muted); margin-bottom: 5px; }
         .info-item .value { font-weight: 600; color: var(--text-color); }
-        table { width: 100%; border-collapse: collapse; font-size: 0.95em; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.95em; margin: 15px 0; }
         th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid var(--border-color); }
         th { background: var(--bg-color); font-weight: 600; }
         tr:hover { background: #f1f5f9; }
@@ -32,13 +33,20 @@
         .note { background: #f3e8ff; border-left: 4px solid #8b5cf6; padding: 15px 20px; border-radius: 0 8px 8px 0; margin: 20px 0; }
         .note-title { font-weight: 600; color: #6d28d9; margin-bottom: 5px; }
         .note-content { color: #5b21b6; font-size: 0.95em; }
+        .note.warning { background: #fef3c7; border-left-color: var(--warning-color); }
+        .note.warning .note-title { color: var(--warning-color); }
+        .note.warning .note-content { color: #92400e; }
+        .note.info { background: #dbeafe; border-left-color: var(--primary-color); }
+        .note.info .note-title { color: var(--primary-color); }
+        .note.info .note-content { color: #1e40af; }
+        .required { background: var(--error-color); color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.75em; }
+        .optional { background: var(--text-muted); color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.75em; }
         .footer { text-align: center; padding: 40px 20px; color: var(--text-muted); font-size: 0.9em; }
         .lang-switcher {
             float: right;
             display: flex;
             gap: 10px;
         }
-
         .lang-switcher a {
             color: rgba(255,255,255,0.7);
             text-decoration: none;
@@ -46,12 +54,10 @@
             border-radius: 4px;
             font-size: 0.85em;
         }
-
         .lang-switcher a:hover {
             color: white;
             background: rgba(255,255,255,0.1);
         }
-
         .lang-switcher a.active {
             color: white;
             background: rgba(255,255,255,0.2);
@@ -69,12 +75,12 @@
             </div>
             <a href="index.html" class="back-link">← 返回 API 列表</a>
             <div class="api-title">
-                <h1>工單備料狀態處理</h1>
+                <h1>工單領退料作業</h1>
                 <span class="method-badge">POST</span>
                 <span class="method-badge">ERP → MES</span>
             </div>
             <div class="api-code">issue.wo.item.process</div>
-            <p class="api-desc">ERP 通知 MES 工單備料狀態變更，用於更新 MES 中的工單備料資訊。</p>
+            <p class="api-desc">ERP 通知 MES 工單領退料作業，用於同步工單用料資料、領退料單及明細。</p>
         </div>
     </div>
 
@@ -83,103 +89,268 @@
             <h2>基本資訊</h2>
             <div class="info-grid">
                 <div class="info-item"><div class="label">API 名稱</div><div class="value">issue.wo.item.process</div></div>
-                <div class="info-item"><div class="label">方法名稱</div><div class="value">issueWoItemProcess</div></div>
-                <div class="info-item"><div class="label">目標資料表</div><div class="value">MODETAIL / material_requisition</div></div>
+                <div class="info-item"><div class="label">方法名稱</div><div class="value">IssueWoItemProcess</div></div>
+                <div class="info-item"><div class="label">目標資料表</div><div class="value">material_requisition / material_apply_basis / material_apply_detail</div></div>
                 <div class="info-item"><div class="label">資料方向</div><div class="value">ERP → MES</div></div>
-                <div class="info-item"><div class="label">用途</div><div class="value">工單備料狀態同步</div></div>
+                <div class="info-item"><div class="label">用途</div><div class="value">工單領退料作業同步</div></div>
+                <div class="info-item"><div class="label">授權模組</div><div class="value">material（用料輕鬆管）</div></div>
+            </div>
+
+            <div class="note warning">
+                <div class="note-title">授權檢查</div>
+                <div class="note-content">
+                    此 API 需要 <code>material</code>（用料輕鬆管）模組授權，若無授權將回傳錯誤。
+                </div>
             </div>
         </div>
 
         <div class="section">
-            <h2>請求參數</h2>
+            <h2>請求參數（外層）</h2>
             <table>
                 <thead><tr><th>欄位</th><th>類型</th><th>必填</th><th>說明</th></tr></thead>
                 <tbody>
-                    <tr><td><code class="code-inline">enterprise_no</code></td><td>String</td><td>必填</td><td>公司編號</td></tr>
-                    <tr><td><code class="code-inline">site_no</code></td><td>String</td><td>必填</td><td>據點編號</td></tr>
-                    <tr><td><code class="code-inline">wo_no</code></td><td>String</td><td>必填</td><td>工單號碼</td></tr>
-                    <tr><td><code class="code-inline">issue_status</code></td><td>String</td><td>必填</td><td>備料狀態</td></tr>
-                    <tr><td><code class="code-inline">issue_date</code></td><td>Date</td><td>選填</td><td>備料日期</td></tr>
-                    <tr><td><code class="code-inline">issue_qty</code></td><td>Numeric</td><td>選填</td><td>備料數量</td></tr>
+                    <tr><td><code class="code-inline">doc_no</code></td><td>String</td><td><span class="required">Y</span></td><td>單據編號</td></tr>
+                    <tr><td><code class="code-inline">create_date</code></td><td>String</td><td><span class="required">Y</span></td><td>建立日期</td></tr>
+                    <tr><td><code class="code-inline">status</code></td><td>String</td><td><span class="required">Y</span></td><td>作業狀態（1/2/3/4）</td></tr>
+                    <tr><td><code class="code-inline">remark</code></td><td>String</td><td><span class="optional">N</span></td><td>備註</td></tr>
+                    <tr><td><code class="code-inline">wo_item_detail</code></td><td>Array</td><td><span class="required">Y</span></td><td>工單用料明細陣列</td></tr>
                 </tbody>
             </table>
         </div>
 
         <div class="section">
-            <h2>備料狀態說明</h2>
+            <h2>請求參數（wo_item_detail 明細）</h2>
             <table>
-                <thead><tr><th>狀態碼</th><th>說明</th></tr></thead>
+                <thead><tr><th>欄位</th><th>類型</th><th>必填</th><th>說明</th></tr></thead>
                 <tbody>
-                    <tr><td><code class="code-inline">0</code></td><td>未備料</td></tr>
-                    <tr><td><code class="code-inline">1</code></td><td>部分備料</td></tr>
-                    <tr><td><code class="code-inline">2</code></td><td>完成備料</td></tr>
-                    <tr><td><code class="code-inline">3</code></td><td>備料取消</td></tr>
+                    <tr><td><code class="code-inline">seq</code></td><td>String</td><td><span class="required">Y</span></td><td>項次</td></tr>
+                    <tr><td><code class="code-inline">wo_no</code></td><td>String</td><td><span class="required">Y</span></td><td>工單編號（製令編號）</td></tr>
+                    <tr><td><code class="code-inline">item_type</code></td><td>String</td><td><span class="required">Y</span></td><td>物料等級（0=成品/1=原料）</td></tr>
+                    <tr><td><code class="code-inline">item_no</code></td><td>String</td><td><span class="required">Y</span></td><td>品號（物料編號）</td></tr>
+                    <tr><td><code class="code-inline">qty</code></td><td>Numeric</td><td><span class="required">Y</span></td><td>異動數量（必須 > 0）</td></tr>
+                    <tr><td><code class="code-inline">unit_no</code></td><td>String</td><td><span class="optional">N</span></td><td>單位</td></tr>
+                    <tr><td><code class="code-inline">input_datetime</code></td><td>String</td><td><span class="optional">N</span></td><td>輸入時間</td></tr>
+                    <tr><td><code class="code-inline">warehouse_no</code></td><td>String</td><td><span class="optional">N</span></td><td>庫別</td></tr>
+                    <tr><td><code class="code-inline">location_no</code></td><td>String</td><td><span class="optional">N</span></td><td>儲位</td></tr>
+                    <tr><td><code class="code-inline">lot_no</code></td><td>String</td><td><span class="optional">N</span></td><td>批號</td></tr>
+                    <tr><td><code class="code-inline">expiry_date</code></td><td>String</td><td><span class="optional">N</span></td><td>有效日期</td></tr>
+                    <tr><td><code class="code-inline">remark</code></td><td>String</td><td><span class="optional">N</span></td><td>備註</td></tr>
+                    <tr><td><code class="code-inline">positive_negative</code></td><td>String</td><td><span class="required">Y</span></td><td>正負向（-1=領料/其他=退料）</td></tr>
+                    <tr><td><code class="code-inline">issue_to_type</code></td><td>String</td><td><span class="optional">N</span></td><td>發料類型</td></tr>
+                    <tr><td><code class="code-inline">op_no</code></td><td>String</td><td><span class="optional">N</span></td><td>製程代號</td></tr>
                 </tbody>
             </table>
+        </div>
+
+        <div class="section">
+            <h2>作業狀態說明</h2>
+            <table>
+                <thead><tr><th>狀態碼</th><th>說明</th><th>數量計算</th></tr></thead>
+                <tbody>
+                    <tr><td><code class="code-inline">1</code></td><td>發料新增</td><td>demand_quantity + qty</td></tr>
+                    <tr><td><code class="code-inline">2</code></td><td>發料刪除</td><td>demand_quantity - qty</td></tr>
+                    <tr><td><code class="code-inline">3</code></td><td>退料新增</td><td>demand_quantity - qty</td></tr>
+                    <tr><td><code class="code-inline">4</code></td><td>退料刪除</td><td>demand_quantity + qty</td></tr>
+                </tbody>
+            </table>
+
+            <div class="note warning">
+                <div class="note-title">數量檢核</div>
+                <div class="note-content">
+                    執行扣減作業（狀態 2、3）時，若 resultQty < 0 將拋出錯誤：<br>
+                    <code>JAVA_0119_00057</code>：需領用量不足，無法執行扣減作業
+                </div>
+            </div>
         </div>
 
         <div class="section">
             <h2>請求範例</h2>
             <pre>{
-  "enterprise_no": "COMP01",
-  "site_no": "SITE01",
-  "wo_no": "5101-20260319001",
-  "issue_status": "2",
-  "issue_date": "2026-03-19",
-  "issue_qty": "100"
+  "doc_no": "ISS20260415001",
+  "create_date": "2026-04-15 10:30:00",
+  "status": "1",
+  "remark": "生產領料",
+  "wo_item_detail": [
+    {
+      "seq": "001",
+      "wo_no": "5101-20260319001",
+      "item_type": "1",
+      "item_no": "MAT-001",
+      "qty": "100",
+      "unit_no": "PCS",
+      "input_datetime": "2026-04-15 10:30:00",
+      "warehouse_no": "WH01",
+      "location_no": "A01",
+      "lot_no": "LOT20260415",
+      "expiry_date": "2027-04-15",
+      "remark": "",
+      "positive_negative": "-1",
+      "issue_to_type": "1",
+      "op_no": "OP01"
+    }
+  ]
 }</pre>
         </div>
 
         <div class="section">
             <h2>處理邏輯</h2>
             <div class="note">
-                <div class="note-title">備料狀態更新</div>
+                <div class="note-title">業務流程</div>
                 <div class="note-content">
-                    此 API 由 ERP 主動呼叫，用於通知 MES 工單的備料狀態已變更。
-                    MES 收到後會更新 MODETAIL 表中的備料狀態欄位，
-                    並可能影響工單的可發放狀態。
+                    <ol style="margin-left: 20px; margin-top: 10px;">
+                        <li>檢查 material 模組授權</li>
+                        <li>驗證 status 必須為 1/2/3/4</li>
+                        <li>驗證 wo_no（製令編號）存在於 MODETAIL</li>
+                        <li>查詢 material_requisition 取得目前 demand_quantity</li>
+                        <li>依據 status 計算新的 resultQty</li>
+                        <li>新增 material_requisition 記錄</li>
+                        <li>新增/更新 material_apply_basis（領退料單頭）</li>
+                        <li>新增 material_apply_detail（領退料單身）</li>
+                    </ol>
                 </div>
             </div>
         </div>
 
         <div class="section">
             <h2>資料庫更新 SQL</h2>
-            <h3 style="font-size: 1.1em; margin: 20px 0 10px;">查詢工單</h3>
-            <pre>-- 組合工單編號 CMOID = wo_no
-SELECT COUNT(1) FROM MODETAIL WHERE CMOID = N'{wo_no}'</pre>
 
-            <h3 style="font-size: 1.1em; margin: 20px 0 10px;">UPDATE（更新備料狀態）</h3>
-            <pre>UPDATE MODETAIL SET
-    ISSUE_STATUS = :issue_status,
-    ISSUE_DATE = :issue_date,
-    ISSUE_QTY = :issue_qty,
-    LASTMAINTAINUSER = :userid,
-    LASTMAINTAINDATETIME = N'{當前時間}'
-WHERE CMOID = :wo_no</pre>
+            <h3>1. 檢查製令是否存在</h3>
+            <pre>SELECT 1 FROM MODETAIL WITH (NOLOCK) WHERE CMOID = :wo_no</pre>
 
-            <h3 style="font-size: 1.1em; margin: 20px 0 10px;">material_requisition 連動更新</h3>
-            <pre>-- 更新工單用料的備料狀態
-UPDATE material_requisition SET
-    issue_status = :issue_status,
-    issue_date = :issue_date,
-    LASTMAINTAINDATETIME = N'{當前時間}'
-WHERE modetail_cmoid = :wo_no</pre>
+            <h3>2. 查詢目前需領用量</h3>
+            <pre>SELECT TOP 1 ISNULL(demand_quantity, 0) AS demand_quantity
+FROM material_requisition WITH (NOLOCK)
+WHERE modetail_cmoid = :wo_no
+  AND material_id = :item_no
+ORDER BY serial DESC</pre>
 
-            <div class="note">
-                <div class="note-title">影響資料表清單</div>
+            <h3>3. INSERT material_requisition（工單用料維護單身）</h3>
+            <pre>INSERT INTO material_requisition (
+    serial, modetail_cmoid, material_type, material_id,
+    opid, erp_wsid, material_batch, remark,
+    demand_quantity, withdrawn_quantity, mr01
+) VALUES (
+    :serial,           -- MAX(serial) + 1
+    :wo_no,            -- 工單編號
+    :item_type,        -- 物料類型 (1=成品/2=原料)
+    :item_no,          -- 品號
+    :op_no,            -- 製程代號
+    '',                -- 工作站代號
+    :lot_no,           -- 批號
+    :remark,           -- 備註
+    :resultQty,        -- 計算後的需領用量
+    0,                 -- 已領用量
+    N'{當前時間}'       -- 建立時間
+)</pre>
+
+            <h3>4. INSERT material_apply_basis（工單領退料單頭）</h3>
+            <pre>IF NOT EXISTS (
+    SELECT 1 FROM material_apply_basis
+    WHERE material_order_id = :doc_no
+)
+INSERT INTO material_apply_basis (
+    material_order_id, material_order_type, factory_id,
+    order_source, material_order_status,
+    creator, create_time, modifier, modify_time
+) VALUES (
+    :doc_no,           -- 單據編號
+    :positive_negative, -- 1=領料/2=退料
+    '001',             -- 廠別
+    '2',               -- 來源 (ERP)
+    '1',               -- 狀態
+    'ERP_SYSTEM',
+    N'{當前時間}',
+    'ERP_SYSTEM',
+    N'{當前時間}'
+)</pre>
+
+            <h3>5. INSERT material_apply_detail（工單領退料單身）</h3>
+            <pre>IF NOT EXISTS (
+    SELECT 1 FROM material_apply_detail
+    WHERE material_order_id = :doc_no
+      AND material_order_seq = :seq
+)
+INSERT INTO material_apply_detail (
+    material_order_id, material_order_seq, mo_id, material_seq,
+    material_id, apply_qty, receive_qty, op_id, ws_id,
+    material_type, standard_quantity,
+    creator, create_time, modifier, modify_time
+) VALUES (
+    :doc_no,           -- 單據編號
+    :seq,              -- 項次
+    :wo_no,            -- 工單編號
+    :serial,           -- 用料流水號
+    :item_no,          -- 品號
+    :qty,              -- 申請數量
+    :qty,              -- 領用數量
+    :op_no,            -- 製程代號
+    '',                -- 工作站代號
+    :item_type,        -- 物料類型
+    :qty,              -- 標準數量
+    'ERP_SYSTEM',
+    N'{當前時間}',
+    'ERP_SYSTEM',
+    N'{當前時間}'
+)</pre>
+        </div>
+
+        <div class="section">
+            <h2>影響資料表</h2>
+            <table>
+                <thead><tr><th>資料表</th><th>操作</th><th>說明</th></tr></thead>
+                <tbody>
+                    <tr><td>material_requisition</td><td>INSERT</td><td>工單用料維護單身（每筆明細新增一筆記錄）</td></tr>
+                    <tr><td>material_apply_basis</td><td>INSERT</td><td>工單領退料單頭（若不存在則新增）</td></tr>
+                    <tr><td>material_apply_detail</td><td>INSERT</td><td>工單領退料單身（若不存在則新增）</td></tr>
+                </tbody>
+            </table>
+
+            <div class="note info">
+                <div class="note-title">程式位置</div>
                 <div class="note-content">
-                    <table style="margin-top:10px; width:100%;">
-                        <tr><th>資料表</th><th>操作</th><th>說明</th></tr>
-                        <tr><td>MODETAIL</td><td>UPDATE</td><td>更新製令主檔備料狀態</td></tr>
-                        <tr><td>material_requisition</td><td>UPDATE</td><td>更新工單用料備料狀態</td></tr>
-                    </table>
+                    API 入口：<code>IssueWoItemProcess.java</code> (SFT_ERPIntegrate)<br>
+                    核心邏輯：<code>RegularESB.upMaterialCROSS()</code> (SFT_dataImport:3715-3905)
                 </div>
             </div>
+        </div>
+
+        <div class="section">
+            <h2>錯誤代碼</h2>
+            <table>
+                <thead><tr><th>代碼</th><th>訊息</th><th>說明</th></tr></thead>
+                <tbody>
+                    <tr><td>JAVA_0119_00059</td><td>狀態不得為空且必須為1/2/3/4</td><td>status 參數驗證失敗</td></tr>
+                    <tr><td>JS_0097_00005</td><td>製令編號不得為空值</td><td>wo_no 為空</td></tr>
+                    <tr><td>JAVA_0119_00058</td><td>物料等級不得為空且必須為0或1</td><td>item_type 驗證失敗</td></tr>
+                    <tr><td>JS_0085_00004</td><td>品號不得為空值</td><td>item_no 為空</td></tr>
+                    <tr><td>JAVA_0119_00060</td><td>異動數量必須大於0</td><td>qty 驗證失敗</td></tr>
+                    <tr><td>JSP_0119_00009</td><td>製令不存在</td><td>MODETAIL 中查無此製令</td></tr>
+                    <tr><td>JAVA_0119_00057</td><td>需領用量不足，無法執行扣減作業</td><td>扣減後數量為負數</td></tr>
+                    <tr><td>eMES_Material_007</td><td>用料輕鬆管模塊</td><td>未授權 material 模組</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2>回應範例</h2>
+
+            <h3>成功</h3>
+            <pre>{
+  "code": "200",
+  "msg": "成功！",
+  "return_no": "ISS20260415001"
+}</pre>
+
+            <h3>失敗</h3>
+            <pre>{
+  "code": "500",
+  "msg": "製令不存在"
+}</pre>
         </div>
     </div>
 
     <div class="footer">
-        <p>eMES API 規格書 | 工單備料同步 | 更新日期: 2026-03-19</p>
+        <p>eMES API 規格書 | 工單領退料作業 | 更新日期: 2026-04-15</p>
     </div>
 </body>
 </html>

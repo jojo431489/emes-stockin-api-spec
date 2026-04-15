@@ -3,41 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>issue.wo.item.process - การประมวลผลสถานะการเตรียมวัสดุใบสั่งผลิต | eMES API</title>
+    <title>issue.wo.item.process - การเบิก-คืนวัสดุใบสั่งผลิต | eMES API</title>
     <style>
-        :root {
-            --primary-color: #2563eb;
-            --secondary-color: #1e40af;
-            --success-color: #16a34a;
-            --error-color: #dc2626;
-            --warning-color: #d97706;
-            --bg-color: #f8fafc;
-            --border-color: #e2e8f0;
-            --text-color: #1e293b;
-            --text-muted: #64748b;
-        }
+        :root { --primary-color: #2563eb; --bg-color: #f8fafc; --border-color: #e2e8f0; --text-color: #1e293b; --text-muted: #64748b; --warning-color: #d97706; --success-color: #16a34a; --error-color: #dc2626; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Segoe UI', 'Tahoma', sans-serif;
-            line-height: 1.6;
-            color: var(--text-color);
-            background-color: var(--bg-color);
-        }
-        .navbar {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 15px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-        .navbar a { color: white; text-decoration: none; }
-        .navbar .brand { font-size: 1.2em; font-weight: 600; }
-        .navbar .back { opacity: 0.9; }
-        .navbar .back:hover { opacity: 1; }
+        body { font-family: 'Segoe UI', 'Tahoma', sans-serif; line-height: 1.6; color: var(--text-color); background: var(--bg-color); }
+        .header { background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%); color: white; padding: 40px 20px; }
+        .header-content { max-width: 1200px; margin: 0 auto; }
+        .back-link { color: rgba(255,255,255,0.8); text-decoration: none; display: inline-flex; align-items: center; gap: 5px; margin-bottom: 20px; font-size: 0.9em; }
+        .api-title { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
+        .api-title h1 { font-size: 2em; margin: 0; }
+        .method-badge { background: rgba(255,255,255,0.2); padding: 5px 15px; border-radius: 20px; font-size: 0.9em; font-weight: 600; }
+        .api-code { font-family: 'Consolas', monospace; background: rgba(0,0,0,0.2); padding: 10px 20px; border-radius: 8px; margin-top: 15px; font-size: 1.1em; display: inline-block; }
+        .api-desc { margin-top: 15px; opacity: 0.9; max-width: 800px; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+        .section { background: white; border-radius: 12px; padding: 30px; margin-bottom: 30px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .section h2 { font-size: 1.4em; color: var(--text-color); margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid var(--bg-color); }
+        .section h3 { font-size: 1.1em; color: var(--text-color); margin: 20px 0 10px; }
+        .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+        .info-item { background: var(--bg-color); padding: 15px; border-radius: 8px; }
+        .info-item .label { font-size: 0.85em; color: var(--text-muted); margin-bottom: 5px; }
+        .info-item .value { font-weight: 600; color: var(--text-color); }
+        table { width: 100%; border-collapse: collapse; font-size: 0.95em; margin: 15px 0; }
+        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid var(--border-color); }
+        th { background: var(--bg-color); font-weight: 600; }
+        tr:hover { background: #f1f5f9; }
+        pre { background: #1e293b; color: #e2e8f0; padding: 20px; border-radius: 8px; overflow-x: auto; font-family: 'Consolas', monospace; font-size: 0.9em; }
+        .code-inline { background: #f1f5f9; padding: 2px 6px; border-radius: 4px; font-family: 'Consolas', monospace; font-size: 0.9em; color: var(--primary-color); }
+        .note { background: #f3e8ff; border-left: 4px solid #8b5cf6; padding: 15px 20px; border-radius: 0 8px 8px 0; margin: 20px 0; }
+        .note-title { font-weight: 600; color: #6d28d9; margin-bottom: 5px; }
+        .note-content { color: #5b21b6; font-size: 0.95em; }
+        .note.warning { background: #fef3c7; border-left-color: var(--warning-color); }
+        .note.warning .note-title { color: var(--warning-color); }
+        .note.warning .note-content { color: #92400e; }
+        .note.info { background: #dbeafe; border-left-color: var(--primary-color); }
+        .note.info .note-title { color: var(--primary-color); }
+        .note.info .note-content { color: #1e40af; }
+        .required { background: var(--error-color); color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.75em; }
+        .optional { background: var(--text-muted); color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.75em; }
+        .footer { text-align: center; padding: 40px 20px; color: var(--text-muted); font-size: 0.9em; }
         .lang-switcher {
+            float: right;
             display: flex;
             gap: 10px;
         }
@@ -56,147 +62,295 @@
             color: white;
             background: rgba(255,255,255,0.2);
         }
-        .header { background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%); color: white; padding: 40px 20px; }
-        .header-content { max-width: 1200px; margin: 0 auto; }
-        .back-link { color: rgba(255,255,255,0.8); text-decoration: none; display: inline-flex; align-items: center; gap: 5px; margin-bottom: 20px; font-size: 0.9em; }
-        .api-title { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
-        .api-title h1 { font-size: 2em; margin: 0; }
-        .method-badge { background: rgba(255,255,255,0.2); padding: 5px 15px; border-radius: 20px; font-size: 0.9em; font-weight: 600; }
-        .api-code { font-family: 'Consolas', monospace; background: rgba(0,0,0,0.2); padding: 10px 20px; border-radius: 8px; margin-top: 15px; font-size: 1.1em; display: inline-block; }
-        .api-desc { margin-top: 15px; opacity: 0.9; max-width: 800px; }
-        .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
-        .section { background: white; border-radius: 12px; padding: 30px; margin-bottom: 30px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        .section h2 { font-size: 1.4em; color: var(--text-color); margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid var(--bg-color); }
-        .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
-        .info-item { background: var(--bg-color); padding: 15px; border-radius: 8px; }
-        .info-item .label { font-size: 0.85em; color: var(--text-muted); margin-bottom: 5px; }
-        .info-item .value { font-weight: 600; color: var(--text-color); }
-        table { width: 100%; border-collapse: collapse; font-size: 0.95em; }
-        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid var(--border-color); }
-        th { background: var(--bg-color); font-weight: 600; }
-        tr:hover { background: #f1f5f9; }
-        pre { background: #1e293b; color: #e2e8f0; padding: 20px; border-radius: 8px; overflow-x: auto; font-family: 'Consolas', monospace; font-size: 0.9em; }
-        .code-inline { background: #f1f5f9; padding: 2px 6px; border-radius: 4px; font-family: 'Consolas', monospace; font-size: 0.9em; color: var(--primary-color); }
-        .note { background: #f3e8ff; border-left: 4px solid #8b5cf6; padding: 15px 20px; border-radius: 0 8px 8px 0; margin: 20px 0; }
-        .note-title { font-weight: 600; color: #6d28d9; margin-bottom: 5px; }
-        .note-content { color: #5b21b6; font-size: 0.95em; }
-        .footer { text-align: center; padding: 40px 20px; color: var(--text-muted); font-size: 0.9em; }
     </style>
 </head>
 <body>
-    <nav class="navbar">
-        <a href="index.html" class="back">← กลับไปรายการ API</a>
-        <div class="lang-switcher">
-            <a href="../issue-wo-item-process.html">繁體中文</a>
-            <a href="../en/issue-wo-item-process.html">English</a>
-            <a href="../vi/issue-wo-item-process.html">Tiếng Việt</a>
-            <a href="issue-wo-item-process.html" class="active">ภาษาไทย</a>
+    <div class="header">
+        <div class="header-content">
+            <div class="lang-switcher">
+                <a href="../issue-wo-item-process.html">繁體中文</a>
+                <a href="../en/issue-wo-item-process.html">English</a>
+                <a href="../vi/issue-wo-item-process.html">Tiếng Việt</a>
+                <a href="issue-wo-item-process.html" class="active">ภาษาไทย</a>
+            </div>
+            <a href="index.html" class="back-link">← กลับไปรายการ API</a>
+            <div class="api-title">
+                <h1>การเบิก-คืนวัสดุใบสั่งผลิต</h1>
+                <span class="method-badge">POST</span>
+                <span class="method-badge">ERP → MES</span>
+            </div>
+            <div class="api-code">issue.wo.item.process</div>
+            <p class="api-desc">ERP แจ้ง MES เกี่ยวกับการเบิก-คืนวัสดุใบสั่งผลิต เพื่อซิงค์ข้อมูลวัสดุใบสั่งผลิต ใบเบิก-คืนวัสดุ และรายละเอียด</p>
         </div>
-        <span class="brand">เอกสารข้อกำหนด eMES API</span>
-    </nav>
+    </div>
 
     <div class="container">
         <div class="section">
             <h2>ข้อมูลพื้นฐาน</h2>
             <div class="info-grid">
                 <div class="info-item"><div class="label">ชื่อ API</div><div class="value">issue.wo.item.process</div></div>
-                <div class="info-item"><div class="label">ชื่อเมธอด</div><div class="value">issueWoItemProcess</div></div>
-                <div class="info-item"><div class="label">ตารางเป้าหมาย</div><div class="value">MODETAIL / material_requisition</div></div>
+                <div class="info-item"><div class="label">ชื่อเมธอด</div><div class="value">IssueWoItemProcess</div></div>
+                <div class="info-item"><div class="label">ตารางเป้าหมาย</div><div class="value">material_requisition / material_apply_basis / material_apply_detail</div></div>
                 <div class="info-item"><div class="label">ทิศทางข้อมูล</div><div class="value">ERP → MES</div></div>
-                <div class="info-item"><div class="label">วัตถุประสงค์</div><div class="value">ซิงค์สถานะการเตรียมวัสดุใบสั่งผลิต</div></div>
+                <div class="info-item"><div class="label">วัตถุประสงค์</div><div class="value">ซิงค์การเบิก-คืนวัสดุใบสั่งผลิต</div></div>
+                <div class="info-item"><div class="label">โมดูลที่ต้องอนุญาต</div><div class="value">material (ระบบจัดการวัสดุ)</div></div>
+            </div>
+
+            <div class="note warning">
+                <div class="note-title">การตรวจสอบสิทธิ์</div>
+                <div class="note-content">
+                    API นี้ต้องการสิทธิ์โมดูล <code>material</code> (ระบบจัดการวัสดุ) หากไม่มีสิทธิ์จะส่งคืนข้อผิดพลาด
+                </div>
             </div>
         </div>
 
         <div class="section">
-            <h2>พารามิเตอร์คำขอ</h2>
+            <h2>พารามิเตอร์คำขอ (ระดับนอก)</h2>
             <table>
                 <thead><tr><th>ฟิลด์</th><th>ประเภท</th><th>จำเป็น</th><th>คำอธิบาย</th></tr></thead>
                 <tbody>
-                    <tr><td><code class="code-inline">enterprise_no</code></td><td>String</td><td>จำเป็น</td><td>รหัสบริษัท</td></tr>
-                    <tr><td><code class="code-inline">site_no</code></td><td>String</td><td>จำเป็น</td><td>รหัสสาขา</td></tr>
-                    <tr><td><code class="code-inline">wo_no</code></td><td>String</td><td>จำเป็น</td><td>เลขที่ใบสั่งผลิต</td></tr>
-                    <tr><td><code class="code-inline">issue_status</code></td><td>String</td><td>จำเป็น</td><td>สถานะการเตรียมวัสดุ</td></tr>
-                    <tr><td><code class="code-inline">issue_date</code></td><td>Date</td><td>ตัวเลือก</td><td>วันที่เตรียมวัสดุ</td></tr>
-                    <tr><td><code class="code-inline">issue_qty</code></td><td>Numeric</td><td>ตัวเลือก</td><td>จำนวนเตรียมวัสดุ</td></tr>
+                    <tr><td><code class="code-inline">doc_no</code></td><td>String</td><td><span class="required">Y</span></td><td>เลขที่เอกสาร</td></tr>
+                    <tr><td><code class="code-inline">create_date</code></td><td>String</td><td><span class="required">Y</span></td><td>วันที่สร้าง</td></tr>
+                    <tr><td><code class="code-inline">status</code></td><td>String</td><td><span class="required">Y</span></td><td>สถานะการดำเนินการ (1/2/3/4)</td></tr>
+                    <tr><td><code class="code-inline">remark</code></td><td>String</td><td><span class="optional">N</span></td><td>หมายเหตุ</td></tr>
+                    <tr><td><code class="code-inline">wo_item_detail</code></td><td>Array</td><td><span class="required">Y</span></td><td>อาร์เรย์รายละเอียดวัสดุใบสั่งผลิต</td></tr>
                 </tbody>
             </table>
         </div>
 
         <div class="section">
-            <h2>คำอธิบายสถานะการเตรียมวัสดุ</h2>
+            <h2>พารามิเตอร์คำขอ (รายละเอียด wo_item_detail)</h2>
             <table>
-                <thead><tr><th>รหัสสถานะ</th><th>คำอธิบาย</th></tr></thead>
+                <thead><tr><th>ฟิลด์</th><th>ประเภท</th><th>จำเป็น</th><th>คำอธิบาย</th></tr></thead>
                 <tbody>
-                    <tr><td><code class="code-inline">0</code></td><td>ยังไม่เตรียมวัสดุ</td></tr>
-                    <tr><td><code class="code-inline">1</code></td><td>เตรียมวัสดุบางส่วน</td></tr>
-                    <tr><td><code class="code-inline">2</code></td><td>เตรียมวัสดุเสร็จสิ้น</td></tr>
-                    <tr><td><code class="code-inline">3</code></td><td>ยกเลิกการเตรียมวัสดุ</td></tr>
+                    <tr><td><code class="code-inline">seq</code></td><td>String</td><td><span class="required">Y</span></td><td>ลำดับ</td></tr>
+                    <tr><td><code class="code-inline">wo_no</code></td><td>String</td><td><span class="required">Y</span></td><td>เลขที่ใบสั่งผลิต</td></tr>
+                    <tr><td><code class="code-inline">item_type</code></td><td>String</td><td><span class="required">Y</span></td><td>ระดับวัสดุ (0=สินค้าสำเร็จรูป/1=วัตถุดิบ)</td></tr>
+                    <tr><td><code class="code-inline">item_no</code></td><td>String</td><td><span class="required">Y</span></td><td>รหัสสินค้า (รหัสวัสดุ)</td></tr>
+                    <tr><td><code class="code-inline">qty</code></td><td>Numeric</td><td><span class="required">Y</span></td><td>จำนวนที่เปลี่ยนแปลง (ต้อง > 0)</td></tr>
+                    <tr><td><code class="code-inline">unit_no</code></td><td>String</td><td><span class="optional">N</span></td><td>หน่วย</td></tr>
+                    <tr><td><code class="code-inline">input_datetime</code></td><td>String</td><td><span class="optional">N</span></td><td>เวลาบันทึก</td></tr>
+                    <tr><td><code class="code-inline">warehouse_no</code></td><td>String</td><td><span class="optional">N</span></td><td>คลังสินค้า</td></tr>
+                    <tr><td><code class="code-inline">location_no</code></td><td>String</td><td><span class="optional">N</span></td><td>ตำแหน่งจัดเก็บ</td></tr>
+                    <tr><td><code class="code-inline">lot_no</code></td><td>String</td><td><span class="optional">N</span></td><td>เลขที่ล็อต</td></tr>
+                    <tr><td><code class="code-inline">expiry_date</code></td><td>String</td><td><span class="optional">N</span></td><td>วันหมดอายุ</td></tr>
+                    <tr><td><code class="code-inline">remark</code></td><td>String</td><td><span class="optional">N</span></td><td>หมายเหตุ</td></tr>
+                    <tr><td><code class="code-inline">positive_negative</code></td><td>String</td><td><span class="required">Y</span></td><td>ทิศทาง (-1=เบิก/อื่นๆ=คืน)</td></tr>
+                    <tr><td><code class="code-inline">issue_to_type</code></td><td>String</td><td><span class="optional">N</span></td><td>ประเภทการเบิก</td></tr>
+                    <tr><td><code class="code-inline">op_no</code></td><td>String</td><td><span class="optional">N</span></td><td>รหัสกระบวนการ</td></tr>
                 </tbody>
             </table>
+        </div>
+
+        <div class="section">
+            <h2>คำอธิบายสถานะการดำเนินการ</h2>
+            <table>
+                <thead><tr><th>รหัสสถานะ</th><th>คำอธิบาย</th><th>การคำนวณจำนวน</th></tr></thead>
+                <tbody>
+                    <tr><td><code class="code-inline">1</code></td><td>เพิ่มการเบิก</td><td>demand_quantity + qty</td></tr>
+                    <tr><td><code class="code-inline">2</code></td><td>ลบการเบิก</td><td>demand_quantity - qty</td></tr>
+                    <tr><td><code class="code-inline">3</code></td><td>เพิ่มการคืน</td><td>demand_quantity - qty</td></tr>
+                    <tr><td><code class="code-inline">4</code></td><td>ลบการคืน</td><td>demand_quantity + qty</td></tr>
+                </tbody>
+            </table>
+
+            <div class="note warning">
+                <div class="note-title">การตรวจสอบจำนวน</div>
+                <div class="note-content">
+                    เมื่อดำเนินการหักลบ (สถานะ 2, 3) หาก resultQty < 0 จะเกิดข้อผิดพลาด:<br>
+                    <code>JAVA_0119_00057</code>: จำนวนที่ต้องเบิกไม่เพียงพอ ไม่สามารถดำเนินการหักลบได้
+                </div>
+            </div>
         </div>
 
         <div class="section">
             <h2>ตัวอย่างคำขอ</h2>
             <pre>{
-  "enterprise_no": "COMP01",
-  "site_no": "SITE01",
-  "wo_no": "5101-20260319001",
-  "issue_status": "2",
-  "issue_date": "2026-03-19",
-  "issue_qty": "100"
+  "doc_no": "ISS20260415001",
+  "create_date": "2026-04-15 10:30:00",
+  "status": "1",
+  "remark": "เบิกวัสดุสำหรับการผลิต",
+  "wo_item_detail": [
+    {
+      "seq": "001",
+      "wo_no": "5101-20260319001",
+      "item_type": "1",
+      "item_no": "MAT-001",
+      "qty": "100",
+      "unit_no": "PCS",
+      "input_datetime": "2026-04-15 10:30:00",
+      "warehouse_no": "WH01",
+      "location_no": "A01",
+      "lot_no": "LOT20260415",
+      "expiry_date": "2027-04-15",
+      "remark": "",
+      "positive_negative": "-1",
+      "issue_to_type": "1",
+      "op_no": "OP01"
+    }
+  ]
 }</pre>
         </div>
 
         <div class="section">
             <h2>ตรรกะการประมวลผล</h2>
             <div class="note">
-                <div class="note-title">การอัปเดตสถานะการเตรียมวัสดุ</div>
+                <div class="note-title">กระบวนการทางธุรกิจ</div>
                 <div class="note-content">
-                    API นี้ถูกเรียกโดย ERP เพื่อแจ้ง MES ว่าสถานะการเตรียมวัสดุของใบสั่งผลิตมีการเปลี่ยนแปลง
-                    MES จะอัปเดตฟิลด์สถานะการเตรียมวัสดุในตาราง MODETAIL หลังจากได้รับการแจ้งเตือน
-                    และอาจส่งผลต่อสถานะการสามารถปล่อยใบสั่งผลิตได้
+                    <ol style="margin-left: 20px; margin-top: 10px;">
+                        <li>ตรวจสอบสิทธิ์โมดูล material</li>
+                        <li>ตรวจสอบว่า status ต้องเป็น 1/2/3/4</li>
+                        <li>ตรวจสอบว่า wo_no (เลขที่ใบสั่งผลิต) มีอยู่ใน MODETAIL</li>
+                        <li>ค้นหา material_requisition เพื่อรับ demand_quantity ปัจจุบัน</li>
+                        <li>คำนวณ resultQty ใหม่ตาม status</li>
+                        <li>เพิ่มระเบียน material_requisition</li>
+                        <li>เพิ่ม/อัปเดต material_apply_basis (ส่วนหัวใบเบิก-คืน)</li>
+                        <li>เพิ่ม material_apply_detail (รายละเอียดใบเบิก-คืน)</li>
+                    </ol>
                 </div>
             </div>
         </div>
 
         <div class="section">
             <h2>SQL อัปเดตฐานข้อมูล</h2>
-            <h3 style="font-size: 1.1em; margin: 20px 0 10px;">ค้นหาใบสั่งผลิต</h3>
-            <pre>-- รวมเลขที่ใบสั่งผลิต CMOID = wo_no
-SELECT COUNT(1) FROM MODETAIL WHERE CMOID = N'{wo_no}'</pre>
 
-            <h3 style="font-size: 1.1em; margin: 20px 0 10px;">UPDATE (อัปเดตสถานะการเตรียมวัสดุ)</h3>
-            <pre>UPDATE MODETAIL SET
-    ISSUE_STATUS = :issue_status,
-    ISSUE_DATE = :issue_date,
-    ISSUE_QTY = :issue_qty,
-    LASTMAINTAINUSER = :userid,
-    LASTMAINTAINDATETIME = N'{เวลาปัจจุบัน}'
-WHERE CMOID = :wo_no</pre>
+            <h3>1. ตรวจสอบว่าใบสั่งผลิตมีอยู่</h3>
+            <pre>SELECT 1 FROM MODETAIL WITH (NOLOCK) WHERE CMOID = :wo_no</pre>
 
-            <h3 style="font-size: 1.1em; margin: 20px 0 10px;">การเชื่อมโยง material_requisition</h3>
-            <pre>-- อัปเดตสถานะการเตรียมวัสดุใบสั่งผลิต
-UPDATE material_requisition SET
-    issue_status = :issue_status,
-    issue_date = :issue_date,
-    LASTMAINTAINDATETIME = N'{เวลาปัจจุบัน}'
-WHERE modetail_cmoid = :wo_no</pre>
+            <h3>2. ค้นหาจำนวนที่ต้องเบิกปัจจุบัน</h3>
+            <pre>SELECT TOP 1 ISNULL(demand_quantity, 0) AS demand_quantity
+FROM material_requisition WITH (NOLOCK)
+WHERE modetail_cmoid = :wo_no
+  AND material_id = :item_no
+ORDER BY serial DESC</pre>
 
-            <div class="note">
-                <div class="note-title">รายการตารางที่ได้รับผลกระทบ</div>
+            <h3>3. INSERT material_requisition (รายละเอียดวัสดุใบสั่งผลิต)</h3>
+            <pre>INSERT INTO material_requisition (
+    serial, modetail_cmoid, material_type, material_id,
+    opid, erp_wsid, material_batch, remark,
+    demand_quantity, withdrawn_quantity, mr01
+) VALUES (
+    :serial,           -- MAX(serial) + 1
+    :wo_no,            -- เลขที่ใบสั่งผลิต
+    :item_type,        -- ประเภทวัสดุ (1=สินค้าสำเร็จรูป/2=วัตถุดิบ)
+    :item_no,          -- รหัสสินค้า
+    :op_no,            -- รหัสกระบวนการ
+    '',                -- รหัสสถานีงาน
+    :lot_no,           -- เลขที่ล็อต
+    :remark,           -- หมายเหตุ
+    :resultQty,        -- จำนวนที่ต้องเบิกหลังคำนวณ
+    0,                 -- จำนวนที่เบิกแล้ว
+    N'{เวลาปัจจุบัน}'    -- เวลาสร้าง
+)</pre>
+
+            <h3>4. INSERT material_apply_basis (ส่วนหัวใบเบิก-คืน)</h3>
+            <pre>IF NOT EXISTS (
+    SELECT 1 FROM material_apply_basis
+    WHERE material_order_id = :doc_no
+)
+INSERT INTO material_apply_basis (
+    material_order_id, material_order_type, factory_id,
+    order_source, material_order_status,
+    creator, create_time, modifier, modify_time
+) VALUES (
+    :doc_no,           -- เลขที่เอกสาร
+    :positive_negative, -- 1=เบิก/2=คืน
+    '001',             -- รหัสโรงงาน
+    '2',               -- แหล่งที่มา (ERP)
+    '1',               -- สถานะ
+    'ERP_SYSTEM',
+    N'{เวลาปัจจุบัน}',
+    'ERP_SYSTEM',
+    N'{เวลาปัจจุบัน}'
+)</pre>
+
+            <h3>5. INSERT material_apply_detail (รายละเอียดใบเบิก-คืน)</h3>
+            <pre>IF NOT EXISTS (
+    SELECT 1 FROM material_apply_detail
+    WHERE material_order_id = :doc_no
+      AND material_order_seq = :seq
+)
+INSERT INTO material_apply_detail (
+    material_order_id, material_order_seq, mo_id, material_seq,
+    material_id, apply_qty, receive_qty, op_id, ws_id,
+    material_type, standard_quantity,
+    creator, create_time, modifier, modify_time
+) VALUES (
+    :doc_no,           -- เลขที่เอกสาร
+    :seq,              -- ลำดับ
+    :wo_no,            -- เลขที่ใบสั่งผลิต
+    :serial,           -- ลำดับวัสดุ
+    :item_no,          -- รหัสสินค้า
+    :qty,              -- จำนวนขอเบิก
+    :qty,              -- จำนวนเบิก
+    :op_no,            -- รหัสกระบวนการ
+    '',                -- รหัสสถานีงาน
+    :item_type,        -- ประเภทวัสดุ
+    :qty,              -- จำนวนมาตรฐาน
+    'ERP_SYSTEM',
+    N'{เวลาปัจจุบัน}',
+    'ERP_SYSTEM',
+    N'{เวลาปัจจุบัน}'
+)</pre>
+        </div>
+
+        <div class="section">
+            <h2>ตารางที่ได้รับผลกระทบ</h2>
+            <table>
+                <thead><tr><th>ตาราง</th><th>การดำเนินการ</th><th>คำอธิบาย</th></tr></thead>
+                <tbody>
+                    <tr><td>material_requisition</td><td>INSERT</td><td>รายละเอียดวัสดุใบสั่งผลิต (เพิ่มหนึ่งระเบียนต่อรายการ)</td></tr>
+                    <tr><td>material_apply_basis</td><td>INSERT</td><td>ส่วนหัวใบเบิก-คืน (เพิ่มถ้าไม่มี)</td></tr>
+                    <tr><td>material_apply_detail</td><td>INSERT</td><td>รายละเอียดใบเบิก-คืน (เพิ่มถ้าไม่มี)</td></tr>
+                </tbody>
+            </table>
+
+            <div class="note info">
+                <div class="note-title">ตำแหน่งโปรแกรม</div>
                 <div class="note-content">
-                    <table style="margin-top:10px; width:100%;">
-                        <tr><th>ตาราง</th><th>การดำเนินการ</th><th>คำอธิบาย</th></tr>
-                        <tr><td>MODETAIL</td><td>UPDATE</td><td>อัปเดตสถานะการเตรียมวัสดุตารางหลักใบสั่งผลิต</td></tr>
-                        <tr><td>material_requisition</td><td>UPDATE</td><td>อัปเดตสถานะการเตรียมวัสดุใบสั่งผลิต</td></tr>
-                    </table>
+                    จุดเข้า API: <code>IssueWoItemProcess.java</code> (SFT_ERPIntegrate)<br>
+                    ตรรกะหลัก: <code>RegularESB.upMaterialCROSS()</code> (SFT_dataImport:3715-3905)
                 </div>
             </div>
+        </div>
+
+        <div class="section">
+            <h2>รหัสข้อผิดพลาด</h2>
+            <table>
+                <thead><tr><th>รหัส</th><th>ข้อความ</th><th>คำอธิบาย</th></tr></thead>
+                <tbody>
+                    <tr><td>JAVA_0119_00059</td><td>สถานะต้องไม่ว่างและต้องเป็น 1/2/3/4</td><td>การตรวจสอบพารามิเตอร์ status ล้มเหลว</td></tr>
+                    <tr><td>JS_0097_00005</td><td>เลขที่ใบสั่งผลิตต้องไม่ว่าง</td><td>wo_no เป็นค่าว่าง</td></tr>
+                    <tr><td>JAVA_0119_00058</td><td>ระดับวัสดุต้องไม่ว่างและต้องเป็น 0 หรือ 1</td><td>การตรวจสอบ item_type ล้มเหลว</td></tr>
+                    <tr><td>JS_0085_00004</td><td>รหัสสินค้าต้องไม่ว่าง</td><td>item_no เป็นค่าว่าง</td></tr>
+                    <tr><td>JAVA_0119_00060</td><td>จำนวนที่เปลี่ยนแปลงต้องมากกว่า 0</td><td>การตรวจสอบ qty ล้มเหลว</td></tr>
+                    <tr><td>JSP_0119_00009</td><td>ไม่พบใบสั่งผลิต</td><td>ไม่พบในตาราง MODETAIL</td></tr>
+                    <tr><td>JAVA_0119_00057</td><td>จำนวนที่ต้องเบิกไม่เพียงพอ ไม่สามารถหักลบได้</td><td>จำนวนหลังหักลบเป็นค่าลบ</td></tr>
+                    <tr><td>eMES_Material_007</td><td>โมดูลจัดการวัสดุ</td><td>ไม่ได้รับอนุญาตโมดูล material</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2>ตัวอย่างการตอบกลับ</h2>
+
+            <h3>สำเร็จ</h3>
+            <pre>{
+  "code": "200",
+  "msg": "สำเร็จ!",
+  "return_no": "ISS20260415001"
+}</pre>
+
+            <h3>ล้มเหลว</h3>
+            <pre>{
+  "code": "500",
+  "msg": "ไม่พบใบสั่งผลิต"
+}</pre>
         </div>
     </div>
 
     <div class="footer">
-        <p>เอกสารข้อกำหนด eMES API | การซิงค์การเตรียมวัสดุใบสั่งผลิต | วันที่อัปเดต: 2026-04-15</p>
+        <p>เอกสารข้อกำหนด eMES API | การเบิก-คืนวัสดุใบสั่งผลิต | วันที่อัปเดต: 2026-04-15</p>
     </div>
 </body>
 </html>
