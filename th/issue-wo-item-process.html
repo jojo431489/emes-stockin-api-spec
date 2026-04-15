@@ -101,7 +101,7 @@
             <div class="info-grid">
                 <div class="info-item"><div class="label">ชื่อ API</div><div class="value">issue.wo.item.process</div></div>
                 <div class="info-item"><div class="label">ชื่อเมธอด</div><div class="value">issueWoItemProcess</div></div>
-                <div class="info-item"><div class="label">ตารางเป้าหมาย</div><div class="value">MODETAIL / SFT_WO_ISSUE</div></div>
+                <div class="info-item"><div class="label">ตารางเป้าหมาย</div><div class="value">MODETAIL / SFT_WO_ISSUE / material_requisition</div></div>
                 <div class="info-item"><div class="label">ทิศทางข้อมูล</div><div class="value">ERP → MES</div></div>
                 <div class="info-item"><div class="label">วัตถุประสงค์</div><div class="value">ซิงค์สถานะการเตรียมวัสดุใบสั่งผลิต</div></div>
             </div>
@@ -181,11 +181,31 @@ UPDATE SFT_WO_ISSUE SET
     ISSUE_DATE = :issue_date,
     ISSUE_QTY = :issue_qty
 WHERE WO_NO = :wo_no</pre>
+
+            <h3 style="font-size: 1.1em; margin: 20px 0 10px;">การเชื่อมโยง material_requisition</h3>
+            <pre>-- อัปเดตสถานะการเตรียมวัสดุใบสั่งผลิต
+UPDATE material_requisition SET
+    issue_status = :issue_status,
+    issue_date = :issue_date,
+    LASTMAINTAINDATETIME = N'{เวลาปัจจุบัน}'
+WHERE modetail_cmoid = :wo_no</pre>
+
+            <div class="note">
+                <div class="note-title">รายการตารางที่ได้รับผลกระทบ</div>
+                <div class="note-content">
+                    <table style="margin-top:10px; width:100%;">
+                        <tr><th>ตาราง</th><th>การดำเนินการ</th><th>คำอธิบาย</th></tr>
+                        <tr><td>MODETAIL</td><td>UPDATE</td><td>อัปเดตสถานะการเตรียมวัสดุตารางหลักใบสั่งผลิต</td></tr>
+                        <tr><td>SFT_WO_ISSUE</td><td>UPDATE</td><td>อัปเดตบันทึกการเบิกวัสดุ (ถ้ามี)</td></tr>
+                        <tr><td>material_requisition</td><td>UPDATE</td><td>อัปเดตสถานะการเตรียมวัสดุใบสั่งผลิต</td></tr>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
 
     <div class="footer">
-        <p>เอกสารข้อกำหนด eMES API | การซิงค์การเตรียมวัสดุใบสั่งผลิต | วันที่อัปเดต: 2026-03-19</p>
+        <p>เอกสารข้อกำหนด eMES API | การซิงค์การเตรียมวัสดุใบสั่งผลิต | วันที่อัปเดต: 2026-04-15</p>
     </div>
 </body>
 </html>

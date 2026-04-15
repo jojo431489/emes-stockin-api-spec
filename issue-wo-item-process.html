@@ -84,7 +84,7 @@
             <div class="info-grid">
                 <div class="info-item"><div class="label">API 名稱</div><div class="value">issue.wo.item.process</div></div>
                 <div class="info-item"><div class="label">方法名稱</div><div class="value">issueWoItemProcess</div></div>
-                <div class="info-item"><div class="label">目標資料表</div><div class="value">MODETAIL / SFT_WO_ISSUE</div></div>
+                <div class="info-item"><div class="label">目標資料表</div><div class="value">MODETAIL / SFT_WO_ISSUE / material_requisition</div></div>
                 <div class="info-item"><div class="label">資料方向</div><div class="value">ERP → MES</div></div>
                 <div class="info-item"><div class="label">用途</div><div class="value">工單備料狀態同步</div></div>
             </div>
@@ -164,6 +164,26 @@ UPDATE SFT_WO_ISSUE SET
     ISSUE_DATE = :issue_date,
     ISSUE_QTY = :issue_qty
 WHERE WO_NO = :wo_no</pre>
+
+            <h3 style="font-size: 1.1em; margin: 20px 0 10px;">material_requisition 連動更新</h3>
+            <pre>-- 更新工單用料的備料狀態
+UPDATE material_requisition SET
+    issue_status = :issue_status,
+    issue_date = :issue_date,
+    LASTMAINTAINDATETIME = N'{當前時間}'
+WHERE modetail_cmoid = :wo_no</pre>
+
+            <div class="note">
+                <div class="note-title">影響資料表清單</div>
+                <div class="note-content">
+                    <table style="margin-top:10px; width:100%;">
+                        <tr><th>資料表</th><th>操作</th><th>說明</th></tr>
+                        <tr><td>MODETAIL</td><td>UPDATE</td><td>更新製令主檔備料狀態</td></tr>
+                        <tr><td>SFT_WO_ISSUE</td><td>UPDATE</td><td>更新工單發料記錄（若有）</td></tr>
+                        <tr><td>material_requisition</td><td>UPDATE</td><td>更新工單用料備料狀態</td></tr>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
 

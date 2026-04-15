@@ -81,7 +81,7 @@
             <div class="info-grid">
                 <div class="info-item"><div class="label">Ten API</div><div class="value">issue.wo.item.process</div></div>
                 <div class="info-item"><div class="label">Ten phuong thuc</div><div class="value">issueWoItemProcess</div></div>
-                <div class="info-item"><div class="label">Bang du lieu dich</div><div class="value">MODETAIL / SFT_WO_ISSUE</div></div>
+                <div class="info-item"><div class="label">Bang du lieu dich</div><div class="value">MODETAIL / SFT_WO_ISSUE / material_requisition</div></div>
                 <div class="info-item"><div class="label">Huong du lieu</div><div class="value">ERP → MES</div></div>
                 <div class="info-item"><div class="label">Muc dich</div><div class="value">Dong bo trang thai chuan bi nguyen lieu</div></div>
             </div>
@@ -161,11 +161,31 @@ UPDATE SFT_WO_ISSUE SET
     ISSUE_DATE = :issue_date,
     ISSUE_QTY = :issue_qty
 WHERE WO_NO = :wo_no</pre>
+
+            <h3 style="font-size: 1.1em; margin: 20px 0 10px;">Lien dong material_requisition</h3>
+            <pre>-- Cap nhat trang thai chuan bi nguyen lieu cua vat tu lenh san xuat
+UPDATE material_requisition SET
+    issue_status = :issue_status,
+    issue_date = :issue_date,
+    LASTMAINTAINDATETIME = N'{thoi gian hien tai}'
+WHERE modetail_cmoid = :wo_no</pre>
+
+            <div class="note">
+                <div class="note-title">Danh sach bang du lieu bi anh huong</div>
+                <div class="note-content">
+                    <table style="margin-top:10px; width:100%;">
+                        <tr><th>Bang</th><th>Thao tac</th><th>Mo ta</th></tr>
+                        <tr><td>MODETAIL</td><td>UPDATE</td><td>Cap nhat trang thai chuan bi nguyen lieu bang chinh lenh san xuat</td></tr>
+                        <tr><td>SFT_WO_ISSUE</td><td>UPDATE</td><td>Cap nhat ban ghi phat nguyen lieu (neu co)</td></tr>
+                        <tr><td>material_requisition</td><td>UPDATE</td><td>Cap nhat trang thai chuan bi nguyen lieu vat tu lenh san xuat</td></tr>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
 
     <div class="footer">
-        <p>eMES API | Dong bo chuan bi nguyen lieu | Ngay cap nhat: 2026-03-19</p>
+        <p>eMES API | Dong bo chuan bi nguyen lieu | Ngay cap nhat: 2026-04-15</p>
     </div>
 </body>
 </html>

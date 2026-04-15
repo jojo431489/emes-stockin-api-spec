@@ -544,22 +544,104 @@
   <span class="key">AND</span> RTRIM(MF002) = ITEM.STDROUTEID</pre>
             </div>
 
+            <h3>9.5 Write to material_requisition (Work Order Materials)</h3>
+            <div class="info-box purple">
+                <strong>Work Order Material Data Sync</strong><br>
+                <code>wo.create</code> API directly writes work order material data to the <code>material_requisition</code> table, recording the material requirements for the work order.
+            </div>
+            <div class="code-block">
+<pre><span class="comment">-- wo.create processes work order material data</span>
+<span class="comment">-- 1. First write to order_material table (original material order data)</span>
+<span class="key">SELECT COUNT</span>(1) <span class="key">FROM</span> order_material
+<span class="key">WHERE</span> material_requisition = N'{material_requisition}'
+  <span class="key">AND</span> material_number = N'{material_number}'
+  <span class="key">AND</span> serial_number = N'{serial_number}'
+<span class="comment">-- count > 0 → UPDATE, count = 0 → INSERT</span>
+
+<span class="comment">-- INSERT order_material</span>
+<span class="key">INSERT INTO</span> order_material (
+    material_requisition, material_number, serial_number,
+    material_id, material_quantity, craftsmanship,
+    batch_number, category, order_number, type,
+    batch_description, om01, om02, om03, om04
+) <span class="key">VALUES</span> (
+    :material_requisition, :material_number, :serial_number,
+    :material_id, :material_quantity, :craftsmanship,
+    :batch_number, :category, :order_number, :type,
+    :batch_description, N'{current_time}', :om02, :om03, :om04
+)
+
+<span class="comment">-- 2. Merge records with same Item+Process+Workstation+MaterialBatch+WO, write to material_requisition</span>
+<span class="key">SELECT COUNT</span>(1) <span class="key">FROM</span> material_requisition
+<span class="key">WHERE</span> modetail_cmoid = N'{work_order_no}'
+  <span class="key">AND</span> material_id = N'{material_id}'
+  <span class="key">AND</span> opid = N'{process_id}'
+  <span class="key">AND</span> erp_wsid = N'{workstation_id}'
+  <span class="key">AND</span> material_batch = N'{material_batch}'
+  <span class="key">AND</span> (remark <span class="key">IS NULL OR</span> remark = '')
+<span class="comment">-- count > 0 → UPDATE (accumulate qty), count = 0 → INSERT</span>
+
+<span class="comment">-- INSERT material_requisition (new material record)</span>
+<span class="key">INSERT INTO</span> material_requisition (
+    serial, modetail_cmoid, material_id,
+    opid, erp_wsid, material_batch,
+    withdrawn_quantity, mr01
+) <span class="key">VALUES</span> (
+    :serial,              <span class="comment">-- Serial number (MAX(serial) + 1)</span>
+    :modetail_cmoid,      <span class="comment">-- Work order number (category-order_number)</span>
+    :material_id,         <span class="comment">-- Material ID</span>
+    :opid,                <span class="comment">-- Process ID</span>
+    :erp_wsid,            <span class="comment">-- Workstation ID</span>
+    :material_batch,      <span class="comment">-- Material batch</span>
+    :withdrawn_quantity,  <span class="comment">-- Actual withdrawn quantity</span>
+    N'{current_time}'     <span class="comment">-- mr01</span>
+)
+
+<span class="comment">-- UPDATE material_requisition (accumulate withdrawn quantity)</span>
+<span class="key">UPDATE</span> material_requisition <span class="key">SET</span>
+    withdrawn_quantity = withdrawn_quantity + :new_quantity
+<span class="key">WHERE</span> modetail_cmoid = N'{work_order_no}'
+  <span class="key">AND</span> material_id = N'{material_id}'
+  <span class="key">AND</span> opid = N'{process_id}'
+  <span class="key">AND</span> erp_wsid = N'{workstation_id}'
+  <span class="key">AND</span> material_batch = N'{material_batch}'
+  <span class="key">AND</span> (remark <span class="key">IS NULL OR</span> remark = '')</pre>
+            </div>
+
+            <h4>material_requisition Table Structure</h4>
+            <table>
+                <tr><th>Field</th><th>Type</th><th>Description</th></tr>
+                <tr><td>serial</td><td>INT</td><td>Serial number</td></tr>
+                <tr><td>modetail_cmoid</td><td>NVARCHAR(40)</td><td>Work order number</td></tr>
+                <tr><td>material_id</td><td>NVARCHAR(40)</td><td>Material ID</td></tr>
+                <tr><td>opid</td><td>NVARCHAR(20)</td><td>Process ID</td></tr>
+                <tr><td>erp_wsid</td><td>NVARCHAR(20)</td><td>Workstation ID</td></tr>
+                <tr><td>material_batch</td><td>NVARCHAR(40)</td><td>Material batch</td></tr>
+                <tr><td>demand_quantity</td><td>FLOAT</td><td>Demand quantity</td></tr>
+                <tr><td>withdrawn_quantity</td><td>FLOAT</td><td>Actual withdrawn quantity</td></tr>
+                <tr><td>remark</td><td>NVARCHAR(500)</td><td>Remark</td></tr>
+                <tr><td>mr01</td><td>DATETIME</td><td>Create time</td></tr>
+            </table>
+
             <div class="info-box warning">
-                <strong>Tables Affected by Work Order Creation</strong>
+                <strong>Complete List of Tables Affected by Work Order Creation</strong>
                 <table style="margin-top:10px;">
-                    <tr><th>Table</th><th>Operation</th><th>Description</th></tr>
-                    <tr><td>MODETAIL</td><td>INSERT</td><td>Work order master</td></tr>
-                    <tr><td>LOT</td><td>INSERT</td><td>Lot record</td></tr>
-                    <tr><td>SFT_OP_REALRUN</td><td>DELETE + INSERT</td><td>Process execution (copy from SFT_BOMMF)</td></tr>
-                    <tr><td>SFT_OP_BACK_RUN</td><td>DELETE + INSERT</td><td>Process routing relationships (network routing)</td></tr>
+                    <tr><th>Table</th><th>Operation</th><th>Description</th><th>API</th></tr>
+                    <tr><td>MODETAIL</td><td>INSERT</td><td>Work order master</td><td>wo.create</td></tr>
+                    <tr><td>LOT</td><td>INSERT</td><td>Lot record</td><td>wo.create</td></tr>
+                    <tr><td>SFT_OP_REALRUN</td><td>DELETE + INSERT</td><td>Process execution (copy from SFT_BOMMF)</td><td>wo.create</td></tr>
+                    <tr><td>SFT_OP_BACK_RUN</td><td>DELETE + INSERT</td><td>Process routing relationships (network routing)</td><td>wo.create</td></tr>
+                    <tr><td>order_material</td><td>INSERT/UPDATE</td><td>Material order data</td><td>wo.create</td></tr>
+                    <tr><td>material_requisition</td><td>INSERT/UPDATE</td><td>Work order material details</td><td>wo.create</td></tr>
                 </table>
             </div>
 
             <div class="info-box info">
                 <strong>Code Location</strong><br>
-                SQL Execution: <code>ESBapi.java:1007-1046</code><br>
+                wo.create SQL Execution: <code>ESBapi.java:1007-1046</code><br>
                 Process Initialization: <code>dataMantain.initOpRealRun_SftBommf()</code><br>
-                Routing Relationships: <code>UpdateData.InsertOpBackRun()</code>
+                Routing Relationships: <code>UpdateData.InsertOpBackRun()</code><br>
+                Material Data Sync: <code>ESBapi.java:1252-1394 (wo.create)</code>
             </div>
         </div>
 

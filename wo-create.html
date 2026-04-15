@@ -609,13 +609,13 @@ SFT_OP_REALRUN.sqlUpdate_RecalculateAll("insertMODETAIL")</pre>
                 前後道關聯：<code>UpdateData.InsertOpBackRun()</code>
             </div>
 
-            <h3>9.8 更新 material_requisition（工單用料維護單身）</h3>
+            <h3>9.8 寫入 material_requisition（工單用料）</h3>
             <div class="info-box purple">
-                <strong>相關聯的 API：upMaterial</strong><br>
-                ERP 開立工單後，可能會同時呼叫 <code>upMaterial</code> API 來同步工單用料資料至 <code>material_requisition</code> 表。
+                <strong>工單用料資料同步</strong><br>
+                <code>wo.create</code> API 會直接將工單用料資料寫入 <code>material_requisition</code> 表，用於記錄工單所需的物料資訊。
             </div>
             <div class="code-block">
-<pre><span class="comment">-- API Endpoint: POST /ESB/API/upMaterial</span>
+<pre><span class="comment">-- wo.create 會同時處理工單用料資料</span>
 <span class="comment">-- 1. 先寫入 order_material 表（原始用料訂單資料）</span>
 <span class="key">SELECT COUNT</span>(1) <span class="key">FROM</span> order_material
 <span class="key">WHERE</span> material_requisition = N'{material_requisition}'
@@ -696,8 +696,8 @@ SFT_OP_REALRUN.sqlUpdate_RecalculateAll("insertMODETAIL")</pre>
                     <tr><td>LOT</td><td>INSERT</td><td>批次記錄</td><td>wo.create</td></tr>
                     <tr><td>SFT_OP_REALRUN</td><td>DELETE + INSERT</td><td>製程實績（從 SFT_BOMMF 複製）</td><td>wo.create</td></tr>
                     <tr><td>SFT_OP_BACK_RUN</td><td>DELETE + INSERT</td><td>前後道製程關聯（網狀途程）</td><td>wo.create</td></tr>
-                    <tr><td>order_material</td><td>INSERT/UPDATE</td><td>用料訂單資料</td><td>upMaterial</td></tr>
-                    <tr><td>material_requisition</td><td>INSERT/UPDATE</td><td>工單用料維護單身</td><td>upMaterial</td></tr>
+                    <tr><td>order_material</td><td>INSERT/UPDATE</td><td>用料訂單資料</td><td>wo.create</td></tr>
+                    <tr><td>material_requisition</td><td>INSERT/UPDATE</td><td>工單用料維護單身</td><td>wo.create</td></tr>
                 </table>
             </div>
 
@@ -706,7 +706,7 @@ SFT_OP_REALRUN.sqlUpdate_RecalculateAll("insertMODETAIL")</pre>
                 wo.create SQL 執行：<code>ESBapi.java:1007-1046</code><br>
                 製程初始化：<code>dataMantain.initOpRealRun_SftBommf()</code><br>
                 前後道關聯：<code>UpdateData.InsertOpBackRun()</code><br>
-                用料資料同步：<code>ESBapi.java:1252-1394 (upMaterial)</code>
+                用料資料同步：<code>ESBapi.java:1252-1394 (wo.create)</code>
             </div>
         </div>
 
