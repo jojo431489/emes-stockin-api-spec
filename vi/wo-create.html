@@ -451,33 +451,210 @@
             </table>
         </div>
 
-        <!-- SQL cap nhat co so du lieu -->
+        <!-- SQL cập nhật cơ sở dữ liệu -->
         <div class="card" id="sql">
-            <h2>9. SQL Cap nhat co so du lieu</h2>
+            <h2>9. SQL Cập nhật cơ sở dữ liệu</h2>
 
-            <div class="info-box purple">
-                <strong>Dong bo du lieu vat tu lenh san xuat</strong><br>
-                API <code>wo.create</code> se ghi truc tiep du lieu vat tu lenh san xuat vao bang <code>material_requisition</code>.
+            <h3>9.1 Kiểm tra lệnh sản xuất tồn tại</h3>
+            <div class="code-block">
+<pre><span class="comment">-- Kiểm tra trước khi thêm, nếu tồn tại sẽ trả về JS_0126_00061</span>
+<span class="key">SELECT COUNT</span>(1) <span class="key">FROM</span> MODETAIL <span class="key">WHERE</span> CMOID = N'{wo_no}'</pre>
             </div>
 
+            <h3>9.2 INSERT MODETAIL (Thêm bảng chính lệnh sản xuất)</h3>
+            <div class="code-block">
+<pre><span class="key">INSERT INTO</span> MODETAIL (
+    CMOID, MO004, MO005, ITEMID, MO021, MO022, UNIT,
+    PLANPROCESSST, DUEDATETIME, QTY, STATUS, DOID,
+    SEQUENCE, FACTORYID, WAREHOUSEID, DESCRIPTION,
+    MO008, MO012, MO016, MO032, PLANRELEASEQTY,
+    FLAG, LASTMAINTAINUSER, LASTMAINTAINDATETIME
+) <span class="key">VALUES</span> (
+    :CMOID,              <span class="comment">-- Số lệnh sản xuất (Loại-Số)</span>
+    :MO004,              <span class="comment">-- Loại lệnh</span>
+    :MO005,              <span class="comment">-- Số lệnh</span>
+    :ITEMID,             <span class="comment">-- Mã sản phẩm</span>
+    :MO021,              <span class="comment">-- Tên sản phẩm</span>
+    :MO022,              <span class="comment">-- Quy cách</span>
+    :UNIT,               <span class="comment">-- Đơn vị</span>
+    :PLANPROCESSST,      <span class="comment">-- Ngày bắt đầu dự kiến</span>
+    :DUEDATETIME,        <span class="comment">-- Ngày hoàn thành dự kiến</span>
+    :QTY,                <span class="comment">-- Sản lượng dự kiến</span>
+    <span class="number">1</span>,                   <span class="comment">-- STATUS = 1 (Chưa sản xuất)</span>
+    :DOID,               <span class="comment">-- Số đơn hàng</span>
+    :SEQUENCE,           <span class="comment">-- Mục đơn hàng</span>
+    :FACTORYID,          <span class="comment">-- Mã nhà máy</span>
+    :WAREHOUSEID,        <span class="comment">-- Mã kho</span>
+    :DESCRIPTION,        <span class="comment">-- Ghi chú</span>
+    <span class="number">1</span>,                   <span class="comment">-- MO008 = 1</span>
+    :MO012,              <span class="comment">-- Ngày lập đơn</span>
+    <span class="number">0</span>,                   <span class="comment">-- MO016 = 0</span>
+    :MO032,              <span class="comment">-- Mức ưu tiên (1=Gấp)</span>
+    :QTY,                <span class="comment">-- Số lượng phát hành dự kiến = Sản lượng dự kiến</span>
+    <span class="number">1</span>,                   <span class="comment">-- FLAG số phiên bản</span>
+    :userid,
+    N'{Thời gian hiện tại}'
+)</pre>
+            </div>
+
+            <h3>9.3 INSERT LOT (Thêm bản ghi lô)</h3>
+            <div class="code-block">
+<pre><span class="key">INSERT INTO</span> LOT (
+    ID, TYPE, MOID, ITEMID, LOTSIZE, STATUS, UNIT,
+    QTYPER, LOCATION, ERP_OPSEQ, ERP_OPID, ERP_WSID,
+    LOT004, PKQTY, PKQTYPER, LOT007, LOT011,
+    LASTMAINTAINUSER, LASTMAINTAINDATETIME
+) <span class="key">VALUES</span> (
+    :CMOID,              <span class="comment">-- Số lô = Số lệnh sản xuất</span>
+    <span class="number">1</span>,                   <span class="comment">-- TYPE = 1 (Lô kế hoạch)</span>
+    :CMOID,              <span class="comment">-- MOID = Số lệnh sản xuất</span>
+    :ITEMID,             <span class="comment">-- Mã sản phẩm</span>
+    :QTY,                <span class="comment">-- LOTSIZE = Sản lượng dự kiến</span>
+    <span class="number">0</span>,                   <span class="comment">-- STATUS = 0 (Chờ phát hành)</span>
+    :UNIT,               <span class="comment">-- Đơn vị</span>
+    <span class="number">1</span>,                   <span class="comment">-- QTYPER = 1</span>
+    <span class="string">'release'</span>,           <span class="comment">-- LOCATION = 'release'</span>
+    <span class="string">''</span>, <span class="string">''</span>, <span class="string">''</span>,          <span class="comment">-- Trường quy trình ERP (trống)</span>
+    <span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>,             <span class="comment">-- LOT004, PKQTY, PKQTYPER</span>
+    <span class="string">'0'</span>, <span class="string">'N'</span>,            <span class="comment">-- LOT007, LOT011</span>
+    :userid,
+    N'{Thời gian hiện tại}'
+)</pre>
+            </div>
+
+            <h3>9.4 Khởi tạo quy trình SFT_OP_REALRUN (Đọc từ SFT_BOMMF)</h3>
+            <div class="code-block">
+<pre><span class="comment">-- Kiểm tra sản phẩm có lộ trình tiêu chuẩn không</span>
+<span class="key">SELECT</span> ME007 <span class="key">FROM</span> SFT_BOMME, MODETAIL, ITEM
+<span class="key">WHERE</span> ITEM.ID = MODETAIL.ITEMID
+  <span class="key">AND</span> CMOID = N'{wo_no}'
+  <span class="key">AND</span> RTRIM(ME001) = ITEM.STDROUTEITEMID
+  <span class="key">AND</span> RTRIM(ME002) = ITEM.STDROUTEID
+
+<span class="comment">-- Nếu có lộ trình, xóa rồi thêm mới</span>
+<span class="key">DELETE</span> SFT_OP_REALRUN <span class="key">WHERE</span> ID = N'{wo_no}'
+
+<span class="comment">-- Sao chép dữ liệu quy trình từ SFT_BOMMF</span>
+<span class="key">INSERT INTO</span> SFT_OP_REALRUN (
+    ID, SEQUENCE, OPID, OPDESCRIPTION,
+    ARRIVEQTY, OUTQTY, REWORKQTY, DEFECTQTY,
+    ERP_OPSEQ, PERLOTWORKTIME, STANDARDEQWORKTIME, STANDARDMANWORKTIME,
+    ERP_OPID, ERP_WSID, ERP_FIXEDLEADTIME, ERP_TRANSQTY, ...
+)
+<span class="key">SELECT</span>
+    CMOID,                          <span class="comment">-- ID = Số lệnh sản xuất</span>
+    0,                              <span class="comment">-- SEQUENCE = 0</span>
+    RTRIM(MF004)+'---'+RTRIM(MF006), <span class="comment">-- OPID = Quy trình+Trạm</span>
+    MF008,                          <span class="comment">-- OPDESCRIPTION = Mô tả quy trình</span>
+    0, 0, 0, 0,                     <span class="comment">-- Trường số lượng khởi tạo = 0</span>
+    RTRIM(MF003),                   <span class="comment">-- ERP_OPSEQ = Thứ tự quy trình</span>
+    MF019,                          <span class="comment">-- PERLOTWORKTIME = Thời gian mỗi lô</span>
+    ...
+<span class="key">FROM</span> SFT_BOMMF, MODETAIL, ITEM
+<span class="key">WHERE</span> ITEM.ID = MODETAIL.ITEMID
+  <span class="key">AND</span> CMOID = N'{wo_no}'
+  <span class="key">AND</span> RTRIM(MF001) = ITEM.STDROUTEITEMID
+  <span class="key">AND</span> RTRIM(MF002) = ITEM.STDROUTEID</pre>
+            </div>
+
+            <h3>9.5 Ghi vào material_requisition (Vật tư lệnh sản xuất)</h3>
+            <div class="info-box purple">
+                <strong>Đồng bộ dữ liệu vật tư lệnh sản xuất</strong><br>
+                API <code>wo.create</code> sẽ ghi trực tiếp dữ liệu vật tư lệnh sản xuất vào bảng <code>material_requisition</code>.
+            </div>
+            <div class="code-block">
+<pre><span class="comment">-- wo.create xử lý dữ liệu vật tư lệnh sản xuất</span>
+<span class="comment">-- 1. Đầu tiên ghi vào bảng order_material (dữ liệu đơn hàng vật tư gốc)</span>
+<span class="key">SELECT COUNT</span>(1) <span class="key">FROM</span> order_material
+<span class="key">WHERE</span> material_requisition = N'{material_requisition}'
+  <span class="key">AND</span> material_number = N'{material_number}'
+  <span class="key">AND</span> serial_number = N'{serial_number}'
+<span class="comment">-- count > 0 → UPDATE, count = 0 → INSERT</span>
+
+<span class="comment">-- INSERT order_material</span>
+<span class="key">INSERT INTO</span> order_material (
+    material_requisition, material_number, serial_number,
+    material_id, material_quantity, craftsmanship,
+    batch_number, category, order_number, type,
+    batch_description, om01, om02, om03, om04
+) <span class="key">VALUES</span> (
+    :material_requisition, :material_number, :serial_number,
+    :material_id, :material_quantity, :craftsmanship,
+    :batch_number, :category, :order_number, :type,
+    :batch_description, N'{Thời gian hiện tại}', :om02, :om03, :om04
+)
+
+<span class="comment">-- 2. Gộp các bản ghi cùng Sản phẩm+Quy trình+Trạm+Lô vật tư+Lệnh, ghi vào material_requisition</span>
+<span class="key">SELECT COUNT</span>(1) <span class="key">FROM</span> material_requisition
+<span class="key">WHERE</span> modetail_cmoid = N'{Số lệnh sản xuất}'
+  <span class="key">AND</span> material_id = N'{Mã vật tư}'
+  <span class="key">AND</span> opid = N'{Mã quy trình}'
+  <span class="key">AND</span> erp_wsid = N'{Mã trạm}'
+  <span class="key">AND</span> material_batch = N'{Lô vật tư}'
+  <span class="key">AND</span> (remark <span class="key">IS NULL OR</span> remark = '')
+<span class="comment">-- count > 0 → UPDATE (cộng dồn số lượng), count = 0 → INSERT</span>
+
+<span class="comment">-- INSERT material_requisition (thêm bản ghi vật tư)</span>
+<span class="key">INSERT INTO</span> material_requisition (
+    serial, modetail_cmoid, material_id,
+    opid, erp_wsid, material_batch,
+    withdrawn_quantity, mr01
+) <span class="key">VALUES</span> (
+    :serial,              <span class="comment">-- Số thứ tự (MAX(serial) + 1)</span>
+    :modetail_cmoid,      <span class="comment">-- Số lệnh sản xuất (category-order_number)</span>
+    :material_id,         <span class="comment">-- Mã vật tư</span>
+    :opid,                <span class="comment">-- Mã quy trình</span>
+    :erp_wsid,            <span class="comment">-- Mã trạm</span>
+    :material_batch,      <span class="comment">-- Lô vật tư</span>
+    :withdrawn_quantity,  <span class="comment">-- Số lượng xuất thực tế</span>
+    N'{Thời gian hiện tại}'  <span class="comment">-- mr01</span>
+)
+
+<span class="comment">-- UPDATE material_requisition (cộng dồn số lượng xuất)</span>
+<span class="key">UPDATE</span> material_requisition <span class="key">SET</span>
+    withdrawn_quantity = withdrawn_quantity + :Số_lượng_mới
+<span class="key">WHERE</span> modetail_cmoid = N'{Số lệnh sản xuất}'
+  <span class="key">AND</span> material_id = N'{Mã vật tư}'
+  <span class="key">AND</span> opid = N'{Mã quy trình}'
+  <span class="key">AND</span> erp_wsid = N'{Mã trạm}'
+  <span class="key">AND</span> material_batch = N'{Lô vật tư}'
+  <span class="key">AND</span> (remark <span class="key">IS NULL OR</span> remark = '')</pre>
+            </div>
+
+            <h4>Cấu trúc bảng material_requisition</h4>
+            <table>
+                <tr><th>Trường</th><th>Kiểu</th><th>Mô tả</th></tr>
+                <tr><td>serial</td><td>INT</td><td>Số thứ tự</td></tr>
+                <tr><td>modetail_cmoid</td><td>NVARCHAR(40)</td><td>Số lệnh sản xuất</td></tr>
+                <tr><td>material_id</td><td>NVARCHAR(40)</td><td>Mã vật tư</td></tr>
+                <tr><td>opid</td><td>NVARCHAR(20)</td><td>Mã quy trình</td></tr>
+                <tr><td>erp_wsid</td><td>NVARCHAR(20)</td><td>Mã trạm làm việc</td></tr>
+                <tr><td>material_batch</td><td>NVARCHAR(40)</td><td>Lô vật tư</td></tr>
+                <tr><td>demand_quantity</td><td>FLOAT</td><td>Số lượng yêu cầu</td></tr>
+                <tr><td>withdrawn_quantity</td><td>FLOAT</td><td>Số lượng đã xuất</td></tr>
+                <tr><td>remark</td><td>NVARCHAR(500)</td><td>Ghi chú</td></tr>
+                <tr><td>mr01</td><td>DATETIME</td><td>Thời gian tạo</td></tr>
+            </table>
+
             <div class="info-box warning">
-                <strong>Danh sach bang du lieu bi anh huong boi tao lenh san xuat</strong>
+                <strong>Danh sách bảng dữ liệu bị ảnh hưởng bởi tạo lệnh sản xuất (đầy đủ)</strong>
                 <table style="margin-top:10px;">
-                    <tr><th>Bang</th><th>Thao tac</th><th>Mo ta</th><th>API</th></tr>
-                    <tr><td>MODETAIL</td><td>INSERT</td><td>Bang chinh lenh san xuat</td><td>wo.create</td></tr>
-                    <tr><td>LOT</td><td>INSERT</td><td>Ban ghi lo</td><td>wo.create</td></tr>
-                    <tr><td>SFT_OP_REALRUN</td><td>DELETE + INSERT</td><td>Thuc hien quy trinh (sao chep tu SFT_BOMMF)</td><td>wo.create</td></tr>
-                    <tr><td>SFT_OP_BACK_RUN</td><td>DELETE + INSERT</td><td>Quan he quy trinh truoc-sau</td><td>wo.create</td></tr>
-                    <tr><td>order_material</td><td>INSERT/UPDATE</td><td>Du lieu don hang vat tu</td><td>wo.create</td></tr>
-                    <tr><td>material_requisition</td><td>INSERT/UPDATE</td><td>Chi tiet vat tu lenh san xuat</td><td>wo.create</td></tr>
+                    <tr><th>Bảng</th><th>Thao tác</th><th>Mô tả</th><th>API</th></tr>
+                    <tr><td>MODETAIL</td><td>INSERT</td><td>Bảng chính lệnh sản xuất</td><td>wo.create</td></tr>
+                    <tr><td>LOT</td><td>INSERT</td><td>Bản ghi lô</td><td>wo.create</td></tr>
+                    <tr><td>SFT_OP_REALRUN</td><td>DELETE + INSERT</td><td>Thực hiện quy trình (sao chép từ SFT_BOMMF)</td><td>wo.create</td></tr>
+                    <tr><td>SFT_OP_BACK_RUN</td><td>DELETE + INSERT</td><td>Quan hệ quy trình trước-sau (lộ trình mạng)</td><td>wo.create</td></tr>
+                    <tr><td>order_material</td><td>INSERT/UPDATE</td><td>Dữ liệu đơn hàng vật tư</td><td>wo.create</td></tr>
+                    <tr><td>material_requisition</td><td>INSERT/UPDATE</td><td>Chi tiết vật tư lệnh sản xuất</td><td>wo.create</td></tr>
                 </table>
             </div>
 
             <div class="info-box info">
-                <strong>Vi tri ma nguon</strong><br>
-                Thuc hien SQL: <code>ESBapi.java:1007-1046</code><br>
-                Khoi tao quy trinh: <code>dataMantain.initOpRealRun_SftBommf()</code><br>
-                Dong bo vat tu: <code>ESBapi.java:1252-1394 (wo.create)</code>
+                <strong>Vị trí mã nguồn</strong><br>
+                Thực hiện SQL wo.create: <code>ESBapi.java:1007-1046</code><br>
+                Khởi tạo quy trình: <code>dataMantain.initOpRealRun_SftBommf()</code><br>
+                Quan hệ trước-sau: <code>UpdateData.InsertOpBackRun()</code><br>
+                Đồng bộ vật tư: <code>ESBapi.java:1252-1394 (wo.create)</code>
             </div>
         </div>
 

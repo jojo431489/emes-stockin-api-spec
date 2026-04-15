@@ -509,10 +509,103 @@
 )</pre>
             </div>
 
-            <h3>9.4 เขียนข้อมูล material_requisition (วัสดุใบสั่งผลิต)</h3>
+            <h3>9.4 เริ่มต้นกระบวนการ SFT_OP_REALRUN (อ่านจาก SFT_BOMMF)</h3>
+            <div class="code-block">
+<pre><span class="comment">-- ตรวจสอบว่าสินค้ามีเส้นทางมาตรฐานหรือไม่</span>
+<span class="key">SELECT</span> ME007 <span class="key">FROM</span> SFT_BOMME, MODETAIL, ITEM
+<span class="key">WHERE</span> ITEM.ID = MODETAIL.ITEMID
+  <span class="key">AND</span> CMOID = N'{wo_no}'
+  <span class="key">AND</span> RTRIM(ME001) = ITEM.STDROUTEITEMID
+  <span class="key">AND</span> RTRIM(ME002) = ITEM.STDROUTEID
+
+<span class="comment">-- ถ้ามีเส้นทาง ลบแล้วเพิ่มใหม่</span>
+<span class="key">DELETE</span> SFT_OP_REALRUN <span class="key">WHERE</span> ID = N'{wo_no}'
+
+<span class="comment">-- คัดลอกข้อมูลกระบวนการจาก SFT_BOMMF</span>
+<span class="key">INSERT INTO</span> SFT_OP_REALRUN (
+    ID, SEQUENCE, OPID, OPDESCRIPTION,
+    ARRIVEQTY, OUTQTY, REWORKQTY, DEFECTQTY,
+    ERP_OPSEQ, PERLOTWORKTIME, STANDARDEQWORKTIME, STANDARDMANWORKTIME,
+    ERP_OPID, ERP_WSID, ERP_FIXEDLEADTIME, ERP_TRANSQTY, ...
+)
+<span class="key">SELECT</span>
+    CMOID,                          <span class="comment">-- ID = หมายเลขใบสั่งผลิต</span>
+    0,                              <span class="comment">-- SEQUENCE = 0</span>
+    RTRIM(MF004)+'---'+RTRIM(MF006), <span class="comment">-- OPID = กระบวนการ+สถานีงาน</span>
+    MF008,                          <span class="comment">-- OPDESCRIPTION = คำอธิบายกระบวนการ</span>
+    0, 0, 0, 0,                     <span class="comment">-- ฟิลด์จำนวนเริ่มต้น = 0</span>
+    RTRIM(MF003),                   <span class="comment">-- ERP_OPSEQ = ลำดับกระบวนการ</span>
+    MF019,                          <span class="comment">-- PERLOTWORKTIME = เวลาต่อแบตช์</span>
+    ...
+<span class="key">FROM</span> SFT_BOMMF, MODETAIL, ITEM
+<span class="key">WHERE</span> ITEM.ID = MODETAIL.ITEMID
+  <span class="key">AND</span> CMOID = N'{wo_no}'
+  <span class="key">AND</span> RTRIM(MF001) = ITEM.STDROUTEITEMID
+  <span class="key">AND</span> RTRIM(MF002) = ITEM.STDROUTEID</pre>
+            </div>
+
+            <h3>9.5 เขียนข้อมูล material_requisition (วัสดุใบสั่งผลิต)</h3>
             <div class="info-box purple">
                 <strong>การซิงค์ข้อมูลวัสดุใบสั่งผลิต</strong><br>
                 API <code>wo.create</code> จะเขียนข้อมูลวัสดุใบสั่งผลิตโดยตรงไปยังตาราง <code>material_requisition</code>
+            </div>
+            <div class="code-block">
+<pre><span class="comment">-- wo.create ประมวลผลข้อมูลวัสดุใบสั่งผลิต</span>
+<span class="comment">-- 1. เขียนลงตาราง order_material ก่อน (ข้อมูลคำสั่งซื้อวัสดุต้นฉบับ)</span>
+<span class="key">SELECT COUNT</span>(1) <span class="key">FROM</span> order_material
+<span class="key">WHERE</span> material_requisition = N'{material_requisition}'
+  <span class="key">AND</span> material_number = N'{material_number}'
+  <span class="key">AND</span> serial_number = N'{serial_number}'
+<span class="comment">-- count > 0 → UPDATE, count = 0 → INSERT</span>
+
+<span class="comment">-- INSERT order_material</span>
+<span class="key">INSERT INTO</span> order_material (
+    material_requisition, material_number, serial_number,
+    material_id, material_quantity, craftsmanship,
+    batch_number, category, order_number, type,
+    batch_description, om01, om02, om03, om04
+) <span class="key">VALUES</span> (
+    :material_requisition, :material_number, :serial_number,
+    :material_id, :material_quantity, :craftsmanship,
+    :batch_number, :category, :order_number, :type,
+    :batch_description, N'{เวลาปัจจุบัน}', :om02, :om03, :om04
+)
+
+<span class="comment">-- 2. รวมบันทึกที่มี สินค้า+กระบวนการ+สถานี+แบตช์วัสดุ+ใบสั่ง เหมือนกัน เขียนลง material_requisition</span>
+<span class="key">SELECT COUNT</span>(1) <span class="key">FROM</span> material_requisition
+<span class="key">WHERE</span> modetail_cmoid = N'{หมายเลขใบสั่งผลิต}'
+  <span class="key">AND</span> material_id = N'{รหัสวัสดุ}'
+  <span class="key">AND</span> opid = N'{รหัสกระบวนการ}'
+  <span class="key">AND</span> erp_wsid = N'{รหัสสถานีงาน}'
+  <span class="key">AND</span> material_batch = N'{แบตช์วัสดุ}'
+  <span class="key">AND</span> (remark <span class="key">IS NULL OR</span> remark = '')
+<span class="comment">-- count > 0 → UPDATE (สะสมจำนวน), count = 0 → INSERT</span>
+
+<span class="comment">-- INSERT material_requisition (เพิ่มบันทึกวัสดุ)</span>
+<span class="key">INSERT INTO</span> material_requisition (
+    serial, modetail_cmoid, material_id,
+    opid, erp_wsid, material_batch,
+    withdrawn_quantity, mr01
+) <span class="key">VALUES</span> (
+    :serial,              <span class="comment">-- หมายเลขลำดับ (MAX(serial) + 1)</span>
+    :modetail_cmoid,      <span class="comment">-- หมายเลขใบสั่งผลิต (category-order_number)</span>
+    :material_id,         <span class="comment">-- รหัสวัสดุ</span>
+    :opid,                <span class="comment">-- รหัสกระบวนการ</span>
+    :erp_wsid,            <span class="comment">-- รหัสสถานีงาน</span>
+    :material_batch,      <span class="comment">-- แบตช์วัสดุ</span>
+    :withdrawn_quantity,  <span class="comment">-- จำนวนที่เบิกจริง</span>
+    N'{เวลาปัจจุบัน}'       <span class="comment">-- mr01</span>
+)
+
+<span class="comment">-- UPDATE material_requisition (สะสมจำนวนที่เบิก)</span>
+<span class="key">UPDATE</span> material_requisition <span class="key">SET</span>
+    withdrawn_quantity = withdrawn_quantity + :จำนวนใหม่
+<span class="key">WHERE</span> modetail_cmoid = N'{หมายเลขใบสั่งผลิต}'
+  <span class="key">AND</span> material_id = N'{รหัสวัสดุ}'
+  <span class="key">AND</span> opid = N'{รหัสกระบวนการ}'
+  <span class="key">AND</span> erp_wsid = N'{รหัสสถานีงาน}'
+  <span class="key">AND</span> material_batch = N'{แบตช์วัสดุ}'
+  <span class="key">AND</span> (remark <span class="key">IS NULL OR</span> remark = '')</pre>
             </div>
 
             <h4>โครงสร้างตาราง material_requisition</h4>
