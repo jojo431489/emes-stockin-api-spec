@@ -81,7 +81,7 @@
             <div class="info-grid">
                 <div class="info-item"><div class="label">Ten API</div><div class="value">issue.wo.item.process</div></div>
                 <div class="info-item"><div class="label">Ten phuong thuc</div><div class="value">issueWoItemProcess</div></div>
-                <div class="info-item"><div class="label">Bang du lieu dich</div><div class="value">MODETAIL / SFT_WO_ISSUE / material_requisition</div></div>
+                <div class="info-item"><div class="label">Bang du lieu dich</div><div class="value">MODETAIL / material_requisition</div></div>
                 <div class="info-item"><div class="label">Huong du lieu</div><div class="value">ERP → MES</div></div>
                 <div class="info-item"><div class="label">Muc dich</div><div class="value">Dong bo trang thai chuan bi nguyen lieu</div></div>
             </div>
@@ -154,14 +154,6 @@ SELECT COUNT(1) FROM MODETAIL WHERE CMOID = N'{wo_no}'</pre>
     LASTMAINTAINDATETIME = N'{thoi gian hien tai}'
 WHERE CMOID = :wo_no</pre>
 
-            <h3 style="font-size: 1.1em; margin: 20px 0 10px;">Lien dong SFT_WO_ISSUE (neu co)</h3>
-            <pre>-- Neu co bang SFT_WO_ISSUE thi cap nhat cung
-UPDATE SFT_WO_ISSUE SET
-    ISSUE_STATUS = :issue_status,
-    ISSUE_DATE = :issue_date,
-    ISSUE_QTY = :issue_qty
-WHERE WO_NO = :wo_no</pre>
-
             <h3 style="font-size: 1.1em; margin: 20px 0 10px;">Lien dong material_requisition</h3>
             <pre>-- Cap nhat trang thai chuan bi nguyen lieu cua vat tu lenh san xuat
 UPDATE material_requisition SET
@@ -176,7 +168,6 @@ WHERE modetail_cmoid = :wo_no</pre>
                     <table style="margin-top:10px; width:100%;">
                         <tr><th>Bang</th><th>Thao tac</th><th>Mo ta</th></tr>
                         <tr><td>MODETAIL</td><td>UPDATE</td><td>Cap nhat trang thai chuan bi nguyen lieu bang chinh lenh san xuat</td></tr>
-                        <tr><td>SFT_WO_ISSUE</td><td>UPDATE</td><td>Cap nhat ban ghi phat nguyen lieu (neu co)</td></tr>
                         <tr><td>material_requisition</td><td>UPDATE</td><td>Cap nhat trang thai chuan bi nguyen lieu vat tu lenh san xuat</td></tr>
                     </table>
                 </div>

@@ -65,7 +65,7 @@
             <div class="info-grid">
                 <div class="info-item"><div class="label">API Name</div><div class="value">issue.wo.item.process</div></div>
                 <div class="info-item"><div class="label">Method Name</div><div class="value">issueWoItemProcess</div></div>
-                <div class="info-item"><div class="label">Target Table</div><div class="value">MODETAIL / SFT_WO_ISSUE / material_requisition</div></div>
+                <div class="info-item"><div class="label">Target Table</div><div class="value">MODETAIL / material_requisition</div></div>
                 <div class="info-item"><div class="label">Data Direction</div><div class="value">ERP → MES</div></div>
                 <div class="info-item"><div class="label">Purpose</div><div class="value">Work order material status sync</div></div>
             </div>
@@ -138,14 +138,6 @@ SELECT COUNT(1) FROM MODETAIL WHERE CMOID = N'{wo_no}'</pre>
     LASTMAINTAINDATETIME = N'{current_time}'
 WHERE CMOID = :wo_no</pre>
 
-            <h3 style="font-size: 1.1em; margin: 20px 0 10px;">SFT_WO_ISSUE Linked Update (if exists)</h3>
-            <pre>-- If SFT_WO_ISSUE table exists, update it as well
-UPDATE SFT_WO_ISSUE SET
-    ISSUE_STATUS = :issue_status,
-    ISSUE_DATE = :issue_date,
-    ISSUE_QTY = :issue_qty
-WHERE WO_NO = :wo_no</pre>
-
             <h3 style="font-size: 1.1em; margin: 20px 0 10px;">material_requisition Linked Update</h3>
             <pre>-- Update work order material preparation status
 UPDATE material_requisition SET
@@ -160,7 +152,6 @@ WHERE modetail_cmoid = :wo_no</pre>
                     <table style="margin-top:10px; width:100%;">
                         <tr><th>Table</th><th>Operation</th><th>Description</th></tr>
                         <tr><td>MODETAIL</td><td>UPDATE</td><td>Update work order master material status</td></tr>
-                        <tr><td>SFT_WO_ISSUE</td><td>UPDATE</td><td>Update work order issue record (if exists)</td></tr>
                         <tr><td>material_requisition</td><td>UPDATE</td><td>Update work order material preparation status</td></tr>
                     </table>
                 </div>
